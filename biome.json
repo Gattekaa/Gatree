@@ -1,0 +1,43 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.4.1/schema.json",
+	"organizeImports": {
+		"enabled": true
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "space",
+		"indentWidth": 2
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"performance": {
+				"all": true
+			},
+			"nursery": {
+				"recommended": true,
+				"noUnusedImports": "error",
+				"useAwait": "error"
+			},
+      "a11y": {
+        "useKeyWithClickEvents": "off"
+      },
+			"suspicious": {
+				"noConsoleLog": "error",
+        "noArrayIndexKey": "off"
+			},
+			"recommended": true,
+			"correctness": {
+				"useExhaustiveDependencies": "off"
+			},
+			"security": {
+				"all": true
+			},
+			"style": {
+				"noCommaOperator": "off",
+				"recommended": true
+			}
+			
+		}
+	}
+}

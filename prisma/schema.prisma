@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  trees     Tree[]
+}
+
+model Tree {
+  id              String      @id @default(uuid())
+  title           String
+  status          String      @default("active")
+  backgroundColor String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  components      Component[]
+}
+
+model Component {
+  id              String   @id @default(uuid())
+  label           String
+  url             String
+  backgroundColor String?
+  textColor       String?
+  position        Int      @default(0)
+  text_color      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  treeId          String
+  tree            Tree     @relation(fields: [treeId], references: [id], onDelete: Cascade)
+}
