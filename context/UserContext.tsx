@@ -21,10 +21,10 @@ export const UserContext = createContext<UserContextType>({} as UserContextType)
 export default function UserProvider({ children }: { children: React.ReactNode }) {
   const { push } = useRouter()
   const pathname = usePathname()
-  const publicRoutes = ["/auth/login", "/auth/register"]
+
+  const publicRoutes = ["", "/auth/", "/auth/"]
   const [user, setUser] = useState<User>()
   const { token } = parseCookies();
-
   const { data: current_user, error: get_current_user_error } = useQuery({
     queryKey: ["current_user"],
     queryFn: () => getCurrentUser(),
@@ -34,9 +34,8 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     retry: false,
 
   })
-
   useEffect(() => {
-    if (!token && !publicRoutes.includes(pathname)) {
+    if (!token && !publicRoutes.includes(pathname?.split("/")[1] as string)) {
       push("/auth/login")
     }
   }, [])
