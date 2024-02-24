@@ -23,5 +23,9 @@ export async function GET(req: Request) {
     if (errorMessage === "jwt expired") {
       return NextResponse.json({ error: "Expired token" }, { status: 401 });
     }
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

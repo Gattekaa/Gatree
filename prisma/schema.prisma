@@ -39,8 +39,8 @@ model Component {
   url             String
   backgroundColor String?
   textColor       String?
+  outlined        Boolean  @default(false)
   position        Int      @default(0)
-  text_color      String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   treeId          String

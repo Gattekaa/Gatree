@@ -128,7 +128,7 @@ export default function TreesTable() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-8">
       <Alert
         open={!!deleteId}
         onOpenChange={() => setDeleteId("")}
@@ -217,21 +217,21 @@ export default function TreesTable() {
         </Dialog>
 
       </div>
-      <div className="rounded-md border border-slate-50/50">
+      <div className="flex-1 rounded-md border border-slate-700">
         <Table>
           <TableHeader>
-            <TableRow className="border-slate-50/50">
+            <TableRow className="border-slate-700 bg-slate-950">
               <TableHead className="text-center">Title</TableHead>
               <TableHead className="text-center">Status</TableHead>
               <TableHead className="text-center">Created</TableHead>
               <TableHead className="text-center">Updated</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="h-full">
             {
               isUserTreesLoading && (
                 Array.from({ length: 5 }).map((_, index) => (
-                  <TableRow key={index} className="text-center border-slate-50/50">
+                  <TableRow key={index} className="text-center border-slate-700">
                     <TableCell>
                       <div className="flex justify-center items-center">
                         <Skeleton className="w-40 h-4" />
@@ -259,7 +259,7 @@ export default function TreesTable() {
             }
             {
               !isUserTreesLoading && errorOnGetUserTrees && (
-                <TableRow className="text-center border-slate-50/50">
+                <TableRow className="text-center border-slate-700">
                   <TableCell colSpan={4}>
                     <p className="text-slate-400 py-10">An error occurred while fetching your trees. Please try again later.</p>
                   </TableCell>
@@ -268,7 +268,7 @@ export default function TreesTable() {
             }
             {
               !isUserTreesLoading && trees?.map((tree: Tree) => (
-                <TableRow key={tree.id} className="text-center border-slate-50/50">
+                <TableRow key={tree.id} className="text-center">
                   <TableCell>{tree.title}</TableCell>
                   <TableCell className="capitalize">{tree.status}</TableCell>
                   <TableCell>

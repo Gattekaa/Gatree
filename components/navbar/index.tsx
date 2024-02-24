@@ -19,7 +19,7 @@ export default function Navbar() {
   const { user, handleLogout } = useUserContext()
   const usernameInitial = user?.username?.[0]?.toUpperCase()
   return (
-    <nav className="bg-[#121212] w-full h-20 min-h-20 px-8 border-b-[1px] border-slate-50/50 flex items-center justify-between">
+    <nav className="bg-[#121212] w-full h-20 min-h-20 px-8 border-b-[1px] border-slate-700 flex items-center justify-between">
       <Link href="/">
         <Image
           src={gatteka_logo}

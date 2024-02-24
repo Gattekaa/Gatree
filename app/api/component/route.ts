@@ -10,7 +10,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { tree_id, label, url, backgroundColor, textColor } = await req.json();
+    const { tree_id, label, url, backgroundColor, textColor, outlined } =
+      await req.json();
+
+    if (!tree_id || !label || !url) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
+    }
+
     const user = await getCurrentUser(token);
 
     if (!user) {
@@ -34,6 +43,7 @@ export async function POST(req: Request) {
         url,
         backgroundColor,
         textColor,
+        outlined,
       },
     });
 

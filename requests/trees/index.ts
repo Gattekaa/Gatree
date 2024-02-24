@@ -25,7 +25,10 @@ export async function handleEditTree({
   title?: string;
   backgroundColor?: string;
 }) {
-  const { data } = await api.patch(`/tree/${id}`, { title, backgroundColor });
+  const { data } = await api.patch(`/tree/${id}`, {
+    title: title,
+    backgroundColor: backgroundColor ?? null,
+  });
   return data;
 }
 
@@ -49,6 +52,7 @@ export async function handleNewTreeLink(
   url: string,
   backgroundColor: string | undefined,
   textColor: string | undefined,
+  outlined: boolean
 ): Promise<Tree> {
   const { data } = await api.post("/component", {
     tree_id,
@@ -56,6 +60,7 @@ export async function handleNewTreeLink(
     url,
     backgroundColor,
     textColor,
+    outlined,
   });
   return data;
 }
@@ -71,12 +76,14 @@ export async function handleEditTreeLink(
   url: string,
   backgroundColor: string | undefined,
   textColor: string | undefined,
+  outlined: boolean
 ) {
   const { data } = await api.patch(`/component/${id}`, {
     label,
     url,
     backgroundColor,
     textColor,
+    outlined,
   });
   return data;
 }

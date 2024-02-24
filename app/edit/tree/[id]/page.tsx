@@ -60,15 +60,15 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import type { Component } from "@prisma/client";
-import { Loader2Icon, MoreHorizontal, Plus } from "lucide-react";
+import { Link2Off, Loader2Icon, MoreHorizontal, PaletteIcon, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton"
 import Alert from "@/components/dialog";
 import ColorPicker from 'react-best-gradient-color-picker'
-
-function AddNewComponent() {
-
-}
+import { toast } from "sonner";
+import { isAxiosError } from "axios";
+import { Switch } from "@/components/ui/switch"
+import AnimatedBackground from "@/components/animatedBackground";
 
 export default function EditTree({ params }: { params: { id: string } }) {
   const [deleteId, setDeleteId] = useState<string>("")
@@ -83,14 +83,14 @@ export default function EditTree({ params }: { params: { id: string } }) {
     openModal: false,
     color: ""
   })
-  const [showColorPicker, setShowColorPicker] = useState<boolean>(false)
+
   const queryClient = useQueryClient()
   const [color, setColor] = useState("");
-
   const formSchema = z.object({
     title: z.string().min(1, "Name is required"),
     url: z.string().min(1, "URL is required"),
-    background_color: z.string()
+    background_color: z.string(),
+    outlined: z.boolean()
   })
 
   const form = useForm({
@@ -98,9 +98,12 @@ export default function EditTree({ params }: { params: { id: string } }) {
     values: {
       title: edit.label || "My awesome link",
       url: edit.url || "",
-      backgroundColor: ""
+      backgroundColor: edit.backgroundColor || "",
+      outlined: edit.outlined || false
     }
   })
+  const outlinedChanges = form.watch("outlined")
+
   const tree_id = params.id
   const { data: tree, isPending: isTreeLoading } = useQuery({
     queryKey: ["tree"],
@@ -110,7 +113,7 @@ export default function EditTree({ params }: { params: { id: string } }) {
   const userAvatar = tree?.user?.avatar
 
   const newLinkMutation = useMutation({
-    mutationFn: () => handleNewTreeLink(tree_id, form.getValues("title"), form.getValues("url"), editButtonColor.color, editTextColor.color),
+    mutationFn: () => handleNewTreeLink(tree_id, form.getValues("title"), form.getValues("url"), editButtonColor.color, editTextColor.color, form.getValues("outlined")),
     onSuccess: (response) => {
       queryClient.setQueryData(["tree"], (data: { components: Component[] }) => {
         return {
@@ -123,11 +126,16 @@ export default function EditTree({ params }: { params: { id: string } }) {
       })
       setNewLink(false)
       form.reset()
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data?.error)
+      }
     }
   })
 
   const editLinkMutation = useMutation({
-    mutationFn: () => handleEditTreeLink(edit.id, form.getValues("title"), form.getValues("url"), editButtonColor.color, editTextColor.color),
+    mutationFn: () => handleEditTreeLink(edit.id, form.getValues("title"), form.getValues("url"), editButtonColor.color, editTextColor.color, form.getValues("outlined")),
     onSuccess: (response) => {
       queryClient.setQueryData(["tree"], (data: { components: Component[] }) => {
         return {
@@ -160,7 +168,7 @@ export default function EditTree({ params }: { params: { id: string } }) {
   })
 
   const editTreeMutation = useMutation({
-    mutationFn: () => handleEditTree({ id: tree_id, backgroundColor: color }),
+    mutationFn: (action?: string) => handleEditTree({ id: tree_id, backgroundColor: action === "remove" ? undefined : color }),
     onSuccess: (response) => {
       queryClient.setQueryData(["tree"], (data: { title: string, backgroundColor: string }) => {
         return {
@@ -172,8 +180,8 @@ export default function EditTree({ params }: { params: { id: string } }) {
     }
   })
 
-  function handleBackgroundChange() {
-    editTreeMutation.mutate()
+  function handleBackgroundChange(action = "change") {
+    editTreeMutation.mutate(action)
   }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -189,245 +197,303 @@ export default function EditTree({ params }: { params: { id: string } }) {
   }, [tree])
 
   return (
-    <main
-      style={{ background: color }}
-      className="w-full min-h-full flex flex-col items-center duration-150"
-    >
-      <Alert
-        open={!!deleteId}
-        onOpenChange={() => setDeleteId("")}
-        title="Are you absolutely sure?"
-        description="This action cannot be undone. This will permanently delete the link"
-        alertFooter={<>
-          <Button disabled={deleteLinkMutation.isPending} onClick={() => setDeleteId("")}>Cancel</Button>
-          <Button disabled={deleteLinkMutation.isPending} onClick={() => deleteLinkMutation.mutate(deleteId)}>
-            {
-              deleteLinkMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : "I'm sure, delete it!"
-            }
-          </Button>
-        </>}
-      />
-      <Sheet open={editButtonColor.openModal || editTextColor.openModal} onOpenChange={() => {
-        if (editButtonColor.openModal) {
-          setEditButtonColor({ openModal: false, color: editButtonColor.color })
-        } else {
-          setEditTextColor({ openModal: false, color: editTextColor.color })
-        }
-
-      }} >
-        <SheetContent className="flex justify-center items-center border-l-slate-800">
-          <ColorPicker
-            value={editButtonColor.openModal ? editButtonColor.color : editTextColor.openModal ? editTextColor.color : ""}
-            hideColorTypeBtns={editTextColor.openModal}
-            hideEyeDrop={editTextColor.openModal}
-            hideInputType={editTextColor.openModal}
-            onChange={(color) => {
-              if (editButtonColor.openModal) {
-                setEditButtonColor({ openModal: true, color: color })
-              } else {
-                setEditTextColor({ openModal: true, color: color })
+    <AnimatedBackground>
+      <main
+        style={{ background: color }}
+        className="w-full min-h-full flex flex-col items-center duration-150"
+      >
+        <Alert
+          open={!!deleteId}
+          onOpenChange={() => setDeleteId("")}
+          title="Are you absolutely sure?"
+          description="This action cannot be undone. This will permanently delete the link"
+          alertFooter={<>
+            <Button disabled={deleteLinkMutation.isPending} onClick={() => setDeleteId("")}>Cancel</Button>
+            <Button disabled={deleteLinkMutation.isPending} onClick={() => deleteLinkMutation.mutate(deleteId)}>
+              {
+                deleteLinkMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : "I'm sure, delete it!"
               }
-            }} />
-        </SheetContent>
-      </Sheet>
-      <Navbar />
-      <div className="w-full md:w-[500px] px-4 py-24 flex flex-col gap-10">
-        <div className="flex flex-col flex-1 items-center gap-4">
-          {
-            isTreeLoading ? (
-              <Skeleton className="w-[100px] h-[100px] rounded-full" />
-            ) : (
-              <Avatar className="w-[100px] h-[100px]">
-                <AvatarImage src={userAvatar} />
-                <AvatarFallback>{usernameInitial}</AvatarFallback>
-              </Avatar>
-            )
+            </Button>
+          </>}
+        />
+        <Sheet open={editButtonColor.openModal || editTextColor.openModal} onOpenChange={() => {
+          if (editButtonColor.openModal) {
+            setEditButtonColor({ openModal: false, color: editButtonColor.color })
+          } else {
+            setEditTextColor({ openModal: false, color: editTextColor.color })
           }
-          <Label className="text-xl">
+
+        }} >
+          <SheetContent className="flex justify-center items-center border-l-slate-800">
+            <ColorPicker
+              value={editButtonColor.openModal ? editButtonColor.color : editTextColor.openModal ? editTextColor.color : ""}
+              hideColorTypeBtns={editTextColor.openModal || form.getValues("outlined")}
+              hideEyeDrop={editTextColor.openModal}
+              hideInputType={editTextColor.openModal}
+              onChange={(color) => {
+                if (editButtonColor.openModal) {
+                  setEditButtonColor({ openModal: true, color: color })
+                } else {
+                  setEditTextColor({ openModal: true, color: color })
+                }
+              }} />
+          </SheetContent>
+        </Sheet>
+        <Navbar />
+        <div className="w-full md:w-[500px] px-4 py-24 flex flex-col gap-10">
+          <div className="flex flex-col flex-1 items-center gap-4">
             {
               isTreeLoading ? (
-                <Skeleton className="w-28 h-7 rounded-full" />
+                <Skeleton className="w-[100px] h-[100px] rounded-full" />
               ) : (
-                tree?.title
+                <Avatar className="w-[100px] h-[100px]">
+                  <AvatarImage src={userAvatar} />
+                  <AvatarFallback>{usernameInitial}</AvatarFallback>
+                </Avatar>
               )
             }
-          </Label>
-        </div>
-        <div className="flex justify-end gap-4">
-          <Sheet onOpenChange={() => handleBackgroundChange()}>
-            <SheetTrigger>
+            <Label className="text-xl">
               {
                 isTreeLoading ? (
-                  <Skeleton className="w-[167px] h-10 rounded-md" />
+                  <Skeleton className="w-28 h-7 rounded-full" />
                 ) : (
-                  <Button asChild>
-                    <p>Change background</p>
-                  </Button>
+                  tree?.title
                 )
               }
-            </SheetTrigger>
-            <SheetContent className="flex justify-center items-center border-l-slate-800">
-              <ColorPicker value={color} onChange={setColor} />
-            </SheetContent>
-          </Sheet>
-          <Dialog open={newLink || !!edit.id} onOpenChange={() => {
-            if (edit.id) setEdit({} as Component)
-            if (newLink) setNewLink(false)
-          }}>
-            <DialogTrigger className="">
-              {
-                isTreeLoading ? (
-                  <Skeleton className="w-10 h-10 rounded-full" />
-                ) : (
-                  <Button asChild onClick={() => setNewLink(!newLink)} size="icon" className="rounded-full">
-                    <Plus size={20} className="w-10 h-10 p-3" />
-                  </Button>
-                )
-              }
-            </DialogTrigger>
-            <DialogContent className="flex justify-center items-center w-full md:w-fit h-fit">
-              <Card className="w-full md:w-[500px] border-0">
-                <CardHeader>
-                  <CardTitle>Create new link</CardTitle>
-                  <CardDescription>
-                    Fill in the form below to create a new link
-                  </CardDescription>
-                </CardHeader>
-                <CardContent >
-                  <Form {...form}>
-                    <form onSubmit={onSubmit} id="new_tree_link">
-                      <div className="grid w-full items-center gap-4">
-                        <div className="flex flex-col space-y-1.5 ">
-                          <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <Button asChild variant="tree_link">
-                                    <Input
-                                      style={{ background: editButtonColor.color, color: editTextColor.color }}
-                                      className="h-[50px] border-0 !ring-0 text-center"
-                                      placeholder=""
-                                      {...field}
-                                    />
-                                  </Button>
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div className="flex flex-col space-y-1.5">
-                          <FormField
-                            control={form.control}
-                            name="url"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>URL</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="" {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                  Enter the URL of the link
-                                </FormDescription>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <div className="flex gap-4 !mt-4">
-                            <Button type="button" onClick={() => setEditButtonColor({
-                              ...editButtonColor,
-                              openModal: true
-                            })}>
-                              Change button color
-                            </Button>
-                            <Button type="button" onClick={() => setEditTextColor({
-                              ...editTextColor,
-                              openModal: true
-                            })}>
-                              Change text color
-                            </Button>
+            </Label>
+          </div>
+          <div className="flex justify-end gap-4">
+            <Sheet onOpenChange={() => handleBackgroundChange()}>
+              <SheetTrigger>
+                {
+                  isTreeLoading ? (
+                    <Skeleton className="w-10 h-10 rounded-full" />
+                  ) : (
+                    <Button asChild size="icon" className="rounded-full">
+                      <p>
+                        <PaletteIcon size={20} />
+                      </p>
+                    </Button>
+                  )
+                }
+              </SheetTrigger>
+              <SheetContent className="flex flex-col gap-10 overflow-y-auto justify-between items-center border-l-slate-800">
+                <ColorPicker
+                  value={color}
+                  onChange={setColor}
+                  className="pt-8"
+                />
+                <Button
+                  disabled={editTreeMutation.isPending}
+                  className="w-full"
+                  onClick={() => {
+                    handleBackgroundChange("remove");
+                    setColor("")
+                  }}
+                >
+                  Remove background color
+                </Button>
+              </SheetContent>
+            </Sheet>
+            <Dialog open={newLink || !!edit.id} onOpenChange={() => {
+              if (edit.id) setEdit({} as Component)
+              if (newLink) setNewLink(false)
+            }}>
+              <DialogTrigger className="">
+                {
+                  isTreeLoading ? (
+                    <Skeleton className="w-10 h-10 rounded-full" />
+                  ) : (
+                    <Button asChild onClick={() => setNewLink(!newLink)} size="icon" className="rounded-full">
+                      <Plus size={20} className="w-10 h-10 p-3" />
+                    </Button>
+                  )
+                }
+              </DialogTrigger>
+              <DialogContent className="flex justify-center items-center w-full md:w-fit h-fit">
+                <Card className="w-full md:w-[500px] border-0">
+                  <CardHeader>
+                    <CardTitle>Create new link</CardTitle>
+                    <CardDescription>
+                      Fill in the form below to create a new link
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent >
+                    <Form {...form}>
+                      <form onSubmit={onSubmit} id="new_tree_link">
+                        <div className="grid w-full items-center gap-4">
+                          <div className="flex flex-col space-y-1.5 ">
+                            <FormField
+                              control={form.control}
+                              name="title"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormControl>
+                                    <Button asChild variant="tree_link">
+                                      <Input
+                                        style={{
+                                          background: form.getValues("outlined") ? "transparent" : editButtonColor.color,
+                                          color: editTextColor.color,
+                                          outlineWidth: form.getValues("outlined") ? "2px" : "0",
+                                          outlineColor: editButtonColor.color,
+                                          outlineStyle: form.getValues("outlined") ? "solid" : "none"
+                                        }}
+                                        className="h-[50px] border-0 !ring-0 !ring-transparent text-center"
+                                        placeholder=""
+                                        {...field}
+                                      />
+                                    </Button>
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          <div className="flex flex-col space-y-1.5">
+                            <FormField
+                              control={form.control}
+                              name="url"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>URL</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="" {...field} />
+                                  </FormControl>
+                                  <FormDescription>
+                                    Enter the URL of the link
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <div className="py-4">
+                              <FormField
+                                control={form.control}
+                                name="outlined"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Styles</FormLabel>
+                                    <FormControl>
+                                      <div className="flex items-center space-x-2">
+                                        <Switch id="outlined-button"
+                                          checked={field.value}
+                                          onCheckedChange={field.onChange}
+                                        />
+                                        <Label htmlFor="outlined-button">Outlined</Label>
+                                      </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 !mt-4">
+                              <Button className="w-full " type="button" onClick={() => setEditButtonColor({
+                                ...editButtonColor,
+                                openModal: true
+                              })}>
+                                Change button color
+                              </Button>
+                              <Button className="w-full" type="button" onClick={() => setEditTextColor({
+                                ...editTextColor,
+                                openModal: true
+                              })}>
+                                Change text color
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </form>
-                  </Form>
+                      </form>
+                    </Form>
 
-                </CardContent>
-                <CardFooter className="flex justify-end">
-                  <Button disabled={newLinkMutation.isPending} type="submit" form="new_tree_link">
-                    {
-                      edit.id ? (
-                        editLinkMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : "Save"
-                      ) : (newLinkMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : "Create")
-                    }
-                  </Button>
-                </CardFooter>
-              </Card>
-            </DialogContent>
-          </Dialog>
-        </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-end">
+                    <Button disabled={newLinkMutation.isPending} type="submit" form="new_tree_link">
+                      {
+                        edit.id ? (
+                          editLinkMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : "Save"
+                        ) : (newLinkMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : "Create")
+                      }
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </DialogContent>
+            </Dialog>
+          </div>
 
-        <ul className="flex flex-col gap-6">
-          {
-            isTreeLoading && (
-              Array.from({ length: 5 }).map((_, index) => (
-                <li key={index} className="bg-gray-500/10 pb-4 flex flex-col px-4">
-                  <header className="flex py-2 justify-end">
-                    <Skeleton className="w-8 h-8 rounded-md" />
-                  </header>
-                  <Skeleton className="w-full h-[50px] rounded-full" />
-                </li>
-              )))
-          }
-          {
-            tree?.components?.map((component: Component) => {
-              const linkHasMethod = component.url.startsWith("http")
-              const link = linkHasMethod ? component.url : `//${component.url}`
-              return (
-                (
-                  <li key={component.id} className="bg-gray-500/10 pb-4 flex flex-col">
-                    <header className="flex px-4 py-2 justify-end">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => setDeleteId(component.id)}>Delete</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => {
-                            setEdit(component)
-                            setEditButtonColor({
-                              openModal: false,
-                              color: component.backgroundColor || undefined
-                            })
-                            setEditTextColor({ openModal: false, color: component.textColor || "inherit" })
-                          }}>Edit</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+          <ul className="flex flex-col gap-6">
+            {
+              isTreeLoading && (
+                Array.from({ length: 5 }).map((_, index) => (
+                  <li key={index} className="bg-gray-500/10 pb-4 flex flex-col px-4">
+                    <header className="flex py-2 justify-end">
+                      <Skeleton className="w-8 h-8 rounded-md" />
                     </header>
-                    <div className="px-4">
-                      <Button
-                        style={{
-                          background: component.backgroundColor || undefined,
-                          color: component.textColor || undefined
-                        }}
-                        variant="tree_link"
-                        asChild
-                      >
-                        <Link href={link}>{component.label}</Link>
-                      </Button>
-                    </div>
+                    <Skeleton className="w-full h-[50px] rounded-full" />
                   </li>
-                )
+                )))
+            }
+            {
+              tree?.components?.length === 0 && !isTreeLoading && (
+                <li className="flex flex-col items-center gap-2 text-slate-50/50">
+                  <Link2Off size={64} absoluteStrokeWidth className="animate-pulse" />
+                  <span className="text-xl">You don't have any link in this tree yet 😢.</span>
+                </li>
               )
-            })
-          }
-        </ul>
-      </div>
-    </main>
+            }
+            {
+              tree?.components?.map((component: Component) => {
+                const linkHasMethod = component.url.startsWith("http")
+                const link = linkHasMethod ? component.url : `//${component.url}`
+                return (
+                  (
+                    <li key={component.id} className="bg-gray-500/10 pb-4 flex flex-col">
+                      <header className="flex px-4 py-2 justify-end">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => setDeleteId(component.id)}>Delete</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => {
+                              setEdit(component)
+                              setEditButtonColor({
+                                openModal: false,
+                                color: component.backgroundColor || undefined
+                              })
+                              setEditTextColor({ openModal: false, color: component.textColor || undefined })
+                            }}>Edit</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </header>
+                      <div className="px-4">
+                        <Button
+                          style={{
+                            ...(component.outlined && {
+                              outlineWidth: "2px",
+                              outlineColor: component.backgroundColor || undefined,
+                              outlineStyle: "solid",
+                            }),
+                            background: !component.outlined ? component.backgroundColor || undefined : "transparent",
+                            color: component.textColor || undefined,
+
+                          }}
+                          variant="tree_link"
+                          asChild
+                        >
+                          <Link href={link}>{component.label}</Link>
+                        </Button>
+                      </div>
+                    </li>
+                  )
+                )
+              })
+            }
+          </ul>
+        </div>
+      </main>
+    </AnimatedBackground>
   )
 }

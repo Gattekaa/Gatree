@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner"
 import { Loader2Icon } from "lucide-react";
 import { useUserContext } from "@/context/UserContext";
+import AnimatedBackground from "@/components/animatedBackground";
 
 export default function Login() {
   const { setUser } = useUserContext()
@@ -60,51 +61,53 @@ export default function Login() {
 
 
   return (
-    <div className="w-full h-screen flex justify-center items-center" >
-      <main className="w-[350px] h-fit">
-        <h1 className="text-3xl font-bold mb-8">Login</h1>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(async () => await loginMutation.mutateAsync())} className="space-y-8 flex flex-col">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input autoFocus {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormMessage>
-              <a href="/auth/register" className="text-blue-500">Don't have an account? Register here</a>
-            </FormMessage>
-            <Button
-              disabled={loginMutation.isPending}
-              type="submit"
-            >
-              {
-                loginMutation.isPending ? <Loader2Icon className="animate-spin" /> : "Login"
-              }
-            </Button>
-          </form>
-        </Form>
-      </main>
-    </div >
+    <AnimatedBackground>
+      <div className="w-full h-screen flex justify-center items-center" >
+        <main className="w-[350px] h-fit">
+          <h1 className="text-3xl font-bold mb-8">Login</h1>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(async () => await loginMutation.mutateAsync())} className="space-y-8 flex flex-col">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input autoFocus {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormMessage>
+                <a href="/auth/register" className="text-blue-500">Don't have an account? Register here</a>
+              </FormMessage>
+              <Button
+                disabled={loginMutation.isPending}
+                type="submit"
+              >
+                {
+                  loginMutation.isPending ? <Loader2Icon className="animate-spin" /> : "Login"
+                }
+              </Button>
+            </form>
+          </Form>
+        </main>
+      </div >
+    </AnimatedBackground>
   )
 }
