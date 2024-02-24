@@ -447,7 +447,7 @@ export default function EditTree({ params }: { params: { id: string } }) {
             }
             {
               tree?.components?.length === 0 && !isTreeLoading && (
-                <li className="flex flex-col items-center gap-2 text-slate-50/50">
+                <li className="flex flex-col items-center gap-2 text-slate-950 dark:text-slate-50/50">
                   <Link2Off size={64} absoluteStrokeWidth className="animate-pulse" />
                   <span className="text-xl">You don't have any link in this tree yet 😢.</span>
                 </li>

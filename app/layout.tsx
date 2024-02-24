@@ -25,6 +25,7 @@ export default function RootLayout({
         <TanstackProvider>
           <UserProvider>
             <ThemeProvider
+              themes={['light', 'dark', 'system']}
               attribute="class"
               storageKey="theme"
               defaultTheme="system"

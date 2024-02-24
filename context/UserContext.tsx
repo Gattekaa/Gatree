@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/requests/auth";
 import type { User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { type AxiosError, isAxiosError } from "axios";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { destroyCookie, parseCookies } from "nookies";
 import type React from "react";
 import { useContext, useEffect, useState } from "react";
@@ -20,6 +20,8 @@ export const UserContext = createContext<UserContextType>({} as UserContextType)
 
 export default function UserProvider({ children }: { children: React.ReactNode }) {
   const { push } = useRouter()
+  const pathname = usePathname()
+  const publicRoutes = ["/auth/login", "/auth/register"]
   const [user, setUser] = useState<User>()
   const { token } = parseCookies();
 
@@ -29,8 +31,15 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     staleTime: 1000 * 60 * 60, // 1 hour
     gcTime: 1000 * 60 * 60 * 24, // 24 hours 
     enabled: !!token,
-    retry: false
+    retry: false,
+
   })
+
+  useEffect(() => {
+    if (!token && !publicRoutes.includes(pathname)) {
+      push("/auth/login")
+    }
+  }, [])
 
   useEffect(() => {
     if (current_user) {

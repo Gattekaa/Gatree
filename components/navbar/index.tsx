@@ -14,8 +14,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useUserContext } from "@/context/UserContext";
+import { useTheme } from "next-themes";
 
 export default function Navbar() {
+  const { theme, setTheme } = useTheme()
   const { user, handleLogout } = useUserContext()
   const usernameInitial = user?.username?.[0]?.toUpperCase()
   return (
@@ -47,14 +49,17 @@ export default function Navbar() {
             <DropdownMenuContent>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
+              {/*               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Billing</DropdownMenuItem>
-              <DropdownMenuItem>Team</DropdownMenuItem>
+              <DropdownMenuItem>Team</DropdownMenuItem> */}
+              <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")} >
+                {theme === "dark" ? "Light" : "Dark"} Mode
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleLogout()}>Log-out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )
       }
-    </nav>
+    </nav >
   );
 }
