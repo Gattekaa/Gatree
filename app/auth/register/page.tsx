@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner"
 import { Loader2Icon } from "lucide-react";
 import { useUserContext } from "@/context/UserContext";
+import Link from "next/link";
 
 export default function Register() {
   const { setUser } = useUserContext()
@@ -129,7 +130,9 @@ export default function Register() {
               )}
             />
             <FormMessage>
-              <a href="/auth/login" className="text-blue-500">Already have an account? Login here</a>
+              <Link href="/auth/login" className="text-blue-500">
+                Already have an account? Login here
+              </Link>
             </FormMessage>
             <Button
               disabled={registerMutation.isPending}

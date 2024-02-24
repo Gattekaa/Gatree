@@ -14,6 +14,7 @@ import { toast } from "sonner"
 import { Loader2Icon } from "lucide-react";
 import { useUserContext } from "@/context/UserContext";
 import AnimatedBackground from "@/components/animatedBackground";
+import Link from "next/link";
 
 export default function Login() {
   const { setUser } = useUserContext()
@@ -59,7 +60,6 @@ export default function Login() {
     }
   });
 
-
   return (
     <AnimatedBackground>
       <div className="w-full h-screen flex justify-center items-center" >
@@ -94,7 +94,9 @@ export default function Login() {
                 )}
               />
               <FormMessage>
-                <a href="/auth/register" className="text-blue-500">Don't have an account? Register here</a>
+                <Link href="/auth/register" className="text-blue-500">
+                  Don't have an account? Register here
+                </Link>
               </FormMessage>
               <Button
                 disabled={loginMutation.isPending}

@@ -23,12 +23,6 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const [user, setUser] = useState<User>()
   const { token } = parseCookies();
 
-  useEffect(() => {
-    if (!token) {
-      push("/auth/login")
-    }
-  }, [])
-
   const { data: current_user, error: get_current_user_error } = useQuery({
     queryKey: ["current_user"],
     queryFn: () => getCurrentUser(),

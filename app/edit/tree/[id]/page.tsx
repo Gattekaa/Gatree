@@ -69,8 +69,14 @@ import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { Switch } from "@/components/ui/switch"
 import AnimatedBackground from "@/components/animatedBackground";
+import { useRouter } from "next/navigation";
+import { parseCookies } from "nookies";
+import { useUserContext } from "@/context/UserContext";
 
 export default function EditTree({ params }: { params: { id: string } }) {
+  const { user } = useUserContext()
+  const { push } = useRouter()
+  const { token } = parseCookies()
   const [deleteId, setDeleteId] = useState<string>("")
   const [newLink, setNewLink] = useState<boolean>(false)
   const [edit, setEdit] = useState({} as Component)
@@ -195,6 +201,13 @@ export default function EditTree({ params }: { params: { id: string } }) {
   useEffect(() => {
     setColor(tree?.backgroundColor)
   }, [tree])
+
+
+  useEffect(() => {
+    if (!token || !user) {
+      push("/auth/login")
+    }
+  }, [])
 
   return (
     <AnimatedBackground>
