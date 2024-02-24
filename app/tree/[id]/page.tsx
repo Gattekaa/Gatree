@@ -69,7 +69,16 @@ export default function TreePage({ params }: { params: { id: string } }) {
                   (
                     <li key={component.id} >
                       <Button
-                        style={{ background: component.backgroundColor || undefined, color: component.textColor || undefined }}
+                        style={{
+                          ...(component.outlined && {
+                            outlineWidth: "2px",
+                            outlineColor: component.backgroundColor || undefined,
+                            outlineStyle: "solid",
+                          }),
+                          background: !component.outlined ? component.backgroundColor || undefined : "transparent",
+                          color: component.textColor || undefined,
+
+                        }}
                         variant="tree_link"
                         asChild
                       >
