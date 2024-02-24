@@ -22,7 +22,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const { push } = useRouter()
   const pathname = usePathname()
 
-  const publicRoutes = ["", "/auth/", "/auth/"]
+  const publicRoutes = ["", "tree", "/auth/", "/auth/"]
   const [user, setUser] = useState<User>()
   const { token } = parseCookies();
   const { data: current_user, error: get_current_user_error } = useQuery({
@@ -34,6 +34,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     retry: false,
 
   })
+
   useEffect(() => {
     if (!token && !publicRoutes.includes(pathname?.split("/")[1] as string)) {
       push("/auth/login")
