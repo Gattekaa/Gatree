@@ -1,7 +1,7 @@
 "use client"
 import { cn } from "@/lib/utils";
 import type React from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 export default function LavaBackground(): React.ReactNode {
   interface Element {
@@ -24,21 +24,21 @@ export default function LavaBackground(): React.ReactNode {
     };
   }
 
-  for (let i = 0; i < ELEMENT_COUNT; i++) {
-    const element = {
-      size: Math.floor(Math.random() * 500) + 50, // Random size between 500 to 550
-      color: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`, // Random color
-      x: Math.floor(Math.random() * window.innerWidth), // Random X position on screen
-      y: Math.floor(Math.random() * window.innerHeight), // Random Y position on screen
-      floatTo: Math.random() > 0.6 ? "floatDown" : "floatUp" // Random movement direction
-    }
-
-    const newElement = createElement(element);
-    items.push(newElement);
-  }
-
   const memoizedItems = useMemo(() => items, []);
+  useEffect(() => {
+    for (let i = 0; i < ELEMENT_COUNT; i++) {
+      const element = {
+        size: Math.floor(Math.random() * 500) + 50, // Random size between 500 to 550
+        color: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`, // Random color
+        x: Math.floor(Math.random() * window.innerWidth), // Random X position on screen
+        y: Math.floor(Math.random() * window.innerHeight), // Random Y position on screen
+        floatTo: Math.random() > 0.6 ? "floatDown" : "floatUp" // Random movement direction
+      }
 
+      const newElement = createElement(element);
+      items.push(newElement);
+    }
+  }, [])
   return memoizedItems.map((item, idx) => (
     <div
       key={idx}
