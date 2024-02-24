@@ -21,7 +21,7 @@ export default function RootLayout({
 
   return (
     <html suppressHydrationWarning lang="en">
-      <body className={`${inter.className} w-full h-screen`}>
+      <body className={`${inter.className} w-full h-[100dvh] md:h-screen`}>
         <TanstackProvider>
           <UserProvider>
             <ThemeProvider

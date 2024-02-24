@@ -78,7 +78,7 @@ export default function Register() {
 
   return (
     <AnimatedBackground>
-      <div className="w-full h-screen flex justify-center items-center" >
+      <div className="w-full h-[100dvh] md:h-screen flex justify-center items-center" >
         <main className="w-[350px] h-fit">
           <h1 className="text-3xl font-bold mb-8">Register</h1>
           <Form {...form}>
