@@ -62,6 +62,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   function handleLogout(): void {
     setUser(undefined)
     destroyCookie(null, "token")
+    push("/auth/login")
     toast("You have been logged out! 😢", {
       description: "Goodbye!",
     })
