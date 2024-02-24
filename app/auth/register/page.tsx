@@ -14,6 +14,7 @@ import { toast } from "sonner"
 import { Loader2Icon } from "lucide-react";
 import { useUserContext } from "@/context/UserContext";
 import Link from "next/link";
+import AnimatedBackground from "@/components/animatedBackground";
 
 export default function Register() {
   const { setUser } = useUserContext()
@@ -76,75 +77,77 @@ export default function Register() {
 
 
   return (
-    <div className="w-full h-screen flex justify-center items-center" >
-      <main className="w-[350px] h-fit">
-        <h1 className="text-3xl font-bold mb-8">Register</h1>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(async () => await registerMutation.mutateAsync())} className="space-y-8 flex flex-col">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Type your best password. 😎
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password_confirmation"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password Confirmation</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Confirm your password.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormMessage>
-              <Link href="/auth/login" className="text-blue-500">
-                Already have an account? Login here
-              </Link>
-            </FormMessage>
-            <Button
-              disabled={registerMutation.isPending}
-              type="submit"
-            >
-              {
-                registerMutation.isPending ? <Loader2Icon className="animate-spin" /> : "Register"
-              }
-            </Button>
-          </form>
-        </Form>
-      </main>
-    </div >
+    <AnimatedBackground>
+      <div className="w-full h-screen flex justify-center items-center" >
+        <main className="w-[350px] h-fit">
+          <h1 className="text-3xl font-bold mb-8">Register</h1>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(async () => await registerMutation.mutateAsync())} className="space-y-8 flex flex-col">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      This is your public display name.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Type your best password. 😎
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password_confirmation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password Confirmation</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Confirm your password.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormMessage>
+                <Link href="/auth/login" className="text-blue-500">
+                  Already have an account? Login here
+                </Link>
+              </FormMessage>
+              <Button
+                disabled={registerMutation.isPending}
+                type="submit"
+              >
+                {
+                  registerMutation.isPending ? <Loader2Icon className="animate-spin" /> : "Register"
+                }
+              </Button>
+            </form>
+          </Form>
+        </main>
+      </div >
+    </AnimatedBackground>
   )
 }
