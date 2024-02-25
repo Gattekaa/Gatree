@@ -82,7 +82,7 @@ export default function TreePage({ params }: { params: { id: string } }) {
                         variant="tree_link"
                         asChild
                       >
-                        <Link href={link}>{component.label}</Link>
+                        <Link href={link} target="_blank" rel="noreferrer">{component.label}</Link>
                       </Button>
                     </li>
                   )

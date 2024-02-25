@@ -149,19 +149,28 @@ export default function TreesTable() {
       <Dialog open={!!QrCodeTree.id} onOpenChange={() => setQrCodeTree({} as Tree)}>
         <DialogContent className="flex justify-center items-center w-fit h-fit">
           <Card className="w-[350px] border-0">
-            {
-              !isQrCodeLoading && !qrCodeError && (
-                <CardHeader>
+
+            <CardHeader>
+              {
+                isQrCodeLoading ? (
+                  <Skeleton className="w-28 h-8" />
+                ) : (
                   <CardTitle>QRCode</CardTitle>
+                )
+              }
+              {
+                isQrCodeLoading ? (
+                  <Skeleton className="w-full h-6" />
+                ) : (
                   <CardDescription>
                     Use the following QRCode to share your tree
                   </CardDescription>
-                </CardHeader>
-              )
-            }
+                )
+              }
+            </CardHeader>
             <CardContent className="flex items-center justify-center">
               {
-                isQrCodeLoading && <Loader2Icon size={40} className="animate-spin" />
+                isQrCodeLoading && <Skeleton className="w-[400px] h-[300px]" />
               }
               {
                 !isQrCodeLoading && qrCode && (
@@ -283,7 +292,11 @@ export default function TreesTable() {
                 </Form>
               </CardContent>
               <CardFooter className="flex justify-end">
-                <Button type="submit" form="new_tree_form">Next</Button>
+                <Button disabled={newTreeMutation.isPending} type="submit" form="new_tree_form">
+                  {
+                    newTreeMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : "Next"
+                  }
+                </Button>
               </CardFooter>
             </Card>
           </DialogContent>

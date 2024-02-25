@@ -60,7 +60,7 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import type { Component } from "@prisma/client";
-import { Link2Off, Loader2Icon, MoreHorizontal, PaletteIcon, Plus } from "lucide-react";
+import { Link2Icon, Link2Off, Loader2Icon, MoreHorizontal, PaletteIcon, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton"
 import Alert from "@/components/dialog";
@@ -69,14 +69,9 @@ import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { Switch } from "@/components/ui/switch"
 import AnimatedBackground from "@/components/animatedBackground";
-import { useRouter } from "next/navigation";
-import { parseCookies } from "nookies";
-import { useUserContext } from "@/context/UserContext";
+import Tooltip from "@/components/tooltip";
 
 export default function EditTree({ params }: { params: { id: string } }) {
-  const { user } = useUserContext()
-  const { push } = useRouter()
-  const { token } = parseCookies()
   const [deleteId, setDeleteId] = useState<string>("")
   const [newLink, setNewLink] = useState<boolean>(false)
   const [edit, setEdit] = useState({} as Component)
@@ -202,13 +197,6 @@ export default function EditTree({ params }: { params: { id: string } }) {
     setColor(tree?.backgroundColor)
   }, [tree])
 
-
-  useEffect(() => {
-    if (!token || !user) {
-      push("/auth/login")
-    }
-  }, [])
-
   return (
     <AnimatedBackground>
       <main
@@ -276,17 +264,32 @@ export default function EditTree({ params }: { params: { id: string } }) {
             </Label>
           </div>
           <div className="flex justify-end gap-4">
+            {
+              isTreeLoading ? (
+                <Skeleton className="w-10 h-10 rounded-full" />
+              ) : (
+                <Tooltip text="View as guest user">
+                  <Button size="icon" asChild className="rounded-full">
+                    <Link href={`/tree/${params.id}`} target="_blank" rel="noreferrer">
+                      <Link2Icon size={20} className="w-10 h-10 p-3" />
+                    </Link>
+                  </Button>
+                </Tooltip>
+              )
+            }
             <Sheet onOpenChange={() => handleBackgroundChange()}>
               <SheetTrigger>
                 {
                   isTreeLoading ? (
                     <Skeleton className="w-10 h-10 rounded-full" />
                   ) : (
-                    <Button asChild size="icon" className="rounded-full">
-                      <p>
-                        <PaletteIcon size={20} />
-                      </p>
-                    </Button>
+                    <Tooltip text="Change background color">
+                      <Button asChild size="icon" className="rounded-full">
+                        <p>
+                          <PaletteIcon size={20} />
+                        </p>
+                      </Button>
+                    </Tooltip>
                   )
                 }
               </SheetTrigger>
@@ -317,9 +320,11 @@ export default function EditTree({ params }: { params: { id: string } }) {
                   isTreeLoading ? (
                     <Skeleton className="w-10 h-10 rounded-full" />
                   ) : (
-                    <Button asChild onClick={() => setNewLink(!newLink)} size="icon" className="rounded-full">
-                      <Plus size={20} className="w-10 h-10 p-3" />
-                    </Button>
+                    <Tooltip text="Add new link">
+                      <Button asChild onClick={() => setNewLink(!newLink)} size="icon" className="rounded-full">
+                        <Plus size={20} className="w-10 h-10 p-3" />
+                      </Button>
+                    </Tooltip>
                   )
                 }
               </DialogTrigger>
@@ -483,6 +488,7 @@ export default function EditTree({ params }: { params: { id: string } }) {
                       </header>
                       <div className="px-4">
                         <Button
+                          className="cursor-default"
                           style={{
                             ...(component.outlined && {
                               outlineWidth: "2px",
@@ -494,9 +500,8 @@ export default function EditTree({ params }: { params: { id: string } }) {
 
                           }}
                           variant="tree_link"
-                          asChild
                         >
-                          <Link href={link}>{component.label}</Link>
+                          {component.label}
                         </Button>
                       </div>
                     </li>

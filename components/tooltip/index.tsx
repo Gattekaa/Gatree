@@ -11,7 +11,7 @@ interface TooltipProps {
   delay?: number
 }
 
-export default function Tooltip({ children, text, delay }: TooltipProps) {
+export default function Tooltip({ children, text, delay = 150 }: TooltipProps) {
   return (
     <TooltipProvider delayDuration={delay}>
       <TooltipUIComponent>
