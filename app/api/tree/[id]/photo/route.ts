@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import prisma from "@/database/prisma";
+import sharp from "sharp";
 
 export async function POST(
   request: Request,
@@ -9,10 +10,12 @@ export async function POST(
   try {
     const { searchParams } = new URL(request.url);
     const filename = searchParams.get("filename");
+    const formData = await request.formData();
+    const file = formData.get("file");
 
-    if (!filename || !request.body) {
+    if (!filename || !(file instanceof File)) {
       return NextResponse.json(
-        { error: "No filename or body provided" },
+        { error: "No filename or file provided" },
         { status: 400 },
       );
     }
@@ -25,15 +28,21 @@ export async function POST(
       return NextResponse.json({ error: "Tree not found" }, { status: 404 });
     }
 
-    const blob = await put(filename, request.body, {
+    const blob = new Blob([file], { type: file.type });
+
+    const treatedImage = await sharp(await blob.arrayBuffer())
+      .resize(256, 256)
+      .webp()
+      .toBuffer();
+
+    const imageData = await put(filename, treatedImage, {
       access: "public",
     });
 
     const updatedTree = await prisma.tree.update({
       where: { id: params.id },
-      data: { photo: blob.url },
+      data: { photo: imageData.url },
     });
-
     return NextResponse.json(
       { message: "Photo uploaded successfully", tree: updatedTree },
       { status: 200 },

@@ -100,14 +100,17 @@ export async function handleTreeUploadPhoto(
   if (!file) {
     throw new Error("No file provided");
   }
+  const formData = new FormData();
+  formData.append("file", file);
   const { data } = await api.post(
     `/tree/${id}/photo?filename=${file.name}`,
-    file,
+    formData,
     {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     },
   );
+
   return data;
 }
