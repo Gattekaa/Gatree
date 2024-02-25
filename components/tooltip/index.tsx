@@ -15,7 +15,7 @@ export default function Tooltip({ children, text, delay = 150 }: TooltipProps) {
   return (
     <TooltipProvider delayDuration={delay}>
       <TooltipUIComponent>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           {children}
         </TooltipTrigger>
         <TooltipContent>

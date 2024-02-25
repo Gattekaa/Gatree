@@ -90,8 +90,7 @@ export default function EditTree({ params }: { params: { id: string } }) {
   const formSchema = z.object({
     title: z.string().min(1, "Name is required"),
     url: z.string().min(1, "URL is required"),
-    background_color: z.string(),
-    outlined: z.boolean()
+    outlined: z.boolean().optional()
   })
 
   const form = useForm({
@@ -185,13 +184,23 @@ export default function EditTree({ params }: { params: { id: string } }) {
     editTreeMutation.mutate(action)
   }
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  function onSubmit() {
     if (edit.id) {
       return editLinkMutation.mutate()
     }
     newLinkMutation.mutate()
   }
+
+  useEffect(() => {
+    if (form.getValues("outlined")) {
+      setEditButtonColor({ openModal: false, color: edit.backgroundColor || "rgb(248 250 252)" })
+      setEditTextColor({ openModal: false, color: edit.textColor || "rgb(248 250 252)" })
+    } else {
+      setEditButtonColor({ openModal: false, color: edit.backgroundColor || undefined })
+      setEditTextColor({ openModal: false, color: edit.textColor || undefined })
+    }
+
+  }, [outlinedChanges])
 
   useEffect(() => {
     setColor(tree?.backgroundColor)
@@ -338,7 +347,7 @@ export default function EditTree({ params }: { params: { id: string } }) {
                   </CardHeader>
                   <CardContent >
                     <Form {...form}>
-                      <form onSubmit={onSubmit} id="new_tree_link">
+                      <form onSubmit={form.handleSubmit(async () => await onSubmit())} id="new_tree_link">
                         <div className="grid w-full items-center gap-4">
                           <div className="flex flex-col space-y-1.5 ">
                             <FormField
@@ -362,6 +371,7 @@ export default function EditTree({ params }: { params: { id: string } }) {
                                       />
                                     </Button>
                                   </FormControl>
+                                  <FormMessage className="pt-2" />
                                 </FormItem>
                               )}
                             />
@@ -374,7 +384,7 @@ export default function EditTree({ params }: { params: { id: string } }) {
                                 <FormItem>
                                   <FormLabel>URL</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="" {...field} />
+                                    <Input {...field} />
                                   </FormControl>
                                   <FormDescription>
                                     Enter the URL of the link
