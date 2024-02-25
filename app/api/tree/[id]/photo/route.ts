@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import prisma from "@/database/prisma";
 import sharp from "sharp";
+import { File } from "buffer";
 
 export async function POST(
   request: Request,
