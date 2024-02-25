@@ -55,20 +55,21 @@ import { Input } from "../ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Button } from "../ui/button"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { getUserTrees, handleDeleteTree, handleNewTree, handleTreeStatusToggle } from "@/requests/trees"
+import { getTreeQRCode, getUserTrees, handleDeleteTree, handleNewTree, handleTreeStatusToggle } from "@/requests/trees"
 import { useRouter } from "next/navigation"
-import { Loader2Icon, MoreHorizontal } from "lucide-react"
+import { CloudOff, Download, Loader2Icon, MoreHorizontal } from "lucide-react"
 import { useState } from "react"
 import Alert from "../dialog"
 import { useUserContext } from "@/context/UserContext"
 import Link from "next/link"
 import { Skeleton } from "../ui/skeleton"
-
-
+import Image from "next/image"
+import Tooltip from "../tooltip"
 
 export default function TreesTable() {
   const { user } = useUserContext()
   const queryClient = useQueryClient()
+  const [QrCodeTree, setQrCodeTree] = useState<Tree>({} as Tree)
   const [deleteId, setDeleteId] = useState<string>("")
   const { push } = useRouter()
 
@@ -125,6 +126,78 @@ export default function TreesTable() {
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     newTreeMutation.mutate()
+  }
+
+  function QrCode() {
+
+    const { data: qrCode, error: qrCodeError, isPending: isQrCodeLoading } = useQuery({
+      queryKey: ["qrcode", QrCodeTree],
+      queryFn: () => getTreeQRCode(QrCodeTree.id),
+      enabled: !!QrCodeTree,
+    })
+
+    function handleDownload() {
+      const downloadLink = document.createElement('a');
+      downloadLink.href = qrCode;
+      downloadLink.download = 'qrcode.png';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    };
+
+    return (
+      <Dialog open={!!QrCodeTree.id} onOpenChange={() => setQrCodeTree({} as Tree)}>
+        <DialogContent className="flex justify-center items-center w-fit h-fit">
+          <Card className="w-[350px] border-0">
+            {
+              !isQrCodeLoading && !qrCodeError && (
+                <CardHeader>
+                  <CardTitle>QRCode</CardTitle>
+                  <CardDescription>
+                    Use the following QRCode to share your tree
+                  </CardDescription>
+                </CardHeader>
+              )
+            }
+            <CardContent className="flex items-center justify-center">
+              {
+                isQrCodeLoading && <Loader2Icon size={40} className="animate-spin" />
+              }
+              {
+                !isQrCodeLoading && qrCode && (
+                  <Tooltip delay={100} text="Click to download QRCode image">
+                    <div className="relative group">
+                      <Button
+                        className="absolute top-0 left-0 w-full h-full hover:backdrop-blur-sm !bg-transparent !rounded-none hover:!bg-slate-950/50 opacity-0 hover:opacity-100 duration-150"
+                        onClick={handleDownload}
+                        variant="ghost"
+                      >
+                        <Download size={64} className="animate-bounce" />
+                      </Button>
+                      <Image
+                        src={qrCode}
+                        width={400}
+                        height={400}
+                        alt="QRCode"
+                      />
+                    </div>
+                  </Tooltip>
+                )
+              }
+              {
+                !isQrCodeLoading && qrCodeError && (
+                  <div className="flex flex-col justify-center items-center text-center gap-4 mt-4">
+                    <CloudOff size={64} className="text-slate-400" />
+                    <p className="text-slate-400">An error occurred while fetching the QRCode. Please try again later.</p>
+                  </div>
+                )
+              }
+            </CardContent>
+
+          </Card>
+        </DialogContent>
+      </Dialog>
+    )
   }
 
   return (
@@ -215,7 +288,7 @@ export default function TreesTable() {
             </Card>
           </DialogContent>
         </Dialog>
-
+        <QrCode />
       </div>
       <div className="flex-1 rounded-md border border-slate-700">
         <Table>
@@ -288,15 +361,19 @@ export default function TreesTable() {
                           <DropdownMenuItem>
                             <Link className="w-full h-full" href={`/tree/${tree.id}`}>View</Link>
                           </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Link className="w-full h-full" href={`/edit/tree/${tree.id}`}>Edit</Link>
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setDeleteId(tree.id)}>Delete</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setQrCodeTree(tree)}>
+                            QRCode
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => toggleTreeStatusMutation.mutate({ id: tree.id, status: tree.status })}
                           >
                             {tree.status === "active" ? "Deactivate" : "Activate"}
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Link className="w-full h-full" href={`/edit/tree/${tree.id}`}>Edit</Link>
-                          </DropdownMenuItem>
+
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>

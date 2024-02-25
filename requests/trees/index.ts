@@ -46,13 +46,18 @@ export async function getTree(id: string) {
   return data;
 }
 
+export async function getTreeQRCode(id: string) {
+  const { data } = await api.get(`/qrcode/tree/${id}`);
+  return data;
+}
+
 export async function handleNewTreeLink(
   tree_id: string,
   label: string,
   url: string,
   backgroundColor: string | undefined,
   textColor: string | undefined,
-  outlined: boolean
+  outlined: boolean,
 ): Promise<Tree> {
   const { data } = await api.post("/component", {
     tree_id,
@@ -76,7 +81,7 @@ export async function handleEditTreeLink(
   url: string,
   backgroundColor: string | undefined,
   textColor: string | undefined,
-  outlined: boolean
+  outlined: boolean,
 ) {
   const { data } = await api.patch(`/component/${id}`, {
     label,
