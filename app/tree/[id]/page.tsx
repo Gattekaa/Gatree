@@ -18,9 +18,7 @@ export default function TreePage({ params }: { params: { id: string } }) {
     queryFn: () => getTree(tree_id),
   })
 
-  const usernameInitial = tree?.user?.username?.[0]?.toUpperCase()
-  const userAvatar = tree?.user?.avatar
-
+  const fallbackInitial = tree?.title?.[0]?.toUpperCase()
   return (
     <AnimatedBackground>
       <main
@@ -34,8 +32,8 @@ export default function TreePage({ params }: { params: { id: string } }) {
                 <Skeleton className="w-[100px] h-[100px] rounded-full" />
               ) : (
                 <Avatar className="w-[100px] h-[100px]">
-                  <AvatarImage src={userAvatar} />
-                  <AvatarFallback>{usernameInitial}</AvatarFallback>
+                  <AvatarImage src={tree.photo} className="object-cover" />
+                  <AvatarFallback>{fallbackInitial}</AvatarFallback>
                 </Avatar>
               )
             }
@@ -77,6 +75,7 @@ export default function TreePage({ params }: { params: { id: string } }) {
 
                         }}
                         variant="tree_link"
+                        className="hover:opacity-60 !duration-150"
                         asChild
                       >
                         <Link href={link} target="_blank" rel="noreferrer">{component.label}</Link>

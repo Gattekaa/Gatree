@@ -133,7 +133,7 @@ export default function TreesTable() {
     const { data: qrCode, error: qrCodeError, isPending: isQrCodeLoading } = useQuery({
       queryKey: ["qrcode", QrCodeTree],
       queryFn: () => getTreeQRCode(QrCodeTree.id),
-      enabled: !!QrCodeTree,
+      enabled: !!QrCodeTree.id,
     })
 
     function handleDownload() {

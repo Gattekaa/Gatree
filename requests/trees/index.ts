@@ -92,3 +92,22 @@ export async function handleEditTreeLink(
   });
   return data;
 }
+
+export async function handleTreeUploadPhoto(
+  id: string,
+  file: File | null,
+): Promise<Tree> {
+  if (!file) {
+    throw new Error("No file provided");
+  }
+  const { data } = await api.post(
+    `/tree/${id}/photo?filename=${file.name}`,
+    file,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+  return data;
+}

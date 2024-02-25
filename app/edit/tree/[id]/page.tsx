@@ -1,7 +1,6 @@
 "use client"
 
 import Navbar from "@/components/navbar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 // Form Imports
@@ -50,7 +49,6 @@ import {
 } from "@/components/ui/sheet"
 
 
-
 import { getTree, handleDeleteTreeLink, handleEditTree, handleEditTreeLink, handleNewTreeLink } from "@/requests/trees";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
@@ -70,6 +68,8 @@ import { isAxiosError } from "axios";
 import { Switch } from "@/components/ui/switch"
 import AnimatedBackground from "@/components/animatedBackground";
 import Tooltip from "@/components/tooltip";
+import AvatarWithUpload from "@/components/avatarWithUpload";
+import LabelWithEdit from "@/components/labelWithEdit";
 
 export default function EditTree({ params }: { params: { id: string } }) {
   const [deleteId, setDeleteId] = useState<string>("")
@@ -105,12 +105,13 @@ export default function EditTree({ params }: { params: { id: string } }) {
   const outlinedChanges = form.watch("outlined")
 
   const tree_id = params.id
+
   const { data: tree, isPending: isTreeLoading } = useQuery({
     queryKey: ["tree"],
     queryFn: () => getTree(tree_id),
   })
-  const usernameInitial = tree?.user?.username?.[0]?.toUpperCase()
-  const userAvatar = tree?.user?.avatar
+
+  const fallbackInitial = tree?.title?.[0]?.toUpperCase()
 
   const newLinkMutation = useMutation({
     mutationFn: () => handleNewTreeLink(tree_id, form.getValues("title"), form.getValues("url"), editButtonColor.color, editTextColor.color, form.getValues("outlined")),
@@ -179,6 +180,7 @@ export default function EditTree({ params }: { params: { id: string } }) {
       })
     }
   })
+
 
   function handleBackgroundChange(action = "change") {
     editTreeMutation.mutate(action)
@@ -256,21 +258,17 @@ export default function EditTree({ params }: { params: { id: string } }) {
               isTreeLoading ? (
                 <Skeleton className="w-[100px] h-[100px] rounded-full" />
               ) : (
-                <Avatar className="w-[100px] h-[100px]">
-                  <AvatarImage src={userAvatar} />
-                  <AvatarFallback>{usernameInitial}</AvatarFallback>
-                </Avatar>
+                <AvatarWithUpload avatar={tree?.photo} fallback={fallbackInitial} treeId={params.id} />
               )
             }
-            <Label className="text-xl">
-              {
-                isTreeLoading ? (
-                  <Skeleton className="w-28 h-7 rounded-full" />
-                ) : (
-                  tree?.title
-                )
-              }
-            </Label>
+            {
+              isTreeLoading ? (
+                <Skeleton className="w-28 h-7 rounded-full" />
+              ) : (
+                <LabelWithEdit initialText={tree?.title} treeId={params.id} />
+              )
+            }
+
           </div>
           <div className="flex justify-end gap-4">
             {
@@ -347,7 +345,7 @@ export default function EditTree({ params }: { params: { id: string } }) {
                   </CardHeader>
                   <CardContent >
                     <Form {...form}>
-                      <form onSubmit={form.handleSubmit(async () => await onSubmit())} id="new_tree_link">
+                      <form onSubmit={form.handleSubmit(() => onSubmit())} id="new_tree_link">
                         <div className="grid w-full items-center gap-4">
                           <div className="flex flex-col space-y-1.5 ">
                             <FormField
