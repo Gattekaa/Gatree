@@ -53,10 +53,7 @@ export default function TreePage({ params }: { params: { id: string } }) {
             {
               isTreeLoading && (
                 Array.from({ length: 5 }).map((_, index) => (
-                  <li key={index} className="bg-gray-500/10 pb-4 flex flex-col px-4">
-                    <header className="flex py-2 justify-end">
-                      <Skeleton className="w-8 h-8 rounded-md" />
-                    </header>
+                  <li key={index}>
                     <Skeleton className="w-full h-[50px] rounded-full" />
                   </li>
                 )))
