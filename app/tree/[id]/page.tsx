@@ -3,11 +3,10 @@ import type { Metadata, ResolvingMetadata } from "next"
 
 type Props = {
   params: { id: string }
-  searchParams: { [key: string]: string | string[] | undefined }
 }
 
 export async function generateMetadata(
-  { params, searchParams }: Props,
+  { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   // read route params
@@ -22,14 +21,20 @@ export async function generateMetadata(
   return {
     metadataBase: new URL(`${process.env.FRONTEND_BASE_URL}`),
     title: tree.title,
-    description: `A tree of ${tree.user.username}, powered by Gattree`,
+    description: `A tree of ${tree.user.username}, powered by Gattree. Gatree is a platform to create and share trees of links. You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want. And the best part is that it's free!`,
     robots: "index, follow",
     publisher: "Gattree",
+    authors: [
+      {
+        name: "Vinicius Gabriel",
+        url: "https://www.viniciusgabriel.tech/"
+      }
+    ],
     openGraph: {
       type: "website",
       url: `${process.env.FRONTEND_BASE_URL}/tree/${id}`,
       title: tree.title,
-      description: `A tree of ${tree.user.username}, powered by Gattree`,
+      description: `A tree of ${tree.user.username}, powered by Gattree. Gatree is a platform to create and share trees of links. You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want. And the best part is that it's free!`,
       images: [
         ...previousImages,
         {
@@ -50,7 +55,7 @@ export async function generateMetadata(
         },
       ]
     },
-    
+
     applicationName: "Gattree",
     appleWebApp: {
       statusBarStyle: "black",
