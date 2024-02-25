@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
     const jwt = require("jsonwebtoken");
     const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "30d",
     });
 
     const { password: _, ...userWithoutPassword } = newUser;
