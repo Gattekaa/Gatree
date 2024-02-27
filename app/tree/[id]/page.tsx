@@ -13,7 +13,10 @@ export async function generateMetadata(
   const id = params.id
 
   // fetch data
-  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${id}`).then((res) => res.json())
+  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${id}`, {
+    cache: "no-cache",
+    
+  }).then((res) => res.json())
 
   // optionally access and extend (rather than replace) parent metadata
   const previousImages = (await parent).openGraph?.images || []
