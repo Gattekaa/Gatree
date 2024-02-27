@@ -15,7 +15,7 @@ export async function generateMetadata(
   // fetch data
   const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${id}`, {
     cache: "no-cache",
-    
+
   }).then((res) => res.json())
 
   // optionally access and extend (rather than replace) parent metadata
@@ -69,7 +69,9 @@ export async function generateMetadata(
 }
 
 export default async function TreePage({ params }: { params: { id: string } }) {
-  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${params.id}`).then((res) => res.json())
+  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${params.id}`, {
+    cache: "no-cache",
+  }).then((res) => res.json())
   return (
     <ViewTreeContainer tree={tree} tree_id={params.id} />
   )
