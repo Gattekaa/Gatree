@@ -29,10 +29,10 @@ export async function PATCH(
   { params }: { params: { id: string } },
 ) {
   try {
-    const { title, status, backgroundColor } = await request.json();
+    const { title, status, backgroundColor, theme } = await request.json();
     const tree = await prisma.tree.update({
       where: { id: params.id },
-      data: { title, status, backgroundColor },
+      data: { title, status, backgroundColor, theme },
     });
 
     return NextResponse.json(tree, { status: 200 });

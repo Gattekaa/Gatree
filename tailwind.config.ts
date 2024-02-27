@@ -20,6 +20,7 @@ const config = {
     extend: {
       backgroundImage: {
         backgroundImage: "url('../public/jpg/backgroundImage.jpg')",
+        stars: "url('../public/webp/stars.webp')",
       },
       keyframes: {
         "accordion-down": {

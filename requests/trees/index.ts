@@ -1,5 +1,5 @@
 import api from "@/connection";
-import type { Tree } from "@prisma/client";
+import type { Component, Tree } from "@prisma/client";
 
 export async function getUserTrees() {
   const { data } = await api.get("/tree");
@@ -20,14 +20,17 @@ export async function handleEditTree({
   id,
   title,
   backgroundColor,
+  theme,
 }: {
   id: string;
   title?: string;
   backgroundColor?: string;
+  theme?: string;
 }) {
   const { data } = await api.patch(`/tree/${id}`, {
     title: title,
     backgroundColor: backgroundColor ?? null,
+    theme: theme ?? null,
   });
   return data;
 }
@@ -58,7 +61,7 @@ export async function handleNewTreeLink(
   backgroundColor: string | undefined,
   textColor: string | undefined,
   outlined: boolean,
-): Promise<Tree> {
+): Promise<Component> {
   const { data } = await api.post("/component", {
     tree_id,
     label,

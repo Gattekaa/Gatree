@@ -1,4 +1,4 @@
-import Tree from "@/components/tree"
+import ViewTreeContainer from "@/components/viewTreeContainer"
 import type { Metadata, ResolvingMetadata } from "next"
 
 type Props = {
@@ -65,8 +65,9 @@ export async function generateMetadata(
   }
 }
 
-export default function TreePage({ params }: { params: { id: string } }) {
+export default async function TreePage({ params }: { params: { id: string } }) {
+  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${params.id}`).then((res) => res.json())
   return (
-    <Tree tree_id={params.id} />
+    <ViewTreeContainer tree={tree} tree_id={params.id} />
   )
 }

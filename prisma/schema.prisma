@@ -26,6 +26,7 @@ model Tree {
   title           String
   status          String      @default("active")
   backgroundColor String?
+  theme           String?
   photo           String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
