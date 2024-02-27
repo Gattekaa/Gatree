@@ -40,7 +40,7 @@ export default function AnimatedBackground({ variant, children }: BackgroundThem
           }
         </div>
       </div>
-      <div className="absolute left-0 top-0 z-10 w-full h-full">
+      <div className="fixed left-0 top-0 z-10 w-full h-full overflow-auto">
         {children}
       </div>
     </div>
