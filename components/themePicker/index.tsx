@@ -8,6 +8,7 @@ import {
 import { backgrounds } from "@/assets/static/animated-background"
 import type { Component, Tree } from "@prisma/client"
 import { Label } from "../ui/label"
+import { cn } from "@/lib/utils"
 
 export default function ThemePicker({
   initialTheme,
@@ -45,7 +46,10 @@ export default function ThemePicker({
                       loop
                       muted
                       playsInline
-                      className="w-[180px] h-[100px] object-cover rounded-md border-[1px] border-slate-400/30"
+                      className={cn(
+                        "w-[180px] h-[100px] object-cover rounded-md border-[2px]",
+                        initialTheme === background.slug ? "border-slate-400" : "border-slate-400/30"
+                      )}
                     >
                       <source src={`/backgrounds/${background.fileName}`} type="video/mp4" />
                     </video>
