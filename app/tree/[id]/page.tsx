@@ -1,7 +1,7 @@
 import ViewTreeContainer from "@/components/viewTreeContainer"
-import { getTree } from "@/requests/trees"
 import type { Metadata, ResolvingMetadata } from "next"
 import { redirect } from "next/navigation"
+import { cookies } from 'next/headers'
 
 type Props = {
   params: { id: string }
@@ -13,16 +13,25 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   // read route params
   const id = params.id
+
+  const cookieStore = cookies()
+  const token = cookieStore.get('token')
+
   // fetch data
-  const tree = await getTree(id)
+  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${id}`, {
+    cache: "no-cache",
+    headers: {
+      ...(token && { Authorization: token.value })
+    }
+  }).then((res) => res.json())
 
   // optionally access and extend (rather than replace) parent metadata
   const previousImages = (await parent).openGraph?.images || []
 
   return {
-    metadataBase: new URL(`${process.env.FRONTEND_BASE_URL}`),
+    metadataBase: new URL(`${process.env.FRONTEND_BASE_URL} `),
     title: `${tree.title} | Gatree - Create and share trees of links`,
-    description: `A tree of ${tree.user.username}, powered by Gattree. Gatree is a platform to create and share trees of links. You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want. And the best part is that it's free!`,
+    description: `A tree of ${tree.user?.username}, powered by Gattree.Gatree is a platform to create and share trees of links.You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want.And the best part is that it's free!`,
     robots: "index, follow",
     publisher: "Gattree",
     authors: [
@@ -35,7 +44,7 @@ export async function generateMetadata(
       type: "website",
       url: `${process.env.FRONTEND_BASE_URL}/tree/${id}`,
       title: tree.title,
-      description: `A tree of ${tree.user.username}, powered by Gattree. Gatree is a platform to create and share trees of links. You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want. And the best part is that it's free!`,
+      description: `A tree of ${tree.user?.username}, powered by Gattree. Gatree is a platform to create and share trees of links. You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want. And the best part is that it's free!`,
       images: [
         ...previousImages,
         {
@@ -68,7 +77,20 @@ export async function generateMetadata(
 
 export default async function TreePage({ params }: { params: { id: string } }) {
   try {
-    const tree = await getTree(params.id)
+    const cookieStore = cookies()
+    const token = cookieStore.get('token')
+
+    const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${params.id}`, {
+      cache: "no-cache",
+      headers: {
+        ...(token && { Authorization: token.value })
+      }
+    }).then((res) => res.json())
+
+    if (tree.error) {
+      redirect("/not-found")
+    }
+
     return (
       <ViewTreeContainer tree={tree} tree_id={params.id} />
     )

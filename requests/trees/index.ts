@@ -1,18 +1,18 @@
-import api from "@/connection";
+import connection from "@/connection";
 import type { Component, Tree, User } from "@prisma/client";
 
 export async function getUserTrees() {
-  const { data } = await api.get("/tree");
+  const { data } = await connection.get("/tree");
   return data;
 }
 
 export async function handleNewTree(title: string, status: string) {
-  const { data } = await api.post("/tree", { title, status });
+  const { data } = await connection.post("/tree", { title, status });
   return data;
 }
 
 export async function handleDeleteTree(id: string) {
-  const { data } = await api.delete(`/tree/${id}`);
+  const { data } = await connection.delete(`/tree/${id}`);
   return data;
 }
 
@@ -27,7 +27,7 @@ export async function handleEditTree({
   backgroundColor?: string;
   theme?: string;
 }) {
-  const { data } = await api.patch(`/tree/${id}`, {
+  const { data } = await connection.patch(`/tree/${id}`, {
     title: title,
     backgroundColor: backgroundColor ?? null,
     theme: theme ?? null,
@@ -40,19 +40,19 @@ export async function handleTreeStatusToggle(
   status: string,
 ): Promise<Tree> {
   const newStatus = status === "active" ? "inactive" : "active";
-  const { data } = await api.patch(`/tree/${id}`, { status: newStatus });
+  const { data } = await connection.patch(`/tree/${id}`, { status: newStatus });
   return data;
 }
 
 export async function getTree(
   id: string,
 ): Promise<Tree & { user: User; components: Component[] }> {
-  const { data } = await api.get(`/tree/${id}`);
+  const { data } = await connection.get(`/tree/${id}`);
   return data;
 }
 
 export async function getTreeQRCode(id: string) {
-  const { data } = await api.get(`/qrcode/tree/${id}`);
+  const { data } = await connection.get(`/qrcode/tree/${id}`);
   return data;
 }
 
@@ -64,7 +64,7 @@ export async function handleNewTreeLink(
   textColor: string | undefined,
   outlined: boolean,
 ): Promise<Component> {
-  const { data } = await api.post("/component", {
+  const { data } = await connection.post("/component", {
     tree_id,
     label,
     url,
@@ -76,7 +76,7 @@ export async function handleNewTreeLink(
 }
 
 export async function handleDeleteTreeLink(id: string) {
-  const { data } = await api.delete(`/component/${id}`);
+  const { data } = await connection.delete(`/component/${id}`);
   return data;
 }
 
@@ -88,7 +88,7 @@ export async function handleEditTreeLink(
   textColor: string | undefined,
   outlined: boolean,
 ) {
-  const { data } = await api.patch(`/component/${id}`, {
+  const { data } = await connection.patch(`/component/${id}`, {
     label,
     url,
     backgroundColor,
@@ -107,7 +107,7 @@ export async function handleTreeUploadPhoto(
   }
   const formData = new FormData();
   formData.append("file", file);
-  const { data } = await api.post(
+  const { data } = await connection.post(
     `/tree/${id}/photo?filename=${file.name}`,
     formData,
     {

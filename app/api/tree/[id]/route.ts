@@ -1,4 +1,5 @@
 import prisma from "@/database/prisma";
+import getCurrentUser from "@/helpers/getCurrentUser";
 import { deleteFile } from "@/services/firebase";
 import { NextResponse } from "next/server";
 
@@ -7,6 +8,9 @@ export async function GET(
   { params }: { params: { id: string } },
 ) {
   try {
+    const token = request.headers.get("Authorization");
+    const user = await getCurrentUser(token || "");
+
     const trees = await prisma.tree.findUniqueOrThrow({
       where: { id: params.id },
       include: {
@@ -15,7 +19,7 @@ export async function GET(
       },
     });
 
-    if (trees.status === "inactive") {
+    if (trees.status === "inactive" && trees.userId !== user?.id) {
       return NextResponse.json({ error: "Tree not found" }, { status: 404 });
     }
 
