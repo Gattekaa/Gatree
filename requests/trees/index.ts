@@ -44,7 +44,9 @@ export async function handleTreeStatusToggle(
   return data;
 }
 
-export async function getTree(id: string): Promise<Tree & { user: User}>{
+export async function getTree(
+  id: string,
+): Promise<Tree & { user: User; components: Component[] }> {
   const { data } = await api.get(`/tree/${id}`);
   return data;
 }

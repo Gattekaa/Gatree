@@ -15,6 +15,10 @@ export async function GET(
       },
     });
 
+    if (trees.status === "inactive") {
+      return NextResponse.json({ error: "Tree not found" }, { status: 404 });
+    }
+
     return NextResponse.json(trees, { status: 200 });
   } catch (err) {
     console.error(err);

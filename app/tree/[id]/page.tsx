@@ -1,6 +1,7 @@
 import ViewTreeContainer from "@/components/viewTreeContainer"
 import { getTree } from "@/requests/trees"
 import type { Metadata, ResolvingMetadata } from "next"
+import { redirect } from "next/navigation"
 
 type Props = {
   params: { id: string }
@@ -12,7 +13,6 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   // read route params
   const id = params.id
-
   // fetch data
   const tree = await getTree(id)
 
@@ -67,10 +67,13 @@ export async function generateMetadata(
 }
 
 export default async function TreePage({ params }: { params: { id: string } }) {
-  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${params.id}`, {
-    cache: "no-cache",
-  }).then((res) => res.json())
-  return (
-    <ViewTreeContainer tree={tree} tree_id={params.id} />
-  )
+  try {
+    const tree = await getTree(params.id)
+    return (
+      <ViewTreeContainer tree={tree} tree_id={params.id} />
+    )
+  } catch (err) {
+    console.error(err)
+    redirect("/not-found")
+  }
 }

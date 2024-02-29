@@ -1,13 +1,13 @@
 "use client"
 
 import { Button } from "../ui/button"
-import type { Component, Tree } from "@prisma/client"
+import type { Component, Tree, User } from "@prisma/client"
 import Link from "next/link"
 import AnimatedBackground from "../animatedBackground"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Label } from "../ui/label"
 
-export default function ViewTreeContainer({ tree, tree_id }: { tree_id: string, tree: Tree & { components: Component[] } }) {
+export default function ViewTreeContainer({ tree, tree_id }: { tree_id: string, tree: Tree & { user: User, components: Component[] } }) {
   const fallbackInitial = tree?.title?.[0]?.toUpperCase()
   return (
     <AnimatedBackground variant={tree?.theme || undefined}>

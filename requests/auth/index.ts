@@ -23,7 +23,10 @@ export async function fetchLogin({ username, password }: IAuth) {
   return data;
 }
 
-export async function getCurrentUser() {
-  const { data } = await api.get("/auth/get_current_user");
+export async function getCurrentUser(token?: string) {
+  const { data } = await api.get(
+    "/auth/get_current_user",
+    token ? { headers: { Authorization: token } } : {},
+  );
   return data.user;
 }
