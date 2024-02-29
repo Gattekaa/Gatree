@@ -1,5 +1,5 @@
 import api from "@/connection";
-import type { Component, Tree } from "@prisma/client";
+import type { Component, Tree, User } from "@prisma/client";
 
 export async function getUserTrees() {
   const { data } = await api.get("/tree");
@@ -44,7 +44,7 @@ export async function handleTreeStatusToggle(
   return data;
 }
 
-export async function getTree(id: string) {
+export async function getTree(id: string): Promise<Tree & { user: User}>{
   const { data } = await api.get(`/tree/${id}`);
   return data;
 }

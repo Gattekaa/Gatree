@@ -9,8 +9,16 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Unnamed Project",
-  description: "Create your trees and manage them with ease!",
+  title: "Gatree - Create and share trees of links",
+  description: "Gatree is a platform to create and share trees of links. You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want. And the best part is that it's free!",
+  icons: [
+    {
+      rel: "icon",
+      url: "/logo.png",
+      type: "image/png",
+      sizes: "any",
+    }
+  ],
 };
 
 export default function RootLayout({

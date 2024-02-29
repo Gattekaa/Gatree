@@ -1,4 +1,5 @@
 import prisma from "@/database/prisma";
+import { deleteFile } from "@/services/firebase";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -51,6 +52,10 @@ export async function DELETE(
 ) {
   try {
     const data = await prisma.tree.delete({ where: { id: params.id } });
+
+    if (data.photo) {
+      deleteFile("trees_photos", data.id);
+    }
 
     return NextResponse.json(
       { status: "success", id: data.id },

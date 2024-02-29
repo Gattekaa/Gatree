@@ -9,7 +9,7 @@ export default function Dashboard() {
   const { user } = useUserContext()
 
   return user && (
-    <AnimatedBackground>
+    <AnimatedBackground variant="starry-blue-sky">
       <main className="w-full h-full flex flex-col items-center">
         <Navbar />
         <div className="w-full h-full px-4 md:w-2/3 mt-24 mb-12">

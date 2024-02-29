@@ -68,7 +68,7 @@ export default function LabelWithEdit({
       {
         !enableEdit && (
           <Tooltip text="Click to edit tree name">
-            <Label className="group relative text-xl bg-gray-950/30 px-4 py-2 rounded-xl" onClick={() => setEnableEdit(true)}>
+            <Label className="group relative text-xl bg-gray-950/30 px-4 py-2 rounded-xl  text-slate-50" onClick={() => setEnableEdit(true)}>
               <Pencil size={24} className="opacity-0 group-hover:opacity-100 duration-150 absolute -left-4 -top-4 w-10 h-10 p-3 rounded-full bg-slate-800/50 hover:bg-slate-800/70" />
               {form.getValues("title")}
             </Label>

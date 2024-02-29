@@ -1,4 +1,5 @@
 import ViewTreeContainer from "@/components/viewTreeContainer"
+import { getTree } from "@/requests/trees"
 import type { Metadata, ResolvingMetadata } from "next"
 
 type Props = {
@@ -13,17 +14,14 @@ export async function generateMetadata(
   const id = params.id
 
   // fetch data
-  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${id}`, {
-    cache: "no-cache",
-
-  }).then((res) => res.json())
+  const tree = await getTree(id)
 
   // optionally access and extend (rather than replace) parent metadata
   const previousImages = (await parent).openGraph?.images || []
 
   return {
     metadataBase: new URL(`${process.env.FRONTEND_BASE_URL}`),
-    title: tree.title,
+    title: `${tree.title} | Gatree - Create and share trees of links`,
     description: `A tree of ${tree.user.username}, powered by Gattree. Gatree is a platform to create and share trees of links. You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want. And the best part is that it's free!`,
     robots: "index, follow",
     publisher: "Gattree",
@@ -41,7 +39,7 @@ export async function generateMetadata(
       images: [
         ...previousImages,
         {
-          url: tree.photo,
+          url: tree.photo ?? "",
           width: 800,
           height: 600,
           alt: tree.title,
@@ -51,7 +49,7 @@ export async function generateMetadata(
     twitter: {
       images: [
         {
-          url: tree.photo,
+          url: tree.photo ?? "",
           width: 800,
           height: 600,
           alt: tree.title,
@@ -63,7 +61,7 @@ export async function generateMetadata(
     appleWebApp: {
       statusBarStyle: "black",
       title: tree.title,
-      startupImage: tree.photo,
+      startupImage: tree.photo ?? "",
     }
   }
 }

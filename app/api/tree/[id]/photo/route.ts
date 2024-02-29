@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
 import prisma from "@/database/prisma";
 import sharp from "sharp";
 import { File } from "buffer";
+import { uploadFile } from "@/services/firebase";
 
 export async function POST(
   request: Request,
@@ -36,13 +36,10 @@ export async function POST(
       .webp()
       .toBuffer();
 
-    const imageData = await put(filename, treatedImage, {
-      access: "public",
-    });
-
+    const imagePath = await uploadFile(treatedImage, "trees_photos", tree.id);
     const updatedTree = await prisma.tree.update({
       where: { id: params.id },
-      data: { photo: imageData.url },
+      data: { photo: imagePath },
     });
     return NextResponse.json(
       { message: "Photo uploaded successfully", tree: updatedTree },

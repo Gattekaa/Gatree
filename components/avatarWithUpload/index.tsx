@@ -63,7 +63,7 @@ export default function AvatarWithUpload({
       <Tooltip text="Change tree photo">
         <div className="relative group">
           <label className="opacity-0 group-hover:opacity-100 absolute w-full h-full z-50 rounded-full duration-150">
-            <UploadCloud size={24} className="w-10 h-10 p-3 rounded-full bg-slate-800/50 hover:bg-slate-800/70" />
+            <UploadCloud size={24} className="w-10 h-10 p-3 rounded-full bg-slate-800/50 hover:bg-slate-800/70 text-slate-50" />
             <input
               type="file"
               accept="image/*"
