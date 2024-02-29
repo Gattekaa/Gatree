@@ -22,7 +22,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const { push } = useRouter()
   const pathname = usePathname()
 
-  const publicRoutes = ["", "tree", "/auth/", "/auth/"]
+  const publicRoutes = ["", "tree", "/auth/", "/auth/", "not-found"]
   const [user, setUser] = useState<User>()
   const { token } = parseCookies();
   const { data: current_user, error: get_current_user_error } = useQuery({
