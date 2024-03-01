@@ -1,6 +1,7 @@
 import prisma from "@/database/prisma";
 import getCurrentUser from "@/helpers/getCurrentUser";
 import { deleteFile } from "@/services/firebase";
+import type { User } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -9,8 +10,10 @@ export async function GET(
 ) {
   try {
     const token = request.headers.get("Authorization");
-    const user = await getCurrentUser(token || "");
-
+    let user: User | null = null;
+    if (token) {
+      user = (await getCurrentUser(token)) || null;
+    }
     const trees = await prisma.tree.findUniqueOrThrow({
       where: { id: params.id },
       include: {
