@@ -18,7 +18,7 @@ export async function generateMetadata(
   const token = cookieStore.get('token')
 
   // fetch data
-  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${id}`, {
+  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${id}/metadata`, {
     cache: "no-cache",
     headers: {
       ...(token && { Authorization: token.value })
@@ -46,19 +46,19 @@ export async function generateMetadata(
       title: tree.title,
       description: `A tree of ${tree.user?.username}, powered by Gattree. Gatree is a platform to create and share trees of links. You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want. And the best part is that it's free!`,
       images: [
-        ...previousImages,
         {
-          url: tree.photo ?? "",
+          url: tree.photo,
           width: 800,
           height: 600,
           alt: tree.title,
         },
+        ...previousImages
       ],
     },
     twitter: {
       images: [
         {
-          url: tree.photo ?? "",
+          url: tree.photo,
           width: 800,
           height: 600,
           alt: tree.title,
