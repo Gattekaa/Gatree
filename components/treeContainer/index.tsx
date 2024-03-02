@@ -49,7 +49,7 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import type { Component, Tree } from "@prisma/client";
-import { Link2Icon, Link2Off, Loader2Icon, Plus, Save } from "lucide-react";
+import { Link2Icon, Link2Off, Loader2Icon, Plus, Save, Unlink } from "lucide-react";
 import { useEffect, useState } from "react";
 import Alert from "@/components/dialog";
 import ColorPicker from 'react-best-gradient-color-picker'
@@ -322,9 +322,9 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
           <div className="flex justify-end gap-4">
             <Dialog>
               <DialogTrigger>
-                <Tooltip text="Add new link">
+                <Tooltip text="Change tree path">
                   <Button asChild size="icon" className="rounded-full">
-                    <Plus size={20} className="w-10 h-10 p-3" />
+                    <Unlink size={20} className="w-10 h-10 p-3" />
                   </Button>
                 </Tooltip>
               </DialogTrigger>
