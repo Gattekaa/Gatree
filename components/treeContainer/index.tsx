@@ -127,7 +127,7 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
   const fallbackInitial = tree?.title?.[0]?.toUpperCase()
 
   const newLinkMutation = useMutation({
-    mutationFn: () => handleNewTreeLink(tree_id, form.getValues("title"), form.getValues("url"), editButtonColor.color, editTextColor.color, form.getValues("outlined")),
+    mutationFn: () => handleNewTreeLink(treeData.id, form.getValues("title"), form.getValues("url"), editButtonColor.color, editTextColor.color, form.getValues("outlined")),
     onSuccess: (response: Component) => {
       setTree({
         ...tree,
@@ -187,7 +187,7 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
   })
 
   const editTreeMutation = useMutation({
-    mutationFn: (action?: string) => handleEditTree({ id: tree_id, backgroundColor: action === "remove" ? undefined : tree.backgroundColor || undefined, theme: tree.theme || undefined, path: updatePathForm.getValues("path") || undefined }),
+    mutationFn: (action?: string) => handleEditTree({ id: treeData.id, backgroundColor: action === "remove" ? undefined : tree.backgroundColor || undefined, theme: tree.theme || undefined, path: updatePathForm.getValues("path") || undefined }),
     onSuccess: (response) => {
 
       if (response.path !== treeData.path) {
@@ -203,7 +203,7 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
   })
 
   const batchUpdateLinksMutation = useMutation({
-    mutationFn: () => batchUpdateTreeLinks(tree_id, components),
+    mutationFn: () => batchUpdateTreeLinks(treeData.id, components),
     onSuccess: () => {
       setPositionChanged(false)
       toast.success("Links position updated successfully")
