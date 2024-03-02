@@ -334,7 +334,7 @@ export default function TreesTable() {
                                 />
                               </FormControl>
                               <FormDescription>
-                                This will be the path of your tree ex: {process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/tree/my-awesome-tree
+                                This will be the path of your tree ex: {process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/tree/{form.watch().path}
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
