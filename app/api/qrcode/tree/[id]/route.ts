@@ -35,7 +35,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const url = `${base_url}/tree/${tree.id}`;
+    const url = `${base_url}/tree/${tree.path}`;
 
     const qrcode = await QRCode.toDataURL(url, { errorCorrectionLevel: "H" });
     return NextResponse.json(qrcode, { status: 200 });

@@ -39,7 +39,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { title, status } = await request.json();
+    const { title, path, status } = await request.json();
+
+    if (!title || !path || !status) {
+      return NextResponse.json(
+        { error: "Title, path, and status are required" },
+        { status: 400 },
+      );
+    }
+
+    const pathExists = await prisma.tree.findUnique({
+      where: {
+        path,
+      },
+    });
+
+    if (pathExists) {
+      return NextResponse.json(
+        { error: "Path is not available" },
+        { status: 400 },
+      );
+    }
+
     const user = await getCurrentUser(token);
 
     if (!user) {
@@ -50,6 +71,7 @@ export async function POST(request: Request) {
       data: {
         userId: user.id,
         title,
+        path,
         status,
       },
     });
@@ -57,6 +79,7 @@ export async function POST(request: Request) {
     return NextResponse.json(tree, { status: 200 });
   } catch (err) {
     console.error(err);
+
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },

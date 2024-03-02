@@ -6,8 +6,8 @@ export async function getUserTrees() {
   return data;
 }
 
-export async function handleNewTree(title: string, status: string) {
-  const { data } = await connection.post("/tree", { title, status });
+export async function handleNewTree(title: string, path: string, status: string) {
+  const { data } = await connection.post("/tree", { title, path, status });
   return data;
 }
 
@@ -21,16 +21,19 @@ export async function handleEditTree({
   title,
   backgroundColor,
   theme,
+  path,
 }: {
   id: string;
   title?: string;
   backgroundColor?: string;
   theme?: string;
+  path?: string;
 }) {
   const { data } = await connection.patch(`/tree/${id}`, {
     title: title,
     backgroundColor: backgroundColor ?? null,
     theme: theme ?? null,
+    path: path ?? null,
   });
   return data;
 }
@@ -129,4 +132,11 @@ export async function batchUpdateTreeLinks(
   });
 
   return data.components;
+}
+
+export async function handleAvailablePath(path: string) {
+  const { data } = await connection.post("/tree/available_path", {
+    path,
+  });
+  return data;
 }

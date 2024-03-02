@@ -15,7 +15,7 @@ export async function GET(
       user = (await getCurrentUser(token)) || null;
     }
     const trees = await prisma.tree.findUniqueOrThrow({
-      where: { id: params.id },
+      where: { path: params.id },
       include: {
         user: { select: { username: true, avatar: true } },
         components: {
@@ -45,10 +45,10 @@ export async function PATCH(
   { params }: { params: { id: string } },
 ) {
   try {
-    const { title, status, backgroundColor, theme } = await request.json();
+    const { title, status, backgroundColor, theme, path } = await request.json();
     const tree = await prisma.tree.update({
       where: { id: params.id },
-      data: { title, status, backgroundColor, theme },
+      data: { title, status, backgroundColor, theme, path },
     });
 
     return NextResponse.json(tree, { status: 200 });

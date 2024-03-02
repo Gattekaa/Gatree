@@ -10,7 +10,7 @@ export default function Dashboard() {
 
   return user && (
     <AnimatedBackground variant="starry-blue-sky">
-      <main className="w-full h-full flex flex-col items-center">
+      <main className="w-full h-fit min-h-full flex flex-col items-center">
         <Navbar />
         <div className="w-full h-full px-4 md:w-2/3 mt-24 mb-12">
           <TreesTable />

@@ -14,6 +14,6 @@ export default async function EditTree({ params }: { params: { id: string } }) {
     }
   }).then((res) => res.json())
   return (
-    <TreeContainer tree_id={params.id} tree={tree} />
+    <TreeContainer tree_id={tree.id} tree={tree} />
   )
 }

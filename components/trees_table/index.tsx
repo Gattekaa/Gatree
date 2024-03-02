@@ -55,16 +55,19 @@ import { Input } from "../ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Button } from "../ui/button"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { getTreeQRCode, getUserTrees, handleDeleteTree, handleNewTree, handleTreeStatusToggle } from "@/requests/trees"
+import { getTreeQRCode, getUserTrees, handleAvailablePath, handleDeleteTree, handleNewTree, handleTreeStatusToggle } from "@/requests/trees"
 import { useRouter } from "next/navigation"
 import { CloudOff, Download, Loader2Icon, MoreHorizontal } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Alert from "../dialog"
 import { useUserContext } from "@/context/UserContext"
 import Link from "next/link"
 import { Skeleton } from "../ui/skeleton"
 import Image from "next/image"
 import Tooltip from "../tooltip"
+import { useDebounce } from "@/helpers/useDebounce"
+import { toast } from "sonner"
+import { isAxiosError } from "axios"
 
 export default function TreesTable() {
   const { user } = useUserContext()
@@ -75,14 +78,25 @@ export default function TreesTable() {
 
   const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
+    path: z.string().min(1, "Path is required"),
     status: z.string().min(1, "Status is required"),
-  })
+    path_available: z.boolean()
+  }).superRefine((data, ctx) => {
+    if (!data.path_available) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Path is not available",
+      });
+    }
+  });
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "My awesome tree",
+      path: "",
       status: "active",
+      path_available: false
     }
   })
 
@@ -93,9 +107,14 @@ export default function TreesTable() {
   });
 
   const newTreeMutation = useMutation({
-    mutationFn: async () => await handleNewTree(form.getValues().name, form.getValues().status),
+    mutationFn: async ({ name, path, status }: { name: string, path: string, status: string }) => await handleNewTree(name, path, status),
     onSuccess: (data) => {
       push(`/edit/tree/${data.id}`)
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data.error)
+      }
     }
   })
 
@@ -123,10 +142,22 @@ export default function TreesTable() {
     }
   })
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    newTreeMutation.mutate()
-  }
+  const availablePathMutation = useMutation({
+    mutationFn: async () => handleAvailablePath(form.getValues().path),
+    onSuccess: (data) => {
+      form.clearErrors("path")
+
+      if (!data.available) {
+        form.setValue("path_available", data.available)
+        return form.setError("path", {
+          type: "manual",
+          message: "Path is not available"
+        })
+      }
+
+      form.setValue("path_available", data.available)
+    }
+  })
 
   function QrCode() {
 
@@ -209,6 +240,24 @@ export default function TreesTable() {
     )
   }
 
+  const hasTreePathChanged = useDebounce(form.watch().path, 500)
+
+  useEffect(() => {
+    if (hasTreePathChanged) {
+      availablePathMutation.mutate()
+    }
+  }, [hasTreePathChanged])
+
+  function onSubmit(values: { name: string, path: string, status: string }) {
+    if (form.formState.errors.path_available) {
+      return form.setError("path", {
+        type: "manual",
+        message: "Path is not available"
+      })
+    }
+    newTreeMutation.mutate(values)
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <Alert
@@ -241,7 +290,7 @@ export default function TreesTable() {
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  <form id="new_tree_form" onSubmit={onSubmit}>
+                  <form id="new_tree_form" onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="grid w-full items-center gap-4">
                       <div className="flex flex-col space-y-1.5">
                         <FormField
@@ -251,10 +300,41 @@ export default function TreesTable() {
                             <FormItem>
                               <FormLabel>Tree Name</FormLabel>
                               <FormControl>
-                                <Input placeholder="" {...field} />
+                                <Input
+                                  placeholder=""
+                                  {...field}
+                                  
+                                   />
                               </FormControl>
                               <FormDescription>
                                 Let's start with the name of your tree
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-1.5">
+                        <FormField
+                          control={form.control}
+                          disabled={availablePathMutation.isPending}
+                          name="path"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Tree Path</FormLabel>
+                              <FormControl>
+                                <Input
+                                  style={{
+                                    ...(form.formState.errors.path && form.watch().path && { borderColor: "red" }),
+                                    ...(form.watch().path_available && form.watch().path && { borderColor: "green" })
+                                  }}
+                                  placeholder=""
+                                  {...field}
+                                  onChange={e => field.onChange(e.target.value?.replace(" ", "-")?.toLowerCase())}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                This will be the path of your tree ex: {process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/tree/my-awesome-tree
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
@@ -372,10 +452,10 @@ export default function TreesTable() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                           <DropdownMenuItem>
-                            <Link className="w-full h-full" href={`/tree/${tree.id}`}>View</Link>
+                            <Link className="w-full h-full" href={`/tree/${tree.path}`}>View</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem>
-                            <Link className="w-full h-full" href={`/edit/tree/${tree.id}`}>Edit</Link>
+                            <Link className="w-full h-full" href={`/edit/tree/${tree.path}`}>Edit</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setDeleteId(tree.id)}>Delete</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setQrCodeTree(tree)}>

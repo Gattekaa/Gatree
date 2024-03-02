@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/sheet"
 
 
-import { batchUpdateTreeLinks, handleDeleteTreeLink, handleEditTree, handleEditTreeLink, handleNewTreeLink } from "@/requests/trees";
+import { batchUpdateTreeLinks, handleAvailablePath, handleDeleteTreeLink, handleEditTree, handleEditTreeLink, handleNewTreeLink } from "@/requests/trees";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -61,19 +61,21 @@ import Tooltip from "@/components/tooltip";
 import AvatarWithUpload from "@/components/avatarWithUpload";
 import LabelWithEdit from "@/components/labelWithEdit";
 import BackgroundChange from "@/components/backgroundChange";
-import { Reorder, useDragControls } from "framer-motion"
+import { Reorder } from "framer-motion"
 import TreeItem from "../TreeItem";
+import { useDebounce } from "@/helpers/useDebounce";
+import { useRouter } from "next/navigation";
 
 export default function TreeContainer({ tree_id, tree: treeData }: {
   tree_id: string, tree: Tree & { components: Component[] }
 }) {
+  const { push } = useRouter()
   const [tree, setTree] = useState(treeData)
   const [deleteId, setDeleteId] = useState<string>("")
   const [newLink, setNewLink] = useState<boolean>(false)
   const [edit, setEdit] = useState({} as Component)
   const [components, setComponents] = useState<Component[]>(tree?.components || [])
   const [positionChanged, setPositionChanged] = useState<boolean>(false)
-  const controls = useDragControls()
   const [editButtonColor, setEditButtonColor] = useState<{ openModal: boolean, color: string | undefined }>({
     openModal: false,
     color: ""
@@ -99,6 +101,27 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
       outlined: edit.outlined || false,
     }
   })
+
+  const updatePathSchema = z.object({
+    path: z.string().min(1, "Path is required"),
+    path_available: z.boolean().optional(),
+  }).superRefine((data, ctx) => {
+    if (!data.path_available) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Path is not available",
+      });
+    }
+  });
+
+  const updatePathForm = useForm({
+    resolver: zodResolver(updatePathSchema),
+    values: {
+      path: tree.path,
+      path_available: false
+    }
+  })
+
   const outlinedChanges = form.watch("outlined")
 
   const fallbackInitial = tree?.title?.[0]?.toUpperCase()
@@ -164,8 +187,13 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
   })
 
   const editTreeMutation = useMutation({
-    mutationFn: (action?: string) => handleEditTree({ id: tree_id, backgroundColor: action === "remove" ? undefined : tree.backgroundColor || undefined, theme: tree.theme || undefined }),
+    mutationFn: (action?: string) => handleEditTree({ id: tree_id, backgroundColor: action === "remove" ? undefined : tree.backgroundColor || undefined, theme: tree.theme || undefined, path: updatePathForm.getValues("path") || undefined }),
     onSuccess: (response) => {
+
+      if (response.path !== treeData.path) {
+        push(`/edit/tree/${response.path}`)
+      }
+
       setTree({
         ...tree,
         title: response.title,
@@ -185,6 +213,28 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
     }
   })
 
+  const availablePathMutation = useMutation({
+    mutationFn: async () => {
+      if (updatePathForm.getValues("path") === tree.path) {
+        return { available: true }
+      }
+
+      return await handleAvailablePath(updatePathForm.getValues().path ?? "")
+    },
+    onSuccess: (data) => {
+      updatePathForm.clearErrors("path")
+
+      if (!data.available) {
+        updatePathForm.setValue("path_available", data.available)
+        return updatePathForm.setError("path", {
+          type: "manual",
+          message: "Path is not available"
+        })
+      }
+
+      updatePathForm.setValue("path_available", data.available)
+    }
+  })
 
   function handleBackgroundChange(action = "change") {
     editTreeMutation.mutate(action)
@@ -196,6 +246,15 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
     }
     newLinkMutation.mutate()
   }
+
+  const hasPathChanged = useDebounce(updatePathForm.watch("path") ?? "", 500)
+
+  useEffect(() => {
+    if (hasPathChanged) {
+      availablePathMutation.mutate()
+    }
+  }, [hasPathChanged])
+
 
   useEffect(() => {
     if (form.getValues("outlined")) {
@@ -261,6 +320,65 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
 
           </div>
           <div className="flex justify-end gap-4">
+            <Dialog>
+              <DialogTrigger>
+                <Tooltip text="Add new link">
+                  <Button asChild size="icon" className="rounded-full">
+                    <Plus size={20} className="w-10 h-10 p-3" />
+                  </Button>
+                </Tooltip>
+              </DialogTrigger>
+              <DialogContent className="flex justify-center items-center w-full md:w-fit h-fit">
+                <Card className="w-full md:w-[500px] border-0">
+                  <CardHeader>
+                    <CardTitle>Change tree path</CardTitle>
+                    <CardDescription>
+                      Fill in the form below to change the tree path
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent >
+                    <Form {...updatePathForm}>
+                      <form onSubmit={updatePathForm.handleSubmit(() => editTreeMutation.mutate("update"))} id="new_tree_link">
+                        <div className="grid w-full items-center gap-4">
+                          <div className="flex flex-col space-y-1.5">
+                            <FormField
+                              control={updatePathForm.control}
+                              name="path"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Path</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      style={{
+                                        ...((updatePathForm.watch().path_available || (updatePathForm.watch().path === treeData.path)) && { borderColor: "green" }),
+                                        ...((!updatePathForm.watch().path_available && (updatePathForm.watch().path !== treeData.path)) && { borderColor: "red" }),
+                                      }}
+                                      {...field}
+                                      value={field.value ?? ''}
+                                      onChange={e => field.onChange(e.target.value?.replace(" ", "-")?.toLowerCase())}
+                                    />
+                                  </FormControl>
+                                  <FormDescription>
+                                    This will be the new path of the tree: {process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/tree/{updatePathForm.watch().path}
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </form>
+                    </Form>
+
+                  </CardContent>
+                  <CardFooter className="flex justify-end">
+                    <Button disabled={newLinkMutation.isPending} type="submit" form="new_tree_link">
+                      Update
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </DialogContent>
+            </Dialog>
             {
               positionChanged && (
                 <Tooltip text="Click to save links position">
@@ -413,37 +531,44 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
               </DialogContent>
             </Dialog>
           </div>
-          <Reorder.Group
-            as="ul"
-            axis="y"
-            values={tree.components}
-            onReorder={(newOrder: Component[]) => {
-              setPositionChanged(true),
-                setComponents(newOrder);
-            }}
-            className="flex flex-col gap-6"
-          >
-            {
-              components?.length === 0 && (
+          {
+            components?.length === 0 && (
+              <ul className="flex flex-col gap-6">
                 <li className="flex flex-col items-center gap-2 text-slate-950 dark:text-slate-50/50">
                   <Link2Off size={64} absoluteStrokeWidth className="animate-pulse" />
                   <span className="text-xl">You don't have any link in this tree yet 😢.</span>
                 </li>
-              )
-            }
-            {
-              components?.map((component: Component) => (
-                <TreeItem
-                  key={component.id}
-                  component={component}
-                  setEdit={setEdit}
-                  setEditTextColor={setEditTextColor}
-                  setEditButtonColor={setEditButtonColor}
-                  setDeleteId={setDeleteId}
-                />
-              ))}
-          </Reorder.Group>
+              </ul>
+            )
+          }
+          {
+            components?.length > 0 && (
+              <Reorder.Group
+                as="ul"
+                axis="y"
+                values={tree.components}
+                onReorder={(newOrder: Component[]) => {
+                  setPositionChanged(true),
+                    setComponents(newOrder);
+                }}
+                className="flex flex-col gap-6"
+              >
+                {
+                  components?.map((component: Component) => (
+                    <TreeItem
+                      key={component.id}
+                      component={component}
+                      setEdit={setEdit}
+                      setEditTextColor={setEditTextColor}
+                      setEditButtonColor={setEditButtonColor}
+                      setDeleteId={setDeleteId}
+                    />
+                  ))}
+              </Reorder.Group>
+            )
+          }
         </div>
       </main>
-    </AnimatedBackground>)
+    </AnimatedBackground>
+  )
 }
