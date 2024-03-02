@@ -56,7 +56,7 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import type { Component, Tree } from "@prisma/client";
-import { Link2Icon, Link2Off, Loader2Icon, MoreHorizontal, Plus, Save } from "lucide-react";
+import { Grip, Link2Icon, Link2Off, Loader2Icon, MoreHorizontal, Plus, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import Alert from "@/components/dialog";
 import ColorPicker from 'react-best-gradient-color-picker'
@@ -68,7 +68,7 @@ import Tooltip from "@/components/tooltip";
 import AvatarWithUpload from "@/components/avatarWithUpload";
 import LabelWithEdit from "@/components/labelWithEdit";
 import BackgroundChange from "@/components/backgroundChange";
-import { Reorder } from "framer-motion"
+import { Reorder, useDragControls } from "framer-motion"
 
 export default function TreeContainer({ tree_id, tree: treeData }: {
   tree_id: string, tree: Tree & { components: Component[] }
@@ -79,6 +79,7 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
   const [edit, setEdit] = useState({} as Component)
   const [components, setComponents] = useState<Component[]>(tree?.components || [])
   const [positionChanged, setPositionChanged] = useState<boolean>(false)
+  const controls = useDragControls()
   const [editButtonColor, setEditButtonColor] = useState<{ openModal: boolean, color: string | undefined }>({
     openModal: false,
     color: ""
@@ -439,8 +440,17 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
             {
               components?.map((component: Component) => (
                 (
-                  <Reorder.Item as="li" animate={{ opacity: 1 }} key={component.position} value={component} className="bg-gray-500/10 pb-4 flex flex-col cursor-grab">
-                    <header className="flex px-4 py-2 justify-end">
+                  <Reorder.Item
+                    className="bg-gray-500/10 pb-4 flex flex-col"
+                    key={component.position}
+                    animate={{ opacity: 1 }}
+                    dragControls={controls}
+                    dragListener={false}
+                    value={component}
+                    as="li"
+                  >
+                    <header className="flex px-4 py-2 justify-between">
+                      <Grip size={18} onPointerDown={e => controls.start(e)} className="cursor-grab" />
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
