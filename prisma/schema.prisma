@@ -42,7 +42,7 @@ model Component {
   backgroundColor String?
   textColor       String?
   outlined        Boolean  @default(false)
-  position        Int      @default(0)
+  position        Int      @default(autoincrement())
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   treeId          String
