@@ -6,7 +6,7 @@
 
 */
 -- AlterTable
-ALTER TABLE "Tree" ADD COLUMN     "path" UNIQUE;
+ALTER TABLE "Tree" ADD COLUMN     "path" TEXT NOT NULL;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Tree_path_key" ON "Tree"("path");
