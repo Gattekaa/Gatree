@@ -47,7 +47,7 @@ import {
 } from "@/components/ui/sheet"
 
 
-import { handleDeleteTreeLink, handleEditTree, handleEditTreeLink, handleNewTreeLink } from "@/requests/trees";
+import { batchUpdateTreeLinks, handleDeleteTreeLink, handleEditTree, handleEditTreeLink, handleNewTreeLink } from "@/requests/trees";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -56,7 +56,7 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import type { Component, Tree } from "@prisma/client";
-import { Link2Icon, Link2Off, Loader2Icon, MoreHorizontal, Plus } from "lucide-react";
+import { Link2Icon, Link2Off, Loader2Icon, MoreHorizontal, Plus, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import Alert from "@/components/dialog";
 import ColorPicker from 'react-best-gradient-color-picker'
@@ -68,6 +68,7 @@ import Tooltip from "@/components/tooltip";
 import AvatarWithUpload from "@/components/avatarWithUpload";
 import LabelWithEdit from "@/components/labelWithEdit";
 import BackgroundChange from "@/components/backgroundChange";
+import { Reorder } from "framer-motion"
 
 export default function TreeContainer({ tree_id, tree: treeData }: {
   tree_id: string, tree: Tree & { components: Component[] }
@@ -76,6 +77,8 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
   const [deleteId, setDeleteId] = useState<string>("")
   const [newLink, setNewLink] = useState<boolean>(false)
   const [edit, setEdit] = useState({} as Component)
+  const [components, setComponents] = useState<Component[]>(tree?.components || [])
+  const [positionChanged, setPositionChanged] = useState<boolean>(false)
   const [editButtonColor, setEditButtonColor] = useState<{ openModal: boolean, color: string | undefined }>({
     openModal: false,
     color: ""
@@ -86,7 +89,6 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
     color: ""
   })
 
-  const [color, setColor] = useState("");
   const formSchema = z.object({
     title: z.string().min(1, "Name is required"),
     url: z.string().min(1, "URL is required"),
@@ -116,6 +118,10 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
           response
         ]
       })
+      setComponents([
+        ...components,
+        response
+      ])
       setNewLink(false)
       form.reset()
     },
@@ -138,6 +144,12 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
           return component
         })
       })
+      setComponents(tree.components.map((component) => {
+        if (component.id === edit.id) {
+          return response
+        }
+        return component
+      }))
       setEdit({} as Component)
       form.reset()
     }
@@ -152,6 +164,7 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
         components: tree.components.filter((component) => component.id !== response.id)
       })
       setDeleteId("")
+      setComponents(tree.components.filter((component) => component.id !== response.id))
     }
   })
 
@@ -163,6 +176,17 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
         title: response.title,
         backgroundColor: response.backgroundColor
       })
+    }
+  })
+
+  const batchUpdateLinksMutation = useMutation({
+    mutationFn: () => batchUpdateTreeLinks(tree_id, components),
+    onSuccess: () => {
+      setPositionChanged(false)
+      toast.success("Links position updated successfully")
+    },
+    onError: () => {
+      setComponents(treeData.components)
     }
   })
 
@@ -242,6 +266,22 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
 
           </div>
           <div className="flex justify-end gap-4">
+            {
+              positionChanged && (
+                <Tooltip text="Click to save links position">
+                  <Button
+                    disabled={batchUpdateLinksMutation.isPending}
+                    onClick={() => batchUpdateLinksMutation.mutate()}
+                    size="icon"
+                    className="rounded-full animate-pop"
+                  >
+                    {
+                      batchUpdateLinksMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : <Save size={20} className="w-10 h-10 p-3" />
+                    }
+                  </Button>
+                </Tooltip>
+              )
+            }
             <Tooltip text="View as guest user">
               <Button size="icon" asChild className="rounded-full">
                 <Link href={`/tree/${tree_id}`} target="_blank" rel="noreferrer">
@@ -378,10 +418,18 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
               </DialogContent>
             </Dialog>
           </div>
-
-          <ul className="flex flex-col gap-6">
+          <Reorder.Group
+            as="ul"
+            axis="y"
+            values={tree.components}
+            onReorder={(newOrder: Component[]) => {
+              setPositionChanged(true),
+                setComponents(newOrder);
+            }}
+            className="flex flex-col gap-6"
+          >
             {
-              tree?.components?.length === 0 && (
+              components?.length === 0 && (
                 <li className="flex flex-col items-center gap-2 text-slate-950 dark:text-slate-50/50">
                   <Link2Off size={64} absoluteStrokeWidth className="animate-pulse" />
                   <span className="text-xl">You don't have any link in this tree yet 😢.</span>
@@ -389,57 +437,53 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
               )
             }
             {
-              tree?.components?.map((component: Component) => {
-                const linkHasMethod = component.url.startsWith("http")
-                const link = linkHasMethod ? component.url : `//${component.url}`
-                return (
-                  (
-                    <li key={component.id} className="bg-gray-500/10 pb-4 flex flex-col">
-                      <header className="flex px-4 py-2 justify-end">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => setDeleteId(component.id)}>Delete</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => {
-                              setEdit(component)
-                              setEditButtonColor({
-                                openModal: false,
-                                color: component.backgroundColor || undefined
-                              })
-                              setEditTextColor({ openModal: false, color: component.textColor || undefined })
-                            }}>Edit</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </header>
-                      <div className="px-4">
-                        <Button
-                          className="cursor-default"
-                          style={{
-                            ...(component.outlined && {
-                              outlineWidth: "2px",
-                              outlineColor: component.backgroundColor || undefined,
-                              outlineStyle: "solid",
-                            }),
-                            background: !component.outlined ? component.backgroundColor || undefined : "transparent",
-                            color: component.textColor || undefined,
+              components?.map((component: Component) => (
+                (
+                  <Reorder.Item as="li" animate={{ opacity: 1 }} key={component.position} value={component} className="bg-gray-500/10 pb-4 flex flex-col cursor-grab">
+                    <header className="flex px-4 py-2 justify-end">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem onClick={() => setDeleteId(component.id)}>Delete</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
+                            setEdit(component)
+                            setEditButtonColor({
+                              openModal: false,
+                              color: component.backgroundColor || undefined
+                            })
+                            setEditTextColor({ openModal: false, color: component.textColor || undefined })
+                          }}>Edit</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </header>
+                    <div className="px-4">
+                      <Button
+                        style={{
+                          ...(component.outlined && {
+                            outlineWidth: "2px",
+                            outlineColor: component.backgroundColor || undefined,
+                            outlineStyle: "solid",
+                          }),
+                          background: !component.outlined ? component.backgroundColor || undefined : "transparent",
+                          color: component.textColor || undefined,
 
-                          }}
-                          variant="tree_link"
-                        >
-                          {component.label}
-                        </Button>
-                      </div>
-                    </li>
-                  )
+                        }}
+                        variant="tree_link"
+                      >
+                        {component.label}
+                      </Button>
+                    </div>
+                  </Reorder.Item>
+
                 )
-              })
+              ))
             }
-          </ul>
+          </Reorder.Group>
         </div>
       </main>
     </AnimatedBackground>)

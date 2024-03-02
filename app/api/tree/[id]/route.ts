@@ -18,7 +18,11 @@ export async function GET(
       where: { id: params.id },
       include: {
         user: { select: { username: true, avatar: true } },
-        components: true,
+        components: {
+          orderBy: {
+            position: "asc",
+          },
+        },
       },
     });
 

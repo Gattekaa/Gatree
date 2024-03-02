@@ -119,3 +119,14 @@ export async function handleTreeUploadPhoto(
 
   return data;
 }
+
+export async function batchUpdateTreeLinks(
+  tree_id: string,
+  links: Component[],
+): Promise<Component[]> {
+  const { data } = await connection.post(`tree/${tree_id}/batch_update`, {
+    links: links.map((link, idx) => ({ id: link.id, position: idx })),
+  });
+
+  return data.components;
+}

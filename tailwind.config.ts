@@ -47,6 +47,10 @@ const config = {
           "0%, 100%": { transform: "translateX(0)" },
           "50%": { transform: "translateX(150%)" },
         },
+        pop: {
+          "0%": { transform: "scale(0)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -55,6 +59,7 @@ const config = {
         floatUp: "floatUp 10s ease-in-out infinite",
         floatLeft: "floatLeft 10s ease-in-out infinite",
         floatRight: "floatRight 10s ease-in-out infinite",
+        pop: "pop 0.05s ease-out",
       },
     },
   },
