@@ -32,13 +32,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-// Dropdown Menu Imports
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 // Sheet Imports
 import {
@@ -56,7 +49,7 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import type { Component, Tree } from "@prisma/client";
-import { Grip, Link2Icon, Link2Off, Loader2Icon, MoreHorizontal, Plus, Save } from "lucide-react";
+import { Link2Icon, Link2Off, Loader2Icon, Plus, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import Alert from "@/components/dialog";
 import ColorPicker from 'react-best-gradient-color-picker'
@@ -69,6 +62,7 @@ import AvatarWithUpload from "@/components/avatarWithUpload";
 import LabelWithEdit from "@/components/labelWithEdit";
 import BackgroundChange from "@/components/backgroundChange";
 import { Reorder, useDragControls } from "framer-motion"
+import TreeItem from "../TreeItem";
 
 export default function TreeContainer({ tree_id, tree: treeData }: {
   tree_id: string, tree: Tree & { components: Component[] }
@@ -439,60 +433,15 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
             }
             {
               components?.map((component: Component) => (
-                (
-                  <Reorder.Item
-                    className="bg-gray-500/10 pb-4 flex flex-col"
-                    key={component.position}
-                    animate={{ opacity: 1 }}
-                    dragControls={controls}
-                    dragListener={false}
-                    value={component}
-                    as="li"
-                  >
-                    <header className="flex px-4 py-2 justify-between">
-                      <Grip size={18} onPointerDown={e => controls.start(e)} className="cursor-grab" />
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => setDeleteId(component.id)}>Delete</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => {
-                            setEdit(component)
-                            setEditButtonColor({
-                              openModal: false,
-                              color: component.backgroundColor || undefined
-                            })
-                            setEditTextColor({ openModal: false, color: component.textColor || undefined })
-                          }}>Edit</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </header>
-                    <div className="px-4">
-                      <Button
-                        style={{
-                          ...(component.outlined && {
-                            outlineWidth: "2px",
-                            outlineColor: component.backgroundColor || undefined,
-                            outlineStyle: "solid",
-                          }),
-                          background: !component.outlined ? component.backgroundColor || undefined : "transparent",
-                          color: component.textColor || undefined,
-
-                        }}
-                        variant="tree_link"
-                      >
-                        {component.label}
-                      </Button>
-                    </div>
-                  </Reorder.Item>
-
-                )
-              ))
-            }
+                <TreeItem
+                  key={component.id}
+                  component={component}
+                  setEdit={setEdit}
+                  setEditTextColor={setEditTextColor}
+                  setEditButtonColor={setEditButtonColor}
+                  setDeleteId={setDeleteId}
+                />
+              ))}
           </Reorder.Group>
         </div>
       </main>
