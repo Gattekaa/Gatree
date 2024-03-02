@@ -1,2 +1,1 @@
 -- AlterTable
-ALTER TABLE "Tree" ALTER COLUMN "path" DROP NOT NULL;
