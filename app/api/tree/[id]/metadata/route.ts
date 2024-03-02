@@ -15,7 +15,7 @@ export async function GET(
     }
 
     const trees = await prisma.tree.findUniqueOrThrow({
-      where: { id: params.id },
+      where: { path: params.id },
       select: {
         title: true,
         photo: true,
