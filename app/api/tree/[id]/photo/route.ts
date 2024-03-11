@@ -22,7 +22,7 @@ export async function POST(
     }
 
     const tree = await prisma.tree.findUnique({
-      where: { id: params.id },
+      where: { path: params.id },
     });
 
     if (!tree) {
@@ -38,7 +38,7 @@ export async function POST(
 
     const imagePath = await uploadFile(treatedImage, "trees_photos", tree.id);
     const updatedTree = await prisma.tree.update({
-      where: { id: params.id },
+      where: { path: params.id },
       data: { photo: imagePath },
     });
     return NextResponse.json(
