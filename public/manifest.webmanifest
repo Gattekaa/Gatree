@@ -3,7 +3,7 @@
     "background_color": "#121212",
     "display": "fullscreen",
     "scope": "/",
-    "start_url": "/",
+    "start_url": "/dashboard",
     "name": "Gatree - Create and share trees of links",
     "short_name": "Gatree",
     "description": "Gatree is a platform to create and share trees of links.You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want.And the best part is that it's free!",
