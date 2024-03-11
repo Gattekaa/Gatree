@@ -34,6 +34,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.331.0",
     "next": "14.1.0",
+    "next-pwa": "^5.6.0",
     "next-themes": "^0.2.1",
     "nookies": "^2.5.2",
     "qrcode": "^1.5.3",
@@ -63,5 +64,5 @@
     "typescript": "^5.3.3"
   },
   "module": "index.ts",
-  "type": "module"
+  "type": "commonjs"
 }

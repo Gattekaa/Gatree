@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   description: `Gatree is a platform to create and share trees of links.You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want.And the best part is that it's free!`,
   robots: "index, follow",
   publisher: "Gattree",
+  manifest: "/manifest.webmanifest",
   authors: [
     {
       name: "Vinicius Gabriel",
@@ -27,9 +28,21 @@ export const metadata: Metadata = {
     description: `Gatree is a platform to create and share trees of links. You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want. And the best part is that it's free!`,
     images: [
       {
-        url: "/logo.png",
-        width: 800,
-        height: 600,
+        url: "/logo_1200x630px.png",
+        width: 1200,
+        height: 630,
+        alt: "Gatree Logo"
+      },
+      {
+        url: "/logo_320px.png",
+        width: 320,
+        height: 320,
+        alt: "Gatree Logo"
+      },
+      {
+        url: "/logo_with_green_bg.png",
+        width: 80,
+        height: 80,
         alt: "Gatree Logo"
       },
     ],
@@ -37,9 +50,21 @@ export const metadata: Metadata = {
   twitter: {
     images: [
       {
-        url: "/logo.png",
-        width: 800,
-        height: 600,
+        url: "/logo_1200x630px.png",
+        width: 1200,
+        height: 630,
+        alt: "Gatree Logo"
+      },
+      {
+        url: "/logo_320px.png",
+        width: 320,
+        height: 320,
+        alt: "Gatree Logo"
+      },
+      {
+        url: "/logo_with_green_bg.png",
+        width: 80,
+        height: 80,
         alt: "Gatree Logo"
       },
     ]
@@ -47,9 +72,9 @@ export const metadata: Metadata = {
   icons: [
     {
       rel: "icon",
-      url: "/logo.png",
+      url: "/rounded_logo_32px.png",
       type: "image/png",
-      sizes: "any",
+      sizes: "32x32",
     }
   ],
   applicationName: "Gattree",
