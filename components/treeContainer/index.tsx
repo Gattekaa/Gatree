@@ -387,7 +387,7 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
               <Reorder.Group
                 as="ul"
                 axis="y"
-                values={tree.components}
+                values={components}
                 onReorder={(newOrder: Component[]) => {
                   setPositionChanged(true),
                     setComponents(newOrder);
