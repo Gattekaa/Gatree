@@ -40,22 +40,20 @@ import {
 } from "@/components/ui/sheet"
 
 
-import { batchUpdateTreeLinks, handleAvailablePath, handleDeleteTreeLink, handleEditTree, handleEditTreeLink, handleNewTreeLink } from "@/requests/trees";
+import { batchUpdateTreeLinks, handleAvailablePath, handleDeleteTreeLink, handleEditTree, handleNewTreeLink } from "@/requests/trees";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import type { Component, Tree } from "@prisma/client";
-import { Link2Icon, Link2Off, Loader2Icon, Plus, Save, Unlink } from "lucide-react";
+import { Link2Icon, Link2Off, Loader2Icon, Save, Unlink } from "lucide-react";
 import { useEffect, useState } from "react";
 import Alert from "@/components/dialog";
 import ColorPicker from 'react-best-gradient-color-picker'
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
-import { Switch } from "@/components/ui/switch"
 import AnimatedBackground from "@/components/animatedBackground";
 import Tooltip from "@/components/tooltip";
 import AvatarWithUpload from "@/components/avatarWithUpload";
@@ -65,6 +63,8 @@ import { Reorder } from "framer-motion"
 import TreeItem from "../TreeItem";
 import { useDebounce } from "@/helpers/useDebounce";
 import { useRouter } from "next/navigation";
+import TreeComponentDialog from "../TreeComponentDialog";
+import AddNewComponentButton from "../AddNewComponentButton";
 
 export default function TreeContainer({ tree_id, tree: treeData }: {
   tree_id: string, tree: Tree & { components: Component[] }
@@ -85,7 +85,6 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
     openModal: false,
     color: ""
   })
-
   const formSchema = z.object({
     title: z.string().min(1, "Name is required"),
     url: z.string().min(1, "URL is required"),
@@ -150,30 +149,6 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
     }
   })
 
-  const editLinkMutation = useMutation({
-    mutationFn: () => handleEditTreeLink(edit.id, form.getValues("title"), form.getValues("url"), editButtonColor.color, editTextColor.color, form.getValues("outlined")),
-    onSuccess: (response) => {
-      setTree({
-        ...tree,
-        components: tree.components.map((component) => {
-          if (component.id === edit.id) {
-            return response
-          }
-          return component
-        })
-      })
-      setComponents(tree.components.map((component) => {
-        if (component.id === edit.id) {
-          return response
-        }
-        return component
-      }))
-      setEdit({} as Component)
-      form.reset()
-    }
-
-  })
-
   const deleteLinkMutation = useMutation({
     mutationFn: (id: string) => handleDeleteTreeLink(id),
     onSuccess: (response) => {
@@ -205,7 +180,6 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
       })
     }
   })
-
   const batchUpdateLinksMutation = useMutation({
     mutationFn: () => batchUpdateTreeLinks(treeData.id, components),
     onSuccess: () => {
@@ -244,12 +218,6 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
     editTreeMutation.mutate(action)
   }
 
-  function onSubmit() {
-    if (edit.id) {
-      return editLinkMutation.mutate()
-    }
-    newLinkMutation.mutate()
-  }
 
   const hasPathChanged = useDebounce(updatePathForm.watch("path") ?? "", 500)
 
@@ -273,6 +241,17 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
 
   return (
     <AnimatedBackground variant={tree?.theme || undefined}>
+      <TreeComponentDialog
+        open={newLink || !!edit.id}
+        onOpenChange={() => {
+          if (edit.id) setEdit({} as Component)
+          if (newLink) setNewLink(false)
+        }}
+        setTree={setTree}
+        treeId={tree.id}
+        setComponents={setComponents}
+        component={edit}
+      />
       <main
         style={{ background: tree.backgroundColor || undefined }}
         className="w-full min-h-full flex flex-col items-center duration-150"
@@ -387,22 +366,6 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
                 </Card>
               </DialogContent>
             </Dialog>
-            {
-              positionChanged && (
-                <Tooltip text="Click to save links position">
-                  <Button
-                    disabled={batchUpdateLinksMutation.isPending}
-                    onClick={() => batchUpdateLinksMutation.mutate()}
-                    size="icon"
-                    className="rounded-full animate-pop"
-                  >
-                    {
-                      batchUpdateLinksMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : <Save size={20} className="w-10 h-10 p-3" />
-                    }
-                  </Button>
-                </Tooltip>
-              )
-            }
             <Tooltip text="View as guest user">
               <Button size="icon" asChild className="rounded-full">
                 <Link href={`/tree/${tree_id}`} target="_blank" rel="noreferrer">
@@ -418,127 +381,29 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
               setTree={setTree}
               treeId={tree_id}
             />
-            <Dialog open={newLink || !!edit.id} onOpenChange={() => {
-              if (edit.id) setEdit({} as Component)
-              if (newLink) setNewLink(false)
-            }}>
-              <DialogTrigger className="">
-                <Tooltip text="Add new link">
-                  <Button asChild onClick={() => setNewLink(!newLink)} size="icon" className="rounded-full">
-                    <Plus size={20} className="w-10 h-10 p-3" />
-                  </Button>
-                </Tooltip>
-              </DialogTrigger>
-              <DialogContent className="flex justify-center items-center w-full md:w-fit h-fit">
-                <Card className="w-full md:w-[500px] border-0">
-                  <CardHeader>
-                    <CardTitle>Create new link</CardTitle>
-                    <CardDescription>
-                      Fill in the form below to create a new link
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent >
-                    <Form {...form}>
-                      <form onSubmit={form.handleSubmit(() => onSubmit())} id="new_tree_link">
-                        <div className="grid w-full items-center gap-4">
-                          <div className="flex flex-col space-y-1.5 ">
-                            <FormField
-                              control={form.control}
-                              name="title"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Button asChild variant="tree_link">
-                                      <Input
-                                        style={{
-                                          background: form.getValues("outlined") ? "transparent" : editButtonColor.color,
-                                          color: editTextColor.color,
-                                          outlineWidth: form.getValues("outlined") ? "2px" : "0",
-                                          outlineColor: editButtonColor.color,
-                                          outlineStyle: form.getValues("outlined") ? "solid" : "none"
-                                        }}
-                                        className="h-[50px] border-0 !ring-0 !ring-transparent text-center"
-                                        placeholder=""
-                                        {...field}
-                                      />
-                                    </Button>
-                                  </FormControl>
-                                  <FormMessage className="pt-2" />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                          <div className="flex flex-col space-y-1.5">
-                            <FormField
-                              control={form.control}
-                              name="url"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>URL</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                  <FormDescription>
-                                    Enter the URL of the link
-                                  </FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <div className="py-4">
-                              <FormField
-                                control={form.control}
-                                name="outlined"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Styles</FormLabel>
-                                    <FormControl>
-                                      <div className="flex items-center space-x-2">
-                                        <Switch id="outlined-button"
-                                          checked={field.value}
-                                          onCheckedChange={field.onChange}
-                                        />
-                                        <Label htmlFor="outlined-button">Outlined</Label>
-                                      </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 !mt-4">
-                              <Button className="w-full " type="button" onClick={() => setEditButtonColor({
-                                ...editButtonColor,
-                                openModal: true
-                              })}>
-                                Change button color
-                              </Button>
-                              <Button className="w-full" type="button" onClick={() => setEditTextColor({
-                                ...editTextColor,
-                                openModal: true
-                              })}>
-                                Change text color
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                    </Form>
-
-                  </CardContent>
-                  <CardFooter className="flex justify-end">
-                    <Button disabled={newLinkMutation.isPending} type="submit" form="new_tree_link">
-                      {
-                        edit.id ? (
-                          editLinkMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : "Save"
-                        ) : (newLinkMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : "Create")
-                      }
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </DialogContent>
-            </Dialog>
           </div>
+          {
+            positionChanged && (
+              <div className="w-full flex justify-end">
+                <Button
+                  disabled={batchUpdateLinksMutation.isPending}
+                  onClick={() => batchUpdateLinksMutation.mutate()}
+                  className="rounded-full animate-pop gap-2"
+                >
+                  {
+                    batchUpdateLinksMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : (
+                      <>
+                        <Save size={20} /> Save links position
+                      </>
+                    )
+                  }
+                  
+
+                </Button>
+              </div>
+            )
+          }
+          <AddNewComponentButton onClick={() => setNewLink(true)} />
           {
             components?.length === 0 && (
               <ul className="flex flex-col gap-6">

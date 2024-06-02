@@ -84,7 +84,7 @@ export async function handleDeleteTreeLink(id: string) {
 }
 
 export async function handleEditTreeLink(
-  id: string,
+  id: string | undefined,
   label: string,
   url: string,
   backgroundColor: string | undefined,

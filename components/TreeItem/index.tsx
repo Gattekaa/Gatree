@@ -29,11 +29,12 @@ export default function TreeItem({ component, setEdit, setEditButtonColor, setEd
       animate={{ opacity: 1 }}
       dragControls={controls}
       dragListener={false}
+      style={{ touchAction: "none" }}
       value={component}
       as="li"
     >
-      <header className="flex px-4 py-2 justify-between items-center">
-        <Grip size={18} onPointerDown={e => controls.start(e)} className="cursor-grab" />
+      <header className="flex px-4 py-2 justify-between items-center select-none">
+        <Grip size={18} onPointerDown={e => controls.start(e)} className="cursor-grab" style={{ touchAction: "none" }} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
@@ -54,8 +55,9 @@ export default function TreeItem({ component, setEdit, setEditButtonColor, setEd
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
-      <div className="px-4">
+      <div className="px-4 select-none">
         <Button
+          className="select-none"
           style={{
             ...(component.outlined && {
               outlineWidth: "2px",
