@@ -14,6 +14,7 @@ export async function GET(
     if (token) {
       user = (await getCurrentUser(token)) || null;
     }
+
     const trees = await prisma.tree.findUniqueOrThrow({
       where: { path: params.id },
       include: {
@@ -26,8 +27,18 @@ export async function GET(
       },
     });
 
-    if (trees.status === "inactive" && trees.userId !== user?.id) {
+    const isOwnerVisitor = trees.userId === user?.id;
+    const isActive = trees.status === "active";
+
+    if (!isActive && !isOwnerVisitor) {
       return NextResponse.json({ error: "Tree not found" }, { status: 404 });
+    }
+
+    if (!isOwnerVisitor) {
+      await prisma.tree.update({
+        where: { path: params.id },
+        data: { visits: { increment: 1 } },
+      });
     }
 
     return NextResponse.json(trees, { status: 200 });
@@ -47,7 +58,7 @@ export async function PATCH(
   try {
     const { title, status, backgroundColor, theme, path } = await request.json();
     const tree = await prisma.tree.update({
-      where: { id: params.id },
+      where: { path: params.id },
       data: { title, status, backgroundColor, theme, path },
     });
 
@@ -66,7 +77,9 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
-    const data = await prisma.tree.delete({ where: { id: params.id } });
+    const data = await prisma.tree.delete({
+      where: { path: params.id },
+    });
 
     if (data.photo) {
       deleteFile("trees_photos", data.id);

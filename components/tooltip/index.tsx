@@ -7,18 +7,19 @@ import {
 
 interface TooltipProps {
   children: React.ReactNode
-  text: string,
-  delay?: number
+  text: string | React.ReactNode,
+  delay?: number,
+  side?: "top" | "right" | "bottom" | "left" | undefined
 }
 
-export default function Tooltip({ children, text, delay = 150 }: TooltipProps) {
+export default function Tooltip({ children, text, delay = 150, side }: TooltipProps) {
   return (
     <TooltipProvider delayDuration={delay}>
       <TooltipUIComponent>
         <TooltipTrigger asChild>
           {children}
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent side={side}>
           {text}
         </TooltipContent>
       </TooltipUIComponent>

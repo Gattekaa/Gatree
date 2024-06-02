@@ -97,10 +97,10 @@ export default function RootLayout({
         <TanstackProvider>
           <UserProvider>
             <ThemeProvider
-              themes={['light', 'dark', 'system']}
+              themes={['dark']}
               attribute="class"
               storageKey="theme"
-              defaultTheme="system"
+              defaultTheme="dark"
               enableSystem
               disableTransitionOnChange
             >

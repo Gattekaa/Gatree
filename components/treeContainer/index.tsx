@@ -187,7 +187,11 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
   })
 
   const editTreeMutation = useMutation({
-    mutationFn: (action?: string) => handleEditTree({ id: treeData.id, backgroundColor: action === "remove" ? undefined : tree.backgroundColor || undefined, theme: tree.theme || undefined, path: updatePathForm.getValues("path") || undefined }),
+    mutationFn: (action?: string) => handleEditTree({
+      id: tree_id,
+      backgroundColor: action === "remove" ? undefined : tree.backgroundColor || undefined, theme: tree.theme || undefined,
+      path: updatePathForm.getValues("path") || undefined
+    }),
     onSuccess: (response) => {
 
       if (response.path !== treeData.path) {
@@ -316,7 +320,11 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
 
             <AvatarWithUpload avatar={tree?.photo || ""} fallback={fallbackInitial} treeId={tree_id} />
 
-            <LabelWithEdit initialText={tree?.title} treeId={tree_id} />
+            <LabelWithEdit
+              initialText={tree?.title}
+              treeId={tree_id}
+              setTree={setTree}
+            />
 
           </div>
           <div className="flex justify-end gap-4">

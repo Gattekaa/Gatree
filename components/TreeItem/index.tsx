@@ -24,7 +24,7 @@ export default function TreeItem({ component, setEdit, setEditButtonColor, setEd
   const controls = useDragControls()
   return (
     <Reorder.Item
-      className="bg-gray-500/10 pb-4 flex flex-col"
+      className="bg-gray-500/5 backdrop-blur-lg pb-4 flex flex-col rounded-md border border-transparent hover:border-white/20 "
       key={component.position}
       animate={{ opacity: 1 }}
       dragControls={controls}

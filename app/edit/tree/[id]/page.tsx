@@ -6,7 +6,6 @@ import { cookies } from 'next/headers'
 export default async function EditTree({ params }: { params: { id: string } }) {
   const cookieStore = cookies()
   const token = cookieStore.get('token')
-
   const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${params.id}`, {
     cache: "no-cache",
     headers: {

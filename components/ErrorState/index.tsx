@@ -2,7 +2,7 @@ import AnimatedBackground from "../animatedBackground";
 
 export default function ErrorState() {
   return (
-    <AnimatedBackground variant="starry-blue-sky">
+    <AnimatedBackground variant="grid">
       <main className="w-full h-full flex flex-col items-center justify-center gap-2">
         <h1 className="text-9xl font-bold text-white">404</h1>
         <h2 className="text-2xl font-bold text-white">

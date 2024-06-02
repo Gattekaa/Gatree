@@ -33,7 +33,7 @@ export async function handleEditTree({
     title: title,
     backgroundColor: backgroundColor ?? null,
     theme: theme ?? null,
-    path: path ?? null,
+    path,
   });
   return data;
 }

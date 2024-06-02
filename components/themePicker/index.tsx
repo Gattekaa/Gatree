@@ -5,10 +5,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { backgrounds } from "@/assets/static/animated-background"
 import type { Component, Tree } from "@prisma/client"
 import { Label } from "../ui/label"
 import { cn } from "@/lib/utils"
+import { AnimatedBackgrounds } from "../animatedBackground"
 
 export default function ThemePicker({
   initialTheme,
@@ -20,7 +20,6 @@ export default function ThemePicker({
   setTree: React.Dispatch<React.SetStateAction<Tree & { components: Component[] }>>,
 }) {
 
-
   function handleChange(theme: string) {
     setTree((prev) => ({ ...prev, theme: theme, backgroundColor: null }))
   }
@@ -28,13 +27,13 @@ export default function ThemePicker({
   return (
     <div className="w-full flex flex-col items-center gap-8">
       <Label className="w-full text-base">
-        Animated Background
+        Backgrounds
       </Label>
       <div className="w-[230px]" >
         <Carousel orientation="horizontal" >
           <CarouselContent>
             {
-              backgrounds.map((background, index) => (
+              AnimatedBackgrounds.map((background, index) => (
                 <CarouselItem key={index} className="!w-[180px] max-w-[180px] h-[140px]">
                   <button
                     type="button"
@@ -51,7 +50,7 @@ export default function ThemePicker({
                         initialTheme === background.slug ? "border-slate-400" : "border-slate-400/30"
                       )}
                     >
-                      <source src={`/backgrounds/${background.fileName}`} type="video/mp4" />
+                      <source src={`/backgrounds/${background.slug}.mp4`} type="video/mp4" />
                     </video>
                     <Label>{background.name}</Label>
                   </button>

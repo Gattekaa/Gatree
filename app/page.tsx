@@ -1,24 +1,10 @@
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
+import PresentationSparkles from "@/components/presentationSparkles";
 
 export default function Home() {
   return (
-    <div>
-      <Carousel>
-        <CarouselContent>
-          <CarouselItem>...</CarouselItem>
-          <CarouselItem>...</CarouselItem>
-          <CarouselItem>...</CarouselItem>
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
+    <main>
+      <PresentationSparkles />
+    </main>
 
-    </div>
   );
 }
