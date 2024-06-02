@@ -36,6 +36,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Tree not found" }, { status: 404 });
     }
 
+    const isTreeOwner = tree.userId === user.id;
+
+    if (!isTreeOwner) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const component = await prisma.component.create({
       data: {
         treeId: tree.id,

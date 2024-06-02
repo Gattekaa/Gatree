@@ -18,10 +18,25 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const component = await prisma.component.findUniqueOrThrow({
+      where: {
+        id: params.id,
+      },
+      include: {
+        tree: true,
+      }
+    });
+
+    const isTreeOwner = user.id === component.tree.userId;
+
+    if (!isTreeOwner) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { label, url, backgroundColor, textColor, outlined } =
       await req.json();
 
-    const component = await prisma.component.update({
+    const updatedComponent = await prisma.component.update({
       where: {
         id: params.id,
       },
@@ -34,7 +49,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json(component, { status: 200 });
+    return NextResponse.json(updatedComponent, { status: 200 });
   } catch (err) {
     console.error(err);
     return NextResponse.json(
@@ -60,7 +75,22 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const component = await prisma.component.delete({
+    const component = await prisma.component.findUniqueOrThrow({
+      where: {
+        id: params.id,
+      },
+      include: {
+        tree: true,
+      }
+    });
+
+    const isTreeOwner = user.id === component.tree.userId;
+
+    if (!isTreeOwner) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await prisma.component.delete({
       where: {
         id: params.id,
       },

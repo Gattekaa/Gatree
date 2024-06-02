@@ -30,10 +30,16 @@ export async function POST(
         user: true,
       },
     });
-
     if (!tree) {
       return NextResponse.json({ error: "Tree not found" }, { status: 404 });
     }
+
+    const isTreeOwner = tree.user.id === user.id;
+
+    if (!isTreeOwner) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    
     const updatedComponents = [];
 
     for (const component of tree.components) {

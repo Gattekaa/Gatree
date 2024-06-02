@@ -32,14 +32,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-
-// Sheet Imports
-import {
-  Sheet,
-  SheetContent,
-} from "@/components/ui/sheet"
-
-
 import { batchUpdateTreeLinks, handleAvailablePath, handleDeleteTreeLink, handleEditTree, handleNewTreeLink } from "@/requests/trees";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
@@ -51,7 +43,6 @@ import type { Component, Tree } from "@prisma/client";
 import { Link2Icon, Link2Off, Loader2Icon, Save, Unlink } from "lucide-react";
 import { useEffect, useState } from "react";
 import Alert from "@/components/dialog";
-import ColorPicker from 'react-best-gradient-color-picker'
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import AnimatedBackground from "@/components/animatedBackground";
@@ -79,8 +70,8 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
   const [editButtonColor, setEditButtonColor] = useState<{ openModal: boolean, color: string | undefined }>({
     openModal: false,
     color: ""
-
   })
+
   const [editTextColor, setEditTextColor] = useState<{ openModal: boolean, color: string | undefined }>({
     openModal: false,
     color: ""
@@ -218,7 +209,6 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
     editTreeMutation.mutate(action)
   }
 
-
   const hasPathChanged = useDebounce(updatePathForm.watch("path") ?? "", 500)
 
   useEffect(() => {
@@ -241,17 +231,21 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
 
   return (
     <AnimatedBackground variant={tree?.theme || undefined}>
-      <TreeComponentDialog
-        open={newLink || !!edit.id}
-        onOpenChange={() => {
-          if (edit.id) setEdit({} as Component)
-          if (newLink) setNewLink(false)
-        }}
-        setTree={setTree}
-        treeId={tree.id}
-        setComponents={setComponents}
-        component={edit}
-      />
+      {
+        (newLink || !!edit.id) && (
+          <TreeComponentDialog
+            onOpenChange={() => {
+              if (edit.id) setEdit({} as Component)
+              if (newLink) setNewLink(false)
+            }}
+            setTree={setTree}
+            treeId={tree.id}
+            setComponents={setComponents}
+            component={edit}
+          />
+        )
+
+      }
       <main
         style={{ background: tree.backgroundColor || undefined }}
         className="w-full min-h-full flex flex-col items-center duration-150"
@@ -270,41 +264,15 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
             </Button>
           </>}
         />
-        <Sheet open={editButtonColor.openModal || editTextColor.openModal} onOpenChange={() => {
-          if (editButtonColor.openModal) {
-            setEditButtonColor({ openModal: false, color: editButtonColor.color })
-          } else {
-            setEditTextColor({ openModal: false, color: editTextColor.color })
-          }
-
-        }} >
-          <SheetContent className="flex justify-center items-center border-l-slate-800">
-            <ColorPicker
-              value={editButtonColor.openModal ? editButtonColor.color : editTextColor.openModal ? editTextColor.color : ""}
-              hideColorTypeBtns={editTextColor.openModal || form.getValues("outlined")}
-              hideEyeDrop={editTextColor.openModal}
-              hideInputType={editTextColor.openModal}
-              onChange={(color) => {
-                if (editButtonColor.openModal) {
-                  setEditButtonColor({ openModal: true, color: color })
-                } else {
-                  setEditTextColor({ openModal: true, color: color })
-                }
-              }} />
-          </SheetContent>
-        </Sheet>
         <Navbar />
         <div className="w-full md:w-[500px] px-4 py-24 flex flex-col gap-10">
           <div className="flex flex-col flex-1 items-center gap-4">
-
             <AvatarWithUpload avatar={tree?.photo || ""} fallback={fallbackInitial} treeId={tree_id} />
-
             <LabelWithEdit
               initialText={tree?.title}
               treeId={tree_id}
               setTree={setTree}
             />
-
           </div>
           <div className="flex justify-end gap-4">
             <Dialog>
@@ -397,7 +365,7 @@ export default function TreeContainer({ tree_id, tree: treeData }: {
                       </>
                     )
                   }
-                  
+
 
                 </Button>
               </div>
