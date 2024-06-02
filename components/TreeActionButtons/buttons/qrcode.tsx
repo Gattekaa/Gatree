@@ -102,7 +102,7 @@ export default function QRCodeButton({ tree }: QRCodeButtonProps) {
       <QrCode />
       <Tooltip text="Generate QRCode" side="left">
         <Button
-          className="text-slate-400 w-8 h-8 text-sm rounded-full z-10"
+          className="text-slate-400 w-10 h-10 text-sm rounded-full z-10"
           onClick={() => setQrCodeTree(tree)}
           variant="outline"
           size="icon"

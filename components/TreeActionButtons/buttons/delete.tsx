@@ -43,7 +43,7 @@ export default function DeleteButton({ tree }: DeleteButtonProps) {
       />
       <Tooltip text="Delete" side="left">
         <Button
-          className="text-slate-400 w-8 h-8 text-sm rounded-full z-10"
+          className="text-slate-400 w-10 h-10 text-sm rounded-full z-10"
           onClick={() => tree.path && setDeletePath(tree.path)}
           variant="outline"
           size="icon"

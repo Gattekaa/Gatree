@@ -33,7 +33,7 @@ export default function StatusButton({ tree }: StatusButtonProps) {
     >
       <Toggle
         variant="outline"
-        className="w-8 h-8 p-0 rounded-full text-slate-400 bg-slate-950 border-slate-800 "
+        className="w-10 h-10 p-0 rounded-full text-slate-400 bg-slate-950 border-slate-800 "
         onClick={() => tree.path && toggleTreeStatusMutation.mutate({ id: tree.path, status: tree.status })}
       >
         <Power size={14} className={cn(

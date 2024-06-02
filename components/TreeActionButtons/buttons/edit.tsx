@@ -11,7 +11,7 @@ interface EditButtonProps {
 export default function EditButton({ tree }: EditButtonProps) {
   return (
     <Tooltip text="Edit" side="left">
-      <Button variant="outline" size="icon" className="text-slate-400 w-8 h-8 text-sm rounded-full z-10">
+      <Button variant="outline" size="icon" className="text-slate-400 w-10 h-10 text-sm rounded-full z-10">
         <Link
           href={`/edit/tree/${tree.path}`}
           className="w-full h-full flex justify-center items-center"

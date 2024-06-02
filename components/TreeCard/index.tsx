@@ -17,6 +17,7 @@ export default function TreeCard({ tree }: TreeCardProps) {
   return (
     <MovingBorderContainer
       key={tree.id}
+      as="div"
       borderRadius="12px"
       borderClassName="opacity-0 group-hover:opacity-100 duration-150"
       className="bg-black hover:bg-gray-950 duration-150"
