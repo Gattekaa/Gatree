@@ -14,6 +14,8 @@ type UserContextType = {
   user: User | undefined;
   setUser: (user: User | undefined) => void;
   handleLogout: () => void;
+  isLoadingUser: boolean;
+  hasToken: boolean;
 };
 
 export const UserContext = createContext<UserContextType>({} as UserContextType)
@@ -25,12 +27,14 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const publicRoutes = ["", "tree", "/auth/", "/auth/", "not-found"]
   const [user, setUser] = useState<User>()
   const { token } = parseCookies();
-  const { data: current_user, error: get_current_user_error } = useQuery({
+  const hasToken = !!token
+
+  const { data: current_user, error: get_current_user_error, isPending: isLoadingUser, } = useQuery({
     queryKey: ["current_user"],
     queryFn: () => getCurrentUser(),
     staleTime: 1000 * 60 * 60, // 1 hour
     gcTime: 1000 * 60 * 60 * 24, // 24 hours 
-    enabled: !!token,
+    enabled: hasToken,
     retry: false,
 
   })
@@ -73,7 +77,9 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       value={{
         user,
         setUser,
-        handleLogout
+        handleLogout,
+        isLoadingUser,
+        hasToken
       }}
     >
       {children}

@@ -5,7 +5,7 @@ import { TextGenerateEffect } from "../ui/text-generate";
 
 export default function PresentationSparkles() {
   return (
-    <div className="w-screen h-screen relative bg-black flex flex-col items-center justify-center gap-24 overflow-hidden rounded-md">
+    <div className="w-full h-[100dvh] p-12 pt-[100px] min-h-[400px] bg-black flex flex-col items-center justify-center gap-24 overflow-hidden rounded-md ">
       <span>
         <div className="w-full absolute inset-0 h-screen">
           <SparklesCore
