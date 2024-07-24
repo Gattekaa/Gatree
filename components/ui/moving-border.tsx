@@ -10,6 +10,17 @@ import {
 } from "framer-motion";
 import { useRef } from "react";
 
+export interface MovingBorderProps {
+  borderRadius?: string;
+  children: React.ReactNode;
+  as?: any;
+  containerClassName?: string;
+  borderClassName?: string;
+  duration?: number;
+  className?: string;
+  [key: string]: any;
+}
+
 export function MovingBorderContainer({
   borderRadius = "1.75rem",
   children,
@@ -19,18 +30,7 @@ export function MovingBorderContainer({
   duration,
   className,
   ...otherProps
-}: {
-  borderRadius?: string;
-  children: React.ReactNode;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  as?: any;
-  containerClassName?: string;
-  borderClassName?: string;
-  duration?: number;
-  className?: string;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  [key: string]: any;
-}) {
+}: MovingBorderProps) {
   return (
     <Component
       className={cn(

@@ -52,7 +52,7 @@ export async function generateMetadata(
           height: 600,
           alt: tree.title,
         },
-        ...previousImages
+        ...(!tree.photo ? previousImages : []),
       ],
     },
     twitter: {

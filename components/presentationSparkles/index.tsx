@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 import { MovingBorderContainer } from "../ui/moving-border";
 import { SparklesCore } from "../animatedBackground/backgrounds/sparkles";
 import { TextGenerateEffect } from "../ui/text-generate";
+import ScrollIntoContainer from "../ScrollIntoContainer";
 
 export default function PresentationSparkles() {
   return (
@@ -28,15 +29,17 @@ export default function PresentationSparkles() {
           />
         </span>
       </span>
-      <MovingBorderContainer
-        containerClassName="h-10"
-        borderClassName="bg-[radial-gradient(var(--sky-100)_40%,transparent_60%)]"
-        borderRadius="1.75rem"
-        className="bg-transparent hover:bg-gray-800/50 duration-150 text-black font-medium dark:text-white border-neutral-200 dark:border-slate-800"
-      >
-        See more
-        <ChevronDown className="w-4 h-4 ml-2" />
-      </MovingBorderContainer>
+      <ScrollIntoContainer element="#introduction">
+        <MovingBorderContainer
+          containerClassName="h-10"
+          borderClassName="bg-[radial-gradient(var(--sky-100)_40%,transparent_60%)]"
+          borderRadius="1.75rem"
+          className="bg-transparent hover:bg-gray-800/50 duration-150 text-black font-medium dark:text-white border-neutral-200 dark:border-slate-800"
+        >
+          See more
+          <ChevronDown className="w-4 h-4 ml-2" />
+        </MovingBorderContainer>
+      </ScrollIntoContainer>
       <div
         className="absolute bottom-0 left-0 w-full h-[30vh] bg-gradient-to-t from-black to-transparent pointer-events-none"
       />

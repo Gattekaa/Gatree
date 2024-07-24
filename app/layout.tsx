@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title: "Gatree - Create and share trees of links",
   description: `Gatree is a platform to create and share trees of links.You can create a tree of links for your social media, your portfolio, your company, your project, or anything you want.And the best part is that it's free!`,
   robots: "index, follow",
-  publisher: "Gattree",
+  publisher: "Gatree",
   manifest: "/manifest.webmanifest",
   authors: [
     {
@@ -33,18 +33,6 @@ export const metadata: Metadata = {
         height: 630,
         alt: "Gatree Logo"
       },
-      {
-        url: "/logo_320px.png",
-        width: 320,
-        height: 320,
-        alt: "Gatree Logo"
-      },
-      {
-        url: "/logo_with_green_bg.png",
-        width: 80,
-        height: 80,
-        alt: "Gatree Logo"
-      },
     ],
   },
   twitter: {
@@ -53,18 +41,6 @@ export const metadata: Metadata = {
         url: "/logo_1200x630px.png",
         width: 1200,
         height: 630,
-        alt: "Gatree Logo"
-      },
-      {
-        url: "/logo_320px.png",
-        width: 320,
-        height: 320,
-        alt: "Gatree Logo"
-      },
-      {
-        url: "/logo_with_green_bg.png",
-        width: 80,
-        height: 80,
         alt: "Gatree Logo"
       },
     ]
@@ -77,7 +53,7 @@ export const metadata: Metadata = {
       sizes: "32x32",
     }
   ],
-  applicationName: "Gattree",
+  applicationName: "Gatree",
   appleWebApp: {
     statusBarStyle: "black",
     title: "Gatree - Create and share trees of links",
