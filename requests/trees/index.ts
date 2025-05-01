@@ -66,6 +66,7 @@ export async function handleNewTreeLink(
   backgroundColor: string | undefined,
   textColor: string | undefined,
   outlined: boolean,
+  type: string,
 ): Promise<Component> {
   const { data } = await connection.post("/component", {
     tree_id,
@@ -74,12 +75,23 @@ export async function handleNewTreeLink(
     backgroundColor,
     textColor,
     outlined,
+    type,
   });
   return data;
 }
 
 export async function handleDeleteTreeLink(id: string) {
   const { data } = await connection.delete(`/component/${id}`);
+  return data;
+}
+
+export async function handleToggleTreeDisableLink(
+  id: string,
+  disabled: boolean,
+): Promise<Component> {
+  const { data } = await connection.patch(`/component/${id}`, {
+    disabled,
+  });
   return data;
 }
 
@@ -90,6 +102,7 @@ export async function handleEditTreeLink(
   backgroundColor: string | undefined,
   textColor: string | undefined,
   outlined: boolean,
+  type: string,
 ) {
   const { data } = await connection.patch(`/component/${id}`, {
     label,
@@ -97,6 +110,7 @@ export async function handleEditTreeLink(
     backgroundColor,
     textColor,
     outlined,
+    type,
   });
   return data;
 }

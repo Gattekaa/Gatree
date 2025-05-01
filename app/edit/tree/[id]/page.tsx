@@ -8,7 +8,7 @@ export default async function EditTree({ params }: { params: { id: string } }) {
   const cookieStore = cookies()
   const token = cookieStore.get('token')
   
-  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${params.id}`, {
+  const tree = await fetch(`${process.env.FRONTEND_BASE_URL}/api/tree/${params.id}/edit`, {
     cache: "no-cache",
     headers: {
       ...(token && { Authorization: token.value })

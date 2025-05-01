@@ -33,7 +33,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { label, url, backgroundColor, textColor, outlined } =
+    const { label, url, backgroundColor, textColor, outlined, disabled, type } =
       await req.json();
 
     const updatedComponent = await prisma.component.update({
@@ -46,6 +46,8 @@ export async function PATCH(
         backgroundColor,
         textColor,
         outlined,
+        disabled,
+        type,
       },
     });
 

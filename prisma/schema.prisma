@@ -41,10 +41,12 @@ model Component {
   label           String
   url             String
   backgroundColor String?
+  disabled        Boolean?  @default(false)
   textColor       String?
   outlined        Boolean  @default(false)
   position        Int      @default(autoincrement())
   createdAt       DateTime @default(now())
+  type            String?   @default("component")
   updatedAt       DateTime @updatedAt
   treeId          String
   tree            Tree     @relation(fields: [treeId], references: [id], onDelete: Cascade)

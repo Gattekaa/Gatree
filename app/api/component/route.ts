@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { tree_id, label, url, backgroundColor, textColor, outlined } =
+    const { tree_id, label, url, backgroundColor, textColor, outlined, type } =
       await req.json();
 
     if (!tree_id || !label || !url) {
@@ -50,6 +50,7 @@ export async function POST(req: Request) {
         backgroundColor,
         textColor,
         outlined,
+        type,
       },
     });
 

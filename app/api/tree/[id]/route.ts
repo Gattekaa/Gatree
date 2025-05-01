@@ -1,47 +1,19 @@
 import prisma from "@/database/prisma";
-import getCurrentUser from "@/helpers/getCurrentUser";
 import { deleteFile } from "@/services/firebase";
-import type { User } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { getTree } from "../_getTree";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } },
 ) {
   try {
-    const token = request.headers.get("Authorization");
-    let user: User | null = null;
-    if (token) {
-      user = (await getCurrentUser(token)) || null;
-    }
-
-    const trees = await prisma.tree.findUniqueOrThrow({
-      where: { path: params.id },
-      include: {
-        user: { select: { username: true, avatar: true } },
-        components: {
-          orderBy: {
-            position: "asc",
-          },
-        },
-      },
+    const { getPublicTree } = getTree({
+      params,
+      request,
     });
 
-    const isOwnerVisitor = trees.userId === user?.id;
-    const isActive = trees.status === "active";
-
-    if (!isActive && !isOwnerVisitor) {
-      return NextResponse.json({ error: "Tree not found" }, { status: 404 });
-    }
-
-    if (!isOwnerVisitor) {
-      await prisma.tree.update({
-        where: { path: params.id },
-        data: { visits: { increment: 1 } },
-      });
-    }
-
-    return NextResponse.json(trees, { status: 200 });
+    return getPublicTree();
   } catch (err) {
     console.error(err);
     return NextResponse.json(
@@ -56,7 +28,8 @@ export async function PATCH(
   { params }: { params: { id: string } },
 ) {
   try {
-    const { title, status, backgroundColor, theme, path } = await request.json();
+    const { title, status, backgroundColor, theme, path } =
+      await request.json();
     const tree = await prisma.tree.update({
       where: { path: params.id },
       data: { title, status, backgroundColor, theme, path },

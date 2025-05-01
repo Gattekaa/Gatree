@@ -6,39 +6,54 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog"
-import { z } from "zod";
-import { useForm } from "react-hook-form";
+} from "@/components/ui/form";
+import { useDebounce } from "@/helpers/useDebounce";
+import { handleAvailablePath, handleNewTree } from "@/requests/trees";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
-import { Input } from "../ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { toast } from "sonner";
-import { handleAvailablePath, handleNewTree } from "@/requests/trees";
-import { useRouter } from "next/navigation";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Button } from "../ui/button";
 import { Loader2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useDebounce } from "@/helpers/useDebounce";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { Button } from "../ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 export default function AddNewTree() {
-  const { push } = useRouter()
-  const formSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    path: z.string().min(1, "Path is required"),
-    status: z.string().min(1, "Status is required"),
-    path_available: z.boolean()
-  }).superRefine((data, ctx) => {
-    if (!data.path_available) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Path is not available",
-      });
-    }
-  });
+  const { push } = useRouter();
+  const formSchema = z
+    .object({
+      name: z.string().min(1, "Name is required"),
+      path: z.string().min(1, "Path is required"),
+      status: z.string().min(1, "Status is required"),
+      path_available: z.boolean(),
+    })
+    .superRefine((data, ctx) => {
+      if (!data.path_available) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Path is not available",
+        });
+      }
+    });
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -46,55 +61,63 @@ export default function AddNewTree() {
       name: "My awesome tree",
       path: "",
       status: "active",
-      path_available: false
-    }
-  })
-  const hasTreePathChanged = useDebounce(form.watch().path, 500)
+      path_available: false,
+    },
+  });
+  const hasTreePathChanged = useDebounce(form.watch().path, 500);
 
   const newTreeMutation = useMutation({
-    mutationFn: async ({ name, path, status }: { name: string, path: string, status: string }) => await handleNewTree(name, path, status),
+    mutationFn: async ({
+      name,
+      path,
+      status,
+    }: {
+      name: string;
+      path: string;
+      status: string;
+    }) => await handleNewTree(name, path, status),
     onSuccess: (data) => {
-      push(`/edit/tree/${data.path}`)
+      push(`/edit/tree/${data.path}`);
     },
     onError: (error) => {
       if (isAxiosError(error)) {
-        toast.error(error.response?.data.error)
+        toast.error(error.response?.data.error);
       }
-    }
-  })
+    },
+  });
 
   const availablePathMutation = useMutation({
     mutationFn: async () => handleAvailablePath(form.getValues().path),
     onSuccess: (data) => {
-      form.clearErrors("path")
+      form.clearErrors("path");
 
       if (!data.available) {
-        form.setValue("path_available", data.available)
+        form.setValue("path_available", data.available);
         return form.setError("path", {
           type: "manual",
-          message: "Path is not available"
-        })
+          message: "Path is not available",
+        });
       }
 
-      form.setValue("path_available", data.available)
-    }
-  })
+      form.setValue("path_available", data.available);
+    },
+  });
 
-  function onSubmit(values: { name: string, path: string, status: string }) {
+  function onSubmit(values: { name: string; path: string; status: string }) {
     if (form.formState.errors.path_available) {
       return form.setError("path", {
         type: "manual",
-        message: "Path is not available"
-      })
+        message: "Path is not available",
+      });
     }
-    newTreeMutation.mutate(values)
+    newTreeMutation.mutate(values);
   }
 
   useEffect(() => {
     if (hasTreePathChanged) {
-      availablePathMutation.mutate()
+      availablePathMutation.mutate();
     }
-  }, [hasTreePathChanged])
+  }, [hasTreePathChanged]);
 
   return (
     <Dialog>
@@ -125,11 +148,7 @@ export default function AddNewTree() {
                         <FormItem>
                           <FormLabel>Tree Name</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder=""
-                              {...field}
-
-                            />
+                            <Input placeholder="" {...field} />
                           </FormControl>
                           <FormDescription>
                             Let's start with the name of your tree
@@ -150,16 +169,28 @@ export default function AddNewTree() {
                           <FormControl>
                             <Input
                               style={{
-                                ...(form.formState.errors.path && form.watch().path && { borderColor: "red" }),
-                                ...(form.watch().path_available && form.watch().path && { borderColor: "green" })
+                                ...(form.formState.errors.path &&
+                                  form.watch().path && { borderColor: "red" }),
+                                ...(form.watch().path_available &&
+                                  form.watch().path && {
+                                    borderColor: "green",
+                                  }),
                               }}
                               placeholder=""
                               {...field}
-                              onChange={e => field.onChange(e.target.value?.replace(" ", "-")?.toLowerCase())}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ?.replace(" ", "-")
+                                    ?.toLowerCase(),
+                                )
+                              }
                             />
                           </FormControl>
                           <FormDescription>
-                            This will be the path of your tree ex: {process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/tree/{form.watch().path}
+                            This will be the path of your tree ex:{" "}
+                            {process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/tree/
+                            {form.watch().path}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -174,13 +205,18 @@ export default function AddNewTree() {
                         <FormItem>
                           <FormLabel>Status</FormLabel>
                           <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
                               <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="inactive">Inactive</SelectItem>
+                                <SelectItem value="inactive">
+                                  Inactive
+                                </SelectItem>
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -197,14 +233,20 @@ export default function AddNewTree() {
             </Form>
           </CardContent>
           <CardFooter className="flex justify-end">
-            <Button disabled={newTreeMutation.isPending} type="submit" form="new_tree_form">
-              {
-                newTreeMutation.isPending ? <Loader2Icon size={20} className="animate-spin" /> : "Next"
-              }
+            <Button
+              disabled={newTreeMutation.isPending}
+              type="submit"
+              form="new_tree_form"
+            >
+              {newTreeMutation.isPending ? (
+                <Loader2Icon size={20} className="animate-spin" />
+              ) : (
+                "Next"
+              )}
             </Button>
           </CardFooter>
         </Card>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
