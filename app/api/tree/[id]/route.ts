@@ -1,5 +1,4 @@
 import prisma from "@/database/prisma";
-import { deleteFile } from "@/services/firebase";
 import { NextResponse } from "next/server";
 import { getTree } from "../_getTree";
 
@@ -55,7 +54,7 @@ export async function DELETE(
     });
 
     if (data.photo) {
-      deleteFile("trees_photos", data.id);
+      deleteImage();
     }
 
     return NextResponse.json(

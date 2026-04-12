@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
 import prisma from "@/database/prisma";
-import sharp from "sharp";
+import { uploadImage } from "@/services/imgur";
 import { File } from "buffer";
-import { uploadFile } from "@/services/firebase";
+import { NextResponse } from "next/server";
+import sharp from "sharp";
 
 export async function POST(
   request: Request,
@@ -33,10 +33,10 @@ export async function POST(
 
     const treatedImage = await sharp(await blob.arrayBuffer())
       .resize(256, 256)
-      .webp()
+      .png()
       .toBuffer();
 
-    const imagePath = await uploadFile(treatedImage, "trees_photos", tree.id);
+    const imagePath = await uploadImage(treatedImage);
     const updatedTree = await prisma.tree.update({
       where: { path: params.id },
       data: { photo: imagePath },
