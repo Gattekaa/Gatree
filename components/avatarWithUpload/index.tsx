@@ -1,10 +1,21 @@
-import { Loader2Icon, Save, UploadCloud } from "lucide-react";
-import Tooltip from "../tooltip";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { toast } from "sonner";
+import { handleTreeDeletePhoto, handleTreeUploadPhoto } from "@/requests/trees";
 import { useMutation } from "@tanstack/react-query";
-import { handleTreeUploadPhoto } from "@/requests/trees";
+import { Loader2Icon, Save, Trash2, UploadCloud } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import Tooltip from "../tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 
 interface AvatarWithUploadProps {
@@ -29,6 +40,18 @@ export default function AvatarWithUpload({
     onError: (error) => {
       toast.error("An error occurred while uploading the photo, please try again later.")
       setFile(null)
+      console.error(error)
+    }
+  })
+
+  const deleteImageMutation = useMutation({
+    mutationFn: async () => await handleTreeDeletePhoto(treeId),
+    onSuccess: () => {
+      toast.success("Photo removed successfully")
+      setPhoto("")
+    },
+    onError: (error) => {
+      toast.error("An error occurred while removing the photo, please try again later.")
       console.error(error)
     }
   })
@@ -95,6 +118,47 @@ export default function AvatarWithUpload({
               }
             </Button>
           </Tooltip>
+        )
+      }
+      {
+        photo && !file && (
+          <AlertDialog>
+            <Tooltip text="Remove photo">
+              <AlertDialogTrigger asChild>
+                <Button
+                  disabled={deleteImageMutation.isPending}
+                  size="icon"
+                  variant="destructive"
+                  className="absolute -right-20 rounded-full"
+                >
+                  {
+                    deleteImageMutation.isPending ? (
+                      <Loader2Icon size={24} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={20} />
+                    )
+                  }
+                </Button>
+              </AlertDialogTrigger>
+            </Tooltip>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Remove photo?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. The photo will be permanently removed from your tree.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => deleteImageMutation.mutate()}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Remove
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )
       }
     </div>

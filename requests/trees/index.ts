@@ -137,6 +137,11 @@ export async function handleTreeUploadPhoto(
   return data;
 }
 
+export async function handleTreeDeletePhoto(id: string): Promise<Tree> {
+  const { data } = await connection.delete(`/tree/${id}/photo`);
+  return data;
+}
+
 export async function batchUpdateTreeLinks(
   tree_id: string,
   links: Component[],

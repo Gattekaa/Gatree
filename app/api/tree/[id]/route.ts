@@ -53,10 +53,6 @@ export async function DELETE(
       where: { path: params.id },
     });
 
-    if (data.photo) {
-      deleteImage();
-    }
-
     return NextResponse.json(
       { status: "success", id: data.id },
       { status: 200 },

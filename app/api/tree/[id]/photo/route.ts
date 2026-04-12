@@ -53,3 +53,39 @@ export async function POST(
     );
   }
 }
+
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const tree = await prisma.tree.findUnique({
+      where: { path: params.id },
+    });
+
+    if (!tree) {
+      return NextResponse.json({ error: "Tree not found" }, { status: 404 });
+    }
+
+    if (!tree.photo) {
+      return NextResponse.json({ error: "Tree has no photo" }, { status: 400 });
+    }
+
+    const updatedTree = await prisma.tree.update({
+      where: { path: params.id },
+      data: { photo: null },
+    });
+
+    return NextResponse.json(
+      { message: "Photo removed successfully", tree: updatedTree },
+      { status: 200 },
+    );
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
