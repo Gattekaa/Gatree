@@ -1,5 +1,6 @@
 "use client";
 
+import { getLinkButtonStyle } from "@/lib/link-style";
 import { getIconComponent } from "@/lib/icons";
 import type { LinkStyleConfig } from "@/types";
 import type { Link } from "@prisma/client";
@@ -92,28 +93,10 @@ function StandardLink({
   defaultStyle: LinkStyleConfig;
   radius: string;
 }) {
-  const bgColor = link.bgColor || defaultStyle.bgColor;
-  const textColor = link.textColor || defaultStyle.textColor;
-  const variant = defaultStyle.variant;
-  const shadowColor = defaultStyle.shadowColor || "#000000";
   const iconComponent = getIconComponent(link.icon);
   const hasThumbnail = !!link.thumbnail;
 
-  const linkStyle: React.CSSProperties = (() => {
-    if (variant === "brutal") {
-      return {
-        borderRadius: radius,
-        border: `2px solid ${textColor === "#ffffff" || textColor === "#f7f8f8" ? "rgba(255,255,255,0.6)" : "#000000"}`,
-        backgroundColor: bgColor,
-        color: textColor,
-        boxShadow: `4px 4px 0px ${shadowColor}`,
-      };
-    }
-    if (variant === "outlined") {
-      return { borderRadius: radius, border: `2px solid ${bgColor}`, backgroundColor: "transparent", color: textColor };
-    }
-    return { borderRadius: radius, backgroundColor: bgColor, color: textColor };
-  })();
+  const linkStyle = getLinkButtonStyle(link, defaultStyle, radius);
 
   return (
     <a
@@ -141,28 +124,10 @@ function ContactLink({
   defaultStyle: LinkStyleConfig;
   radius: string;
 }) {
-  const bgColor = link.bgColor || defaultStyle.bgColor;
-  const textColor = link.textColor || defaultStyle.textColor;
-  const variant = defaultStyle.variant;
-  const shadowColor = defaultStyle.shadowColor || "#000000";
   const iconComponent = getIconComponent(link.icon);
   const hasThumbnail = !!link.thumbnail;
 
-  const linkStyle: React.CSSProperties = (() => {
-    if (variant === "brutal") {
-      return {
-        borderRadius: radius,
-        border: `2px solid ${textColor === "#ffffff" || textColor === "#f7f8f8" ? "rgba(255,255,255,0.6)" : "#000000"}`,
-        backgroundColor: bgColor,
-        color: textColor,
-        boxShadow: `4px 4px 0px ${shadowColor}`,
-      };
-    }
-    if (variant === "outlined") {
-      return { borderRadius: radius, border: `2px solid ${bgColor}`, backgroundColor: "transparent", color: textColor };
-    }
-    return { borderRadius: radius, backgroundColor: bgColor, color: textColor };
-  })();
+  const linkStyle = getLinkButtonStyle(link, defaultStyle, radius);
 
   return (
     <a

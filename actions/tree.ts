@@ -1,5 +1,6 @@
 "use server";
 
+import { normalizeSocialUrl } from "@/lib/social-platforms";
 import { isAuthError, requireUser } from "@/lib/auth-utils";
 import { db } from "@/lib/db";
 import type { BackgroundConfig, LinkStyleConfig } from "@/types";
@@ -87,17 +88,9 @@ export async function updateTreeAppearance(
 
   const socialIconSchema = z.object({
     platform: z.string().max(50),
-    url: z.string().max(500).refine((u) => {
-      
-      if (!u) return true;
-      try {
-        const parsed = new URL(u);
-        return ["http:", "https:", "mailto:", "tel:"].includes(parsed.protocol);
-      } catch {
-        return false;
-      }
-    }, "URL inválida"),
-  });
+    url: z.string().max(500),
+  }).refine((icon) => normalizeSocialUrl(icon.platform, icon.url) !== null, "URL inválida")
+    .transform((icon) => ({ ...icon, url: normalizeSocialUrl(icon.platform, icon.url)! }));
 
   const appearanceSchema = z.object({
     avatar: z.string().url().nullable().optional(),
@@ -123,7 +116,7 @@ export async function updateTreeAppearance(
   if (data.fontFamily !== undefined) updateData.fontFamily = data.fontFamily;
   if (data.seoTitle !== undefined) updateData.seoTitle = data.seoTitle;
   if (data.seoDescription !== undefined) updateData.seoDescription = data.seoDescription;
-  if (data.socialIcons !== undefined) updateData.socialIcons = data.socialIcons ?? undefined;
+  if (data.socialIcons !== undefined) updateData.socialIcons = parsed.data.socialIcons ?? undefined;
 
   const updated = await db.tree.update({
     where: { id: treeId },

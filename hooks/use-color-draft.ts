@@ -43,6 +43,11 @@ export function useColorDraft(
 
   function scheduleChange(nextValue: string) {
     if (timerRef.current) clearTimeout(timerRef.current);
+    if (delay === 0) {
+      timerRef.current = null;
+      callbackRef.current(nextValue);
+      return;
+    }
     timerRef.current = setTimeout(() => {
       timerRef.current = null;
       callbackRef.current(nextValue);

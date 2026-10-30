@@ -21,7 +21,7 @@ import {
   THEME_PRESETS,
 } from "@/lib/constants";
 import type { BackgroundConfig, LinkStyleConfig } from "@/types";
-import type { Tree } from "@prisma/client";
+import type { Link, Tree } from "@prisma/client";
 import {
   Globe,
   Image,
@@ -37,7 +37,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AvatarUpload } from "./avatar-upload";
 import { BackgroundPicker } from "./background-picker";
-import { LinkStylePicker } from "./link-style-picker";
+import { LinkAppearanceEditor } from "./link-appearance-editor";
 import { SeoFields } from "./seo-fields";
 import { SlugEditor } from "./slug-editor";
 import { SocialIconsEditor } from "./social-icons-editor";
@@ -49,6 +49,8 @@ import {
 } from "./appearance-save-events";
 
 interface AppearancePanelProps {
+  links: Link[];
+  onLinkChange: (link: Link) => void;
   tree: Tree;
   slug: string;
   onTreeChange: (tree: Tree) => void;
@@ -122,6 +124,8 @@ function enqueueAppearanceSave(treeId: string, selection: AppearanceSave) {
 }
 
 export function AppearancePanel({
+  links,
+  onLinkChange,
   tree,
   slug,
   onTreeChange,
@@ -438,6 +442,8 @@ export function AppearancePanel({
                   ) : (
                     <div className="p-5">
                       <SectionContent
+                        links={links}
+                        onLinkChange={onLinkChange}
                         section={effectiveSection as Section}
                         tree={tree}
                         slug={slug}
@@ -506,6 +512,8 @@ export function AppearancePanel({
                     />
                   ) : (
                     <SectionContent
+                        links={links}
+                        onLinkChange={onLinkChange}
                       section={effectiveSection as Section}
                       tree={tree}
                       slug={slug}
@@ -545,6 +553,8 @@ export function AppearancePanel({
 }
 
 function SectionContent({
+  links,
+  onLinkChange,
   section,
   tree,
   slug,
@@ -564,6 +574,8 @@ function SectionContent({
   translations,
 }: {
   section: Section;
+  links: Link[];
+  onLinkChange: (link: Link) => void;
   tree: Tree;
   slug: string;
   description: string;
@@ -697,11 +709,7 @@ function SectionContent({
               {ap.linkStyle.subtitle}
             </p>
           </div>
-          <LinkStylePicker
-            value={linkStyle}
-            onChange={onLinkStyleChange}
-            translations={ap.linkStyle}
-          />
+          <LinkAppearanceEditor treeId={tree.id} slug={slug} links={links} onLinkChange={onLinkChange} defaults={linkStyle} onDefaultChange={onLinkStyleChange} translations={translations} />
         </div>
       );
 
@@ -717,6 +725,7 @@ function SectionContent({
     case "social":
       return (
         <SocialIconsEditor
+          translations={translations.appearance.socialProfiles}
           socialIcons={
             (tree.socialIcons as Array<{ platform: string; url: string }>) || []
           }

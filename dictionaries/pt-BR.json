@@ -112,6 +112,25 @@
       "numberField": "Número",
       "imageField": "Imagem",
       "iconField": "Ícone",
+      "iconPicker": {
+        "choose": "Escolher ícone",
+        "search": "Buscar ícone...",
+        "remove": "Remover ícone",
+        "social": "Redes sociais",
+        "generic": "Genéricos",
+        "empty": "Nenhum ícone encontrado",
+        "labels": {
+          "globe": "Website",
+          "mail": "Email",
+          "shopping-bag": "Loja",
+          "music": "Música",
+          "video": "Vídeo",
+          "file-text": "Documento",
+          "calendar": "Agenda",
+          "map-pin": "Localização",
+          "link": "Link genérico"
+        }
+      },
       "thumbnailField": "Thumbnail",
       "schedule": "Agendamento",
       "scheduleStart": "Início",
@@ -735,6 +754,31 @@
     "notFound": "Não encontrado"
   },
   "appearance": {
+    "linkCustomization": {
+      "title": "Aparência deste link",
+      "description": "Personalize as cores só deste botão. Os outros links continuam como estão.",
+      "inherit": "Padrão da página",
+      "custom": "Cores próprias",
+      "background": "Fundo do botão",
+      "border": "Borda do botão",
+      "text": "Texto e ícone",
+      "preview": "Prévia deste link",
+      "previewLabel": "Seu link",
+      "target": "Aplicar estilo em",
+      "pageDefaults": "Padrão da página",
+      "scopeDescription": "Escolha um link para usar cores próprias ou ajuste o padrão herdado pelos demais.",
+      "saving": "Salvando cores...",
+      "saved": "Cores salvas",
+      "error": "Não foi possível salvar. Tente novamente."
+    },
+    "socialProfiles": {
+      "title": "Redes sociais",
+      "description": "Cole o endereço completo do seu perfil ou convite. Só as redes preenchidas aparecem na página.",
+      "active": "ativas",
+      "activeSingular": "ativa",
+      "invalid": "Use um endereço válido desta rede social.",
+      "profileUrl": "URL do perfil"
+    },
     "sections": {
       "profile": "Perfil",
       "profileDesc": "Avatar, título e descrição",

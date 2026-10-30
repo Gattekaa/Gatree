@@ -65,11 +65,11 @@ interface LinkFormProps {
   onSubmit: (data: {
     label: string;
     url: string;
-    icon?: string;
+    icon?: string | null;
     type?: LinkType;
-    thumbnail?: string;
-    scheduledStart?: string;
-    scheduledEnd?: string;
+    thumbnail?: string | null;
+    scheduledStart?: string | null;
+    scheduledEnd?: string | null;
   }) => Promise<void>;
   onClose: () => void;
   translations: EditorTranslations;
@@ -216,16 +216,18 @@ export function LinkForm({
       await onSubmit({
         label: data.label,
         url: data.type === "HEADER" ? "#" : data.url,
-        icon: data.icon || undefined,
+        icon: data.icon || null,
         type: data.type,
-        thumbnail: data.thumbnail || undefined,
+        thumbnail: data.thumbnail || null,
         scheduledStart: data.scheduledStart
           ? new Date(data.scheduledStart).toISOString()
-          : undefined,
+          : null,
         scheduledEnd: data.scheduledEnd
           ? new Date(data.scheduledEnd).toISOString()
-          : undefined,
+          : null,
       });
+    } catch {
+      // The parent displays the mutation error; keep the form open for retry.
     } finally {
       setIsSubmitting(false);
     }
@@ -532,6 +534,7 @@ export function LinkForm({
                         <FormControl>
                           <IconPicker
                             value={field.value || null}
+                            translations={t.iconPicker}
                             onChange={(icon) => field.onChange(icon)}
                           />
                         </FormControl>

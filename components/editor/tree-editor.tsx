@@ -1,5 +1,6 @@
 "use client";
 
+import type { createLink, updateLink } from "@/actions/link";
 import type { EditorTranslations } from "@/app/[lang]/(dashboard)/editor/[slug]/client";
 import { ShareDialog } from "@/components/shared/share-dialog";
 import {
@@ -27,7 +28,7 @@ import {
   useUpdateLink,
   useUpdateTree,
 } from "@/hooks/use-tree-detail";
-import type { Link, LinkType, Tree } from "@prisma/client";
+import type { Link, Tree } from "@prisma/client";
 import {
   BarChart3,
   Check,
@@ -109,17 +110,13 @@ export function TreeEditorView({
     [tree.id, reorderLinksMutation, translations],
   );
 
+  const handleLinkAppearanceChange = useCallback((updated: Link) => {
+    setLinks((current) => current.map((link) => link.id === updated.id ? updated : link));
+  }, []);
+
   const handleCreateLink = useCallback(
-    async (data: {
-      label: string;
-      url: string;
-      icon?: string;
-      type?: LinkType;
-      thumbnail?: string;
-      scheduledStart?: string;
-      scheduledEnd?: string;
-    }) => {
-      createLinkMutation.mutate(
+    async (data: Parameters<typeof createLink>[1]) => {
+      await createLinkMutation.mutateAsync(
         { treeId: tree.id, data },
         {
           onSuccess: (newLink) => {
@@ -137,17 +134,9 @@ export function TreeEditorView({
   const handleUpdateLink = useCallback(
     async (
       linkId: string,
-      data: {
-        label?: string;
-        url?: string;
-        icon?: string | null;
-        type?: LinkType;
-        thumbnail?: string | null;
-        scheduledStart?: string | null;
-        scheduledEnd?: string | null;
-      },
+      data: Parameters<typeof updateLink>[1],
     ) => {
-      updateLinkMutation.mutate(
+      await updateLinkMutation.mutateAsync(
         { linkId, data },
         {
           onSuccess: (updated) => {
@@ -265,6 +254,8 @@ export function TreeEditorView({
 
           <div className="mb-2 grid grid-cols-3 gap-2">
             <AppearancePanel
+              links={links}
+              onLinkChange={handleLinkAppearanceChange}
               tree={tree}
               slug={slug}
               onTreeChange={(updated) =>
@@ -425,6 +416,8 @@ export function TreeEditorView({
 
             <div className="hidden items-center gap-2 sm:flex">
               <AppearancePanel
+                links={links}
+                onLinkChange={handleLinkAppearanceChange}
                 tree={tree}
                 slug={slug}
                 onTreeChange={(updated) =>

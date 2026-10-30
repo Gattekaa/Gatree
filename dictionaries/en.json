@@ -112,6 +112,25 @@
       "numberField": "Number",
       "imageField": "Image",
       "iconField": "Icon",
+      "iconPicker": {
+        "choose": "Choose an icon",
+        "search": "Search icons...",
+        "remove": "Remove icon",
+        "social": "Social networks",
+        "generic": "General",
+        "empty": "No icons found",
+        "labels": {
+          "globe": "Website",
+          "mail": "Email",
+          "shopping-bag": "Shop",
+          "music": "Music",
+          "video": "Video",
+          "file-text": "Document",
+          "calendar": "Calendar",
+          "map-pin": "Location",
+          "link": "General link"
+        }
+      },
       "thumbnailField": "Thumbnail",
       "schedule": "Schedule",
       "scheduleStart": "Start",
@@ -726,6 +745,31 @@
     "notFound": "Not found"
   },
   "appearance": {
+    "linkCustomization": {
+      "title": "This link’s appearance",
+      "description": "Customize only this button’s colors. Other links keep their current appearance.",
+      "inherit": "Page defaults",
+      "custom": "Custom colors",
+      "background": "Button background",
+      "border": "Button border",
+      "text": "Text and icon",
+      "preview": "Link preview",
+      "previewLabel": "Your link",
+      "target": "Apply style to",
+      "pageDefaults": "Page defaults",
+      "scopeDescription": "Choose a link to give it its own colors, or edit the defaults inherited by other links.",
+      "saving": "Saving colors...",
+      "saved": "Colors saved",
+      "error": "Could not save. Please try again."
+    },
+    "socialProfiles": {
+      "title": "Social networks",
+      "description": "Paste the full URL of your profile or invitation. Only networks you fill in appear on your page.",
+      "active": "active",
+      "activeSingular": "active",
+      "invalid": "Enter a valid URL for this social network.",
+      "profileUrl": "Profile URL"
+    },
     "sections": {
       "profile": "Profile",
       "profileDesc": "Avatar, title, and description",

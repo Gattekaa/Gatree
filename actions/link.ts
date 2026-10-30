@@ -1,5 +1,6 @@
 "use server";
 
+import { linkAppearanceSchema } from "@/lib/link-appearance";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { serverLinkSchema } from "@/lib/validations";
@@ -11,13 +12,13 @@ export async function createLink(
   data: {
     label: string;
     url: string;
-    icon?: string;
+    icon?: string | null;
     type?: LinkType;
-    bgColor?: string;
-    textColor?: string;
-    thumbnail?: string;
-    scheduledStart?: string;
-    scheduledEnd?: string;
+    bgColor?: string | null;
+    textColor?: string | null;
+    thumbnail?: string | null;
+    scheduledStart?: string | null;
+    scheduledEnd?: string | null;
   }
 ) {
   const session = await auth();
@@ -44,6 +45,9 @@ export async function createLink(
     }
   }
 
+  const appearance = linkAppearanceSchema.safeParse({ bgColor: data.bgColor, textColor: data.textColor });
+  if (!appearance.success) return { error: "errors.invalidData" };
+
   const maxPosition = await db.link.aggregate({
     where: { treeId },
     _max: { position: true },
@@ -58,8 +62,8 @@ export async function createLink(
       icon: parsed.data.icon || null,
       type: parsed.data.type,
       position: nextPosition,
-      bgColor: data.bgColor || null,
-      textColor: data.textColor || null,
+      bgColor: appearance.data.bgColor ?? null,
+      textColor: appearance.data.textColor ?? null,
       thumbnail: data.thumbnail || null,
       scheduledStart: data.scheduledStart ? new Date(data.scheduledStart) : null,
       scheduledEnd: data.scheduledEnd ? new Date(data.scheduledEnd) : null,
@@ -95,7 +99,7 @@ export async function updateLink(
   });
   if (!link || link.tree.userId !== session.user.id) return { error: "errors.notAuthorized" };
 
-  if (data.url !== undefined || data.type !== undefined) {
+  {
     const parsed = serverLinkSchema.safeParse({
       label: data.label ?? link.label,
       url: data.url ?? link.url,
@@ -119,7 +123,14 @@ export async function updateLink(
     }
   }
 
-  const prismaData: Record<string, unknown> = { ...data };
+  const appearance = linkAppearanceSchema.safeParse({ bgColor: data.bgColor, textColor: data.textColor });
+  if (!appearance.success) return { error: "errors.invalidData" };
+
+  const prismaData: Record<string, unknown> = {
+    label: data.label, url: data.url, icon: data.icon, type: data.type,
+    enabled: data.enabled, thumbnail: data.thumbnail,
+    bgColor: appearance.data.bgColor, textColor: appearance.data.textColor,
+  };
   if (data.scheduledStart !== undefined) {
     prismaData.scheduledStart = data.scheduledStart ? new Date(data.scheduledStart) : null;
   }

@@ -13,16 +13,19 @@ interface ColorSwatchInputProps {
   value: string;
   onChange: (value: string) => void;
   label?: string;
+  debounceMs?: number;
 }
 
 export function ColorSwatchInput({
   value,
   onChange,
   label,
+  debounceMs = 300,
 }: ColorSwatchInputProps) {
   const { color, input, changeColor, changeInput } = useColorDraft(
     value,
     onChange,
+    debounceMs,
   );
 
   return (
@@ -30,6 +33,7 @@ export function ColorSwatchInput({
       <Popover>
         <PopoverTrigger asChild>
           <button
+            type="button"
             className="rounded-xl h-9 w-9 shrink-0 border border-hairline-strong transition-colors hover:border-ink-subtle"
             style={{ backgroundColor: color.format("rgba") }}
             aria-label={label || "Escolher cor"}
@@ -51,6 +55,7 @@ export function ColorSwatchInput({
         </PopoverContent>
       </Popover>
       <Input
+        wrapperClassName="h-9 min-w-0 flex-1"
         aria-label={label || "Código da cor"}
         value={input}
         onChange={(e) => changeInput(e.target.value)}

@@ -1,143 +1,131 @@
 "use client";
 
 import { useAutoSave } from "@/hooks/use-auto-save";
-import {
-  AtSign,
-  Briefcase,
-  Camera,
-  Gamepad2,
-  Globe,
-  MessageCircle,
-  Music,
-  Pin,
-  Play,
-  Send,
-  Terminal,
-  Tv,
-} from "lucide-react";
-import { useCallback, useState } from "react";
+import { getIconComponent } from "@/lib/icons";
+import { normalizeSocialUrl, SOCIAL_PLATFORMS } from "@/lib/social-platforms";
+import { useCallback, useId, useState } from "react";
 
 interface SocialIcon {
   platform: string;
   url: string;
 }
-
-interface SocialIconsEditorProps {
-  socialIcons: SocialIcon[];
-  onSave: (icons: SocialIcon[]) => void;
+interface SocialProfilesTranslations {
+  title: string;
+  description: string;
+  active: string;
+  activeSingular: string;
+  invalid: string;
+  profileUrl: string;
 }
-
-const SOCIAL_PLATFORMS = [
-  { id: "instagram", label: "Instagram", icon: AtSign },
-  { id: "twitter", label: "Twitter / X", icon: Send },
-  { id: "tiktok", label: "TikTok", icon: Music },
-  { id: "github", label: "GitHub", icon: Terminal },
-  { id: "linkedin", label: "LinkedIn", icon: Briefcase },
-  { id: "youtube", label: "YouTube", icon: Play },
-  { id: "facebook", label: "Facebook", icon: Globe },
-  { id: "twitch", label: "Twitch", icon: Tv },
-  { id: "discord", label: "Discord", icon: Gamepad2 },
-  { id: "threads", label: "Threads", icon: MessageCircle },
-  { id: "pinterest", label: "Pinterest", icon: Pin },
-  { id: "snapchat", label: "Snapchat", icon: Camera },
-] as const;
 
 export function SocialIconsEditor({
   socialIcons,
   onSave,
-}: SocialIconsEditorProps) {
-  const [urls, setUrls] = useState<Record<string, string>>(() => {
-    const map: Record<string, string> = {};
-    for (const icon of socialIcons) {
-      map[icon.platform] = icon.url;
-    }
-    return map;
-  });
-
-  const derivedIcons = SOCIAL_PLATFORMS.filter((p) => urls[p.id]?.trim()).map(
-    (p) => ({ platform: p.id, url: urls[p.id].trim() }),
+  translations: t,
+}: {
+  socialIcons: SocialIcon[];
+  onSave: (icons: SocialIcon[]) => void | Promise<void>;
+  translations: SocialProfilesTranslations;
+}) {
+  const id = useId();
+  const [urls, setUrls] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      socialIcons.map((icon) => [
+        icon.platform === "x" ? "twitter" : icon.platform,
+        icon.url,
+      ]),
+    ),
   );
-
-  const saveFn = useCallback(
-    async (icons: SocialIcon[]) => {
-      onSave(icons);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const save = useCallback(
+    async (serialized: string) => {
+      const drafts = JSON.parse(serialized) as Record<string, string>;
+      const icons: SocialIcon[] = [];
+      for (const platform of SOCIAL_PLATFORMS) {
+        if (!drafts[platform.id]?.trim()) continue;
+        const url = normalizeSocialUrl(platform.id, drafts[platform.id]);
+        // Keep the last saved profiles while the user is editing an invalid URL.
+        if (!url) return;
+        icons.push({ platform: platform.id, url });
+      }
+      await onSave(icons);
     },
     [onSave],
   );
-
-  useAutoSave(JSON.stringify(derivedIcons), async (serialized) => {
-    const parsed = JSON.parse(serialized) as SocialIcon[];
-    await saveFn(parsed);
-  });
-
-  function handleUrlChange(platformId: string, value: string) {
-    setUrls((prev) => ({ ...prev, [platformId]: value }));
-  }
-
-  const filledCount = derivedIcons.length;
+  useAutoSave(JSON.stringify(urls), save);
+  const filledCount = SOCIAL_PLATFORMS.filter((p) =>
+    normalizeSocialUrl(p.id, urls[p.id] || ""),
+  ).length;
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-balance break-words font-semibold text-ink flex items-center gap-2">
-            <span className="inline-block h-2.5 w-2.5 bg-brutal-pink" />
-            Redes Sociais
-          </h3>
-          <p className="break-words mt-1 text-ink-subtle text-sm leading-[1.5]">
-            Adicione URLs das suas redes. Apenas as preenchidas aparecerão na
-            página.
+          <h3 className="text-sm font-semibold text-ink">{t.title}</h3>
+          <p className="mt-1 text-sm leading-relaxed text-ink-subtle">
+            {t.description}
           </p>
         </div>
         {filledCount > 0 && (
-          <span className="border border-brutal-pink px-2 py-0.5 text-xs font-medium text-brutal-pink">
-            {filledCount} ativa{filledCount !== 1 ? "s" : ""}
+          <span className="shrink-0 rounded-full bg-product-accent/10 px-2.5 py-1 text-xs font-medium text-primary">
+            {filledCount} {filledCount === 1 ? t.activeSingular : t.active}
           </span>
         )}
       </div>
-
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {SOCIAL_PLATFORMS.map((platform) => {
-          const Icon = platform.icon;
-          const hasValue = !!urls[platform.id]?.trim();
-
+          const Icon = getIconComponent(platform.id);
+          const value = urls[platform.id] || "";
+          const valid = !!normalizeSocialUrl(platform.id, value);
+          const invalid = !!touched[platform.id] && !!value.trim() && !valid;
+          const inputId = `${id}-${platform.id}`;
           return (
             <div
               key={platform.id}
-              className={`border p-3 transition-colors ${
-                hasValue
-                  ? "border-brutal-pink bg-surface-2"
-                  : "border-hairline-strong bg-surface-2"
-              }`}
+              className={`min-w-0 rounded-2xl border bg-surface-2 p-3 transition-colors ${valid ? "border-primary/35" : "border-hairline"}`}
             >
-              <div className="mb-2 flex items-center gap-2">
-                <div
-                  className={`flex h-7 w-7 rounded-lg items-center justify-center ${
-                    hasValue ? "bg-brutal-pink/10" : "bg-surface-3"
-                  }`}
-                >
-                  <Icon
-                    className={`h-3.5 w-3.5 ${
-                      hasValue ? "text-brutal-pink" : "text-ink-tertiary"
-                    }`}
-                  />
-                </div>
+              <label
+                htmlFor={inputId}
+                className="mb-3 flex items-center gap-2 text-[13px] font-medium text-ink"
+              >
                 <span
-                  className={`text-[13px] font-medium ${
-                    hasValue ? "text-ink" : "text-ink-subtle"
-                  }`}
+                  className={`flex size-8 items-center justify-center rounded-xl ${valid ? "bg-product-accent/10 text-primary" : "bg-surface-3 text-ink-subtle"}`}
                 >
-                  {platform.label}
+                  {Icon && <Icon className="size-4" />}
                 </span>
-              </div>
+                {platform.label}
+              </label>
               <input
-                data-slot="input"
+                id={inputId}
                 type="url"
-                value={urls[platform.id] || ""}
-                onChange={(e) => handleUrlChange(platform.id, e.target.value)}
-                placeholder={`https://${platform.id}.com/seu-perfil`}
-                className="h-12 w-full rounded-xl border border-hairline-strong bg-canvas px-3 py-2 text-[16px] text-ink placeholder:text-ink-tertiary outline-none transition-colors focus:border-primary sm:text-[14px]"
+                inputMode="url"
+                autoComplete="off"
+                spellCheck={false}
+                value={value}
+                aria-label={`${platform.label}: ${t.profileUrl}`}
+                aria-invalid={invalid}
+                aria-describedby={invalid ? `${inputId}-error` : undefined}
+                onBlur={() =>
+                  setTouched((current) => ({ ...current, [platform.id]: true }))
+                }
+                onChange={(event) =>
+                  setUrls((current) => ({
+                    ...current,
+                    [platform.id]: event.target.value,
+                  }))
+                }
+                placeholder={platform.placeholder}
+                className={`h-12 w-full min-w-0 rounded-xl border bg-canvas px-3 py-2 text-base text-ink outline-none transition-colors placeholder:text-ink-tertiary focus:border-primary sm:text-sm ${invalid ? "border-error" : "border-hairline-strong"}`}
               />
+              {invalid && (
+                <p
+                  id={`${inputId}-error`}
+                  role="alert"
+                  className="mt-2 text-xs leading-relaxed text-error"
+                >
+                  {t.invalid}
+                </p>
+              )}
             </div>
           );
         })}

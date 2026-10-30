@@ -3,7 +3,7 @@
 import { createLink, deleteLink, reorderLinks, setPriorityLink, toggleLink, updateLink } from "@/actions/link";
 import { updateTree } from "@/actions/tree";
 import { BASE_QUERY_KEYS } from "@/lib/query-keys";
-import type { Link, LinkType, Tree } from "@prisma/client";
+import type { Link, Tree } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type TreeWithLinks = Tree & { links: Link[] };
@@ -44,7 +44,7 @@ export function useCreateLink(slug: string) {
   return useMutation({
     mutationFn: async ({ treeId, data }: {
       treeId: string;
-      data: { label: string; url: string; icon?: string; type?: LinkType; thumbnail?: string; scheduledStart?: string; scheduledEnd?: string };
+      data: Parameters<typeof createLink>[1];
     }) => {
       const result = await createLink(treeId, data);
       if (result && "error" in result) throw new Error(result.error);
@@ -62,7 +62,7 @@ export function useUpdateLink(slug: string) {
   return useMutation({
     mutationFn: async ({ linkId, data }: {
       linkId: string;
-      data: { label?: string; url?: string; icon?: string | null; type?: LinkType; enabled?: boolean; bgColor?: string | null; textColor?: string | null; thumbnail?: string | null; scheduledStart?: string | null; scheduledEnd?: string | null };
+      data: Parameters<typeof updateLink>[1];
     }) => {
       const result = await updateLink(linkId, data);
       if (result && "error" in result) throw new Error(result.error);

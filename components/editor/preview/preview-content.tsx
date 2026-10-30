@@ -1,6 +1,7 @@
 "use client";
 
 import { DEFAULT_LINK_STYLE, LINK_RADIUS_MAP } from "@/lib/constants";
+import { getLinkButtonStyle } from "@/lib/link-style";
 import { getIconComponent } from "@/lib/icons";
 import type { LinkStyleConfig } from "@/types";
 import type { Link, Tree } from "@prisma/client";
@@ -218,35 +219,9 @@ export function PreviewContent({
                 );
               }
 
-              const bgColor = link.bgColor || linkStyle.bgColor;
-              const textColor = link.textColor || linkStyle.textColor;
-              const shadowColor = linkStyle.shadowColor || "#000000";
               const IconComp = getIconComponent(link.icon);
 
-              const btnStyle: React.CSSProperties = (() => {
-                if (linkStyle.variant === "brutal") {
-                  return {
-                    borderRadius: radiusValue,
-                    border: `2px solid ${textColor === "#ffffff" || textColor === "#f7f8f8" ? "rgba(255,255,255,0.6)" : "#000000"}`,
-                    backgroundColor: bgColor,
-                    color: textColor,
-                    boxShadow: `3px 3px 0px ${shadowColor}`,
-                  };
-                }
-                if (isOutlined) {
-                  return {
-                    borderRadius: radiusValue,
-                    border: `2px solid ${bgColor}`,
-                    color: textColor,
-                    backgroundColor: "transparent",
-                  };
-                }
-                return {
-                  borderRadius: radiusValue,
-                  backgroundColor: bgColor,
-                  color: textColor,
-                };
-              })();
+              const btnStyle = getLinkButtonStyle(link, linkStyle, radiusValue, 3);
 
               return (
                 <div

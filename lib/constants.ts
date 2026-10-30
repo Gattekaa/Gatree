@@ -1,3 +1,4 @@
+import { SOCIAL_PLATFORMS } from "@/lib/social-platforms";
 import type { IconOption, ThemePreset } from "@/types";
 
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://gatree.app";
@@ -302,18 +303,7 @@ export const THEME_PRESETS: ThemePreset[] = THEME_CATEGORIES.flatMap((cat) => ca
 
 export const LINK_ICONS: IconOption[] = [
 
-  { name: "instagram", label: "Instagram", category: "social" },
-  { name: "twitter", label: "Twitter / X", category: "social" },
-  { name: "youtube", label: "YouTube", category: "social" },
-  { name: "github", label: "GitHub", category: "social" },
-  { name: "linkedin", label: "LinkedIn", category: "social" },
-  { name: "facebook", label: "Facebook", category: "social" },
-  { name: "tiktok", label: "TikTok", category: "social" },
-  { name: "twitch", label: "Twitch", category: "social" },
-  { name: "discord", label: "Discord", category: "social" },
-  { name: "spotify", label: "Spotify", category: "social" },
-  { name: "whatsapp", label: "WhatsApp", category: "social" },
-  { name: "telegram", label: "Telegram", category: "social" },
+  ...SOCIAL_PLATFORMS.map((platform) => ({ name: platform.id, label: platform.label, category: "social" as const })),
 
   { name: "globe", label: "Website", category: "generic" },
   { name: "mail", label: "Email", category: "generic" },

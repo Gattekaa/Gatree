@@ -1,3 +1,5 @@
+import { SOCIAL_BRAND_ICONS } from "@/components/shared/social-brand-icons";
+import type { ComponentType } from "react";
 import {
     BookOpen,
     Briefcase,
@@ -12,36 +14,23 @@ import {
     Link,
     Mail,
     MapPin,
-    MessageCircle,
     Mic,
     Music,
     Phone,
     Play,
     Podcast,
     Rocket,
-    Send,
     ShoppingBag,
     Star,
     Users,
     Video,
     Zap,
-    type LucideIcon,
 } from "lucide-react";
 
-export const ICON_COMPONENT_MAP: Record<string, LucideIcon> = {
+export const ICON_COMPONENT_MAP: Record<string, ComponentType<{ className?: string }>> = {
 
-  instagram: Camera,
-  twitter: MessageCircle,
-  youtube: Play,
-  github: Briefcase,
-  linkedin: Users,
-  facebook: Users,
-  tiktok: Music,
-  twitch: Play,
-  discord: MessageCircle,
-  spotify: Headphones,
-  whatsapp: Phone,
-  telegram: Send,
+  ...SOCIAL_BRAND_ICONS,
+  x: SOCIAL_BRAND_ICONS.twitter,
 
   globe: Globe,
   mail: Mail,
@@ -71,7 +60,7 @@ export const ICON_COMPONENT_MAP: Record<string, LucideIcon> = {
 
 export function getIconComponent(
   name: string | null | undefined
-): LucideIcon | undefined {
+): ComponentType<{ className?: string }> | undefined {
   if (!name) return undefined;
   return ICON_COMPONENT_MAP[name];
 }
