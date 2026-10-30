@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "@/lib/db";
+import { summarizeCities } from "@/lib/geolocation";
 import type {
   CountryData,
   DeviceData,
@@ -167,17 +168,10 @@ export async function getCityBreakdown(
     },
     _count: { id: true },
     orderBy: { _count: { id: "desc" } },
-    take: 50,
   });
 
-  const total = cities.reduce((sum, c) => sum + c._count.id, 0);
-
-  return cities.map((c) => ({
-    name: c.city || "Desconhecido",
-    parentName: c.region || undefined,
-    count: c._count.id,
-    percentage: total > 0 ? Math.round((c._count.id / total) * 1000) / 10 : 0,
-  }));
+  // Merge historical encoded names with newly decoded events before ranking.
+  return summarizeCities(cities);
 }
 
 export async function getReferrers(

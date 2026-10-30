@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { decodeCityName } from "@/lib/geolocation";
 import { resolveReferrer } from "@/lib/referrer-resolver";
 import { UAParser } from "ua-parser-js";
 
@@ -10,7 +11,7 @@ export async function trackShortLinkClick(
   const refererHeader = headersList.get("referer") || null;
   const country = headersList.get("x-vercel-ip-country") || null;
   const region = headersList.get("x-vercel-ip-country-region") || null;
-  const city = headersList.get("x-vercel-ip-city") || null;
+  const city = decodeCityName(headersList.get("x-vercel-ip-city"));
 
   const parser = new UAParser(userAgent);
   const deviceType = parser.getDevice().type;
