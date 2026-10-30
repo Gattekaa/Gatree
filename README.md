@@ -109,6 +109,8 @@ Defina `GATREE_DATABASE_URL` em produção com o login restrito e `?schema=gatre
 
 A política CSP usa um nonce por resposta, e telas privadas bloqueiam incorporação em iframe. Redirecionamentos verificam o destino e a disponibilidade do link antes de registrar o clique. Os ícones sociais também passam por `/api/click/social/...` e aparecem nos totais e no ranking de analytics. O deploy automático está limitado à branch `main`.
 
+No editor de links, Instagram oferece os modos **Link simples** e **Mostrar publicações**. O segundo permite selecionar até seis posts ou Reels públicos, exibidos em um carrossel com incorporação oficial e altura automática. Os botões externos de cada publicação passam pelo rastreamento do Gatree; interações dentro do iframe pertencem ao Instagram.
+
 ## Verificação
 
 ```bash

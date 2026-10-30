@@ -114,6 +114,18 @@
       "newLinkSubtitle": "Adicione um link à sua árvore",
       "editLinkSubtitle": "Atualize as informações",
       "type": "Tipo",
+      "instagramDisplay": {
+        "mainUrl": "Link principal do Instagram",
+        "title": "Exibição do Instagram",
+        "simple": "Link simples",
+        "posts": "Mostrar publicações",
+        "simpleHint": "Exibe apenas um botão para abrir seu Instagram.",
+        "hint": "Escolha de 1 a 6 publicações ou Reels públicos. Cole os links na ordem desejada. Conteúdos privados, removidos ou com incorporação desativada podem não carregar.",
+        "postLabel": "Publicação",
+        "add": "Adicionar publicação",
+        "remove": "Remover publicação",
+        "invalidPosts": "Informe de 1 a 6 links válidos de publicações ou Reels do Instagram, sem repetir."
+      },
       "instagramUrlInvalid": "Informe um endereço válido do Instagram.",
       "categoryLinks": "Links",
       "categoryMedia": "Mídia",
@@ -768,6 +780,13 @@
     }
   },
   "public": {
+    "instagram": {
+      "title": "Publicações no Instagram",
+      "post": "Publicação do Instagram",
+      "previous": "Publicação anterior",
+      "next": "Próxima publicação",
+      "open": "Ver publicação no Instagram"
+    },
     "poweredBy": "Feito com Gatree",
     "notFound": "Não encontrado"
   },

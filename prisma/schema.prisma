@@ -121,6 +121,7 @@ model Link {
   label    String
   url      String
   icon      String? // Nome do ícone (ex: "instagram", "github", "globe")
+  instagramConfig Json? // Optional curated Instagram posts; null = simple link
   thumbnail String? // URL/path da thumbnail 64x64
   type      LinkType @default(LINK)
   enabled  Boolean  @default(true)

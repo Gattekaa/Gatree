@@ -1,5 +1,7 @@
 "use client";
 
+import { getInstagramDisplay } from "@/lib/instagram";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { getLinkButtonStyle } from "@/lib/link-style";
 import { getIconComponent } from "@/lib/icons";
 import type { LinkStyleConfig } from "@/types";
@@ -19,14 +21,17 @@ const PublicMapLazy = dynamic(
   }
 );
 
+const InstagramPosts = dynamic(() => import("./instagram-posts"));
+
 interface PublicLinkProps {
+  instagramTranslations?: Dictionary["public"]["instagram"];
   link: Link;
   treeId: string;
   defaultStyle: LinkStyleConfig;
   radius: string;
 }
 
-export function PublicLink({ link, treeId, defaultStyle, radius }: PublicLinkProps) {
+export function PublicLink({ link, treeId, defaultStyle, radius, instagramTranslations }: PublicLinkProps) {
   const content = (() => {
     switch (link.type) {
     case "HEADER":
@@ -73,7 +78,11 @@ export function PublicLink({ link, treeId, defaultStyle, radius }: PublicLinkPro
       return <ContactLink link={link} href={`https://wa.me/${phone}`} defaultStyle={defaultStyle} radius={radius} treeId={treeId} />;
     }
 
-    case "LINK":
+    case "LINK": {
+      const display = link.icon === "instagram" ? getInstagramDisplay(link.instagramConfig) : null;
+      if (display && instagramTranslations) return <div className="space-y-3"><StandardLink link={link} treeId={treeId} defaultStyle={defaultStyle} radius={radius} /><InstagramPosts posts={display.posts} linkId={link.id} translations={instagramTranslations} /></div>;
+      return <StandardLink link={link} treeId={treeId} defaultStyle={defaultStyle} radius={radius} />;
+    }
     default:
       return <StandardLink link={link} treeId={treeId} defaultStyle={defaultStyle} radius={radius} />;
   }

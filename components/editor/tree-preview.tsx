@@ -24,7 +24,7 @@ export function TreePreview({ tree, links }: TreePreviewProps) {
   const prevKeyRef = useRef("");
 
   const linksKey = links
-    .map((l) => `${l.id}:${l.enabled}:${l.position}:${l.priority}`)
+    .map((l) => `${l.id}:${l.updatedAt}:${l.enabled}:${l.position}:${l.priority}:${JSON.stringify(l.instagramConfig)}`)
     .join(",");
   const currentKey = `${linksKey}-${tree.description}-${tree.avatar}`;
 

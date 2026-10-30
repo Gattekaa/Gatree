@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { getInstagramDisplay } from "@/lib/instagram";
 import { isPublicLinkAvailable } from "@/lib/link-access";
 import { clickRateLimiter, getClientIp } from "@/lib/rate-limit";
 import { isAllowedRedirectUrl } from "@/lib/security";
@@ -19,6 +20,9 @@ export async function GET(
     where: { id: linkId },
     select: {
       url: true,
+      instagramConfig: true,
+      icon: true,
+      type: true,
       treeId: true,
       enabled: true,
       scheduledStart: true,
@@ -29,9 +33,15 @@ export async function GET(
   if (!link || !isPublicLinkAvailable(link)) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  const destination = /^https?:\/\//i.test(link.url)
+  let destination = /^https?:\/\//i.test(link.url)
     ? link.url
     : "https://" + link.url;
+  const post = new URL(request.url).searchParams.get("post");
+  if (post !== null) {
+    const display = link.type === "LINK" && link.icon === "instagram" ? getInstagramDisplay(link.instagramConfig) : null;
+    if (!/^[0-5]$/.test(post) || !display?.posts[Number(post)]) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    destination = display.posts[Number(post)];
+  }
   if (!isAllowedRedirectUrl(destination)) {
     return NextResponse.json(
       { error: "URL de destino inválida" },

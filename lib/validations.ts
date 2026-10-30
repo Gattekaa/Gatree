@@ -1,4 +1,6 @@
 import { matchesHostname } from "@/lib/security-policy";
+import { instagramDisplaySchema } from "@/lib/instagram";
+import { normalizeSocialUrl } from "@/lib/social-platforms";
 import { treeSlugSchema } from "@/lib/tree-slug";
 import { z } from "zod";
 
@@ -110,12 +112,16 @@ const soundcloudUrl = safeHttpUrl.pipe(
 const mapUrl = safeHttpUrl.pipe(z.string().refine((url) => matchesHostname(new URL(url).hostname, ["google.com", "google.com.br", "maps.app.goo.gl"]), "URL deve ser do Google Maps"));
 
 export const serverLinkSchema = z.object({
+  instagramConfig: instagramDisplaySchema.nullable().optional(),
   label: z.string().max(100, "Máximo 100 caracteres"),
   url: z.string(),
   icon: z.string().nullable().optional(),
   type: z.enum(["LINK", "YOUTUBE", "SPOTIFY", "SOUNDCLOUD", "HEADER", "TEXT", "IMAGE", "MAP", "EMAIL", "PHONE", "WHATSAPP"]),
 }).superRefine((data, ctx) => {
 
+  if (data.instagramConfig && (data.type !== "LINK" || data.icon !== "instagram" || !normalizeSocialUrl("instagram", data.url))) {
+    ctx.addIssue({ code: "custom", message: "Publicações disponíveis apenas para links do Instagram", path: ["instagramConfig"] });
+  }
   if (data.type === "HEADER" || data.type === "TEXT") return;
 
   if (!data.url || data.url.trim().length === 0) {

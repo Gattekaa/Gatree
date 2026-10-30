@@ -78,7 +78,7 @@ export function contentSecurityPolicy(
     "img-src 'self' data: blob: https:",
     "font-src 'self' https://fonts.gstatic.com data:",
     `connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.google.com https://stats.g.doubleclick.net https://nominatim.openstreetmap.org${development ? " ws: wss:" : ""}`,
-    "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://open.spotify.com https://w.soundcloud.com https://www.google.com https://maps.google.com",
+    "frame-src 'self' https://www.instagram.com https://www.youtube.com https://www.youtube-nocookie.com https://open.spotify.com https://w.soundcloud.com https://www.google.com https://maps.google.com",
     `frame-ancestors ${privatePage ? "'none'" : "'self'"}`,
     "object-src 'none'",
     "base-uri 'self'",

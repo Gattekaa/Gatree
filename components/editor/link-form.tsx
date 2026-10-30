@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { SOCIAL_BRAND_ICONS } from "@/components/shared/social-brand-icons";
+import { getInstagramDisplay, instagramDisplaySchema, type InstagramDisplayConfig } from "@/lib/instagram";
 import { normalizeSocialUrl } from "@/lib/social-platforms";
 import { linkFormSchema, type LinkFormInput } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,6 +45,7 @@ import {
   WhatsAppIcon,
   YouTubeIcon,
 } from "./brand-icons";
+import { InstagramDisplayEditor } from "./instagram-display-editor";
 import { IconPicker } from "./icon-picker";
 import { ImageUploadField } from "./image-upload-field";
 import { PhoneField } from "./phone-input";
@@ -70,6 +72,7 @@ interface LinkFormProps {
     icon?: string | null;
     type?: LinkType;
     thumbnail?: string | null;
+    instagramConfig?: InstagramDisplayConfig | null;
     scheduledStart?: string | null;
     scheduledEnd?: string | null;
   }) => Promise<void>;
@@ -88,6 +91,10 @@ export function LinkForm({
   const [instagramSelected, setInstagramSelected] = useState(() =>
     link?.type === "LINK" && link.icon === "instagram" && !!normalizeSocialUrl("instagram", link.url),
   );
+
+  const [instagramMode, setInstagramMode] = useState<"link" | "posts">(() => getInstagramDisplay(link?.instagramConfig) ? "posts" : "link");
+  const [instagramPosts, setInstagramPosts] = useState<string[]>(() => getInstagramDisplay(link?.instagramConfig)?.posts || [""]);
+  const [instagramPostsError, setInstagramPostsError] = useState<string | null>(null);
 
   const LINK_TYPES_TRANSLATED = [
     {
@@ -251,6 +258,10 @@ export function LinkForm({
       form.setError("url", { type: "validate", message: t.instagramUrlInvalid });
       return;
     }
+    const display = instagramSelected && instagramMode === "posts"
+      ? instagramDisplaySchema.safeParse({ mode: "posts", posts: instagramPosts }) : null;
+    if (display && !display.success) { setInstagramPostsError(t.instagramDisplay.invalidPosts); return; }
+    setInstagramPostsError(null);
     setIsSubmitting(true);
     try {
       await onSubmit({
@@ -259,6 +270,7 @@ export function LinkForm({
         icon: instagramSelected ? "instagram" : data.icon || null,
         type: data.type,
         thumbnail: data.thumbnail || null,
+        instagramConfig: display?.success ? display.data : null,
         scheduledStart: data.scheduledStart
           ? new Date(data.scheduledStart).toISOString()
           : null,
@@ -491,7 +503,9 @@ export function LinkForm({
                     render={({ field }) => (
                       <FormItem>
                         <p className="break-words mb-2 text-[13px] font-medium text-ink">
-                          {type === "MAP"
+                          {instagramSelected
+                            ? t.instagramDisplay.mainUrl
+                            : type === "MAP"
                             ? t.locationField
                             : type === "PHONE" || type === "WHATSAPP"
                               ? t.numberField
@@ -524,7 +538,7 @@ export function LinkForm({
                           ) : (
                             <Input
                               leftIcon={Globe}
-                              aria-label={t.urlField}
+                              aria-label={instagramSelected ? t.instagramDisplay.mainUrl : t.urlField}
                               placeholder={
                                 instagramSelected
                                   ? t.placeholders.urlInstagram
@@ -549,6 +563,10 @@ export function LinkForm({
                 )}
 
                 {}
+                {instagramSelected && <InstagramDisplayEditor mode={instagramMode} posts={instagramPosts} error={instagramPostsError} translations={t.instagramDisplay}
+                  onModeChange={(mode) => { setInstagramMode(mode); setInstagramPostsError(null); }}
+                  onPostsChange={(posts) => { setInstagramPosts(posts); setInstagramPostsError(null); }} />}
+
                 {type === "LINK" && !instagramSelected && (
                   <FormField
                     control={form.control}

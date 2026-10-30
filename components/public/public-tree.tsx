@@ -1,4 +1,5 @@
 import { DEFAULT_LINK_STYLE, LINK_RADIUS_MAP } from "@/lib/constants";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { FONT_CLASS_MAP } from "@/lib/fonts";
 import type { BackgroundConfig, LinkStyleConfig } from "@/types";
 import type { Link, Tree } from "@prisma/client";
@@ -10,6 +11,7 @@ import { SocialIconsBar } from "./social-icons-bar";
 interface PublicTreeProps {
   tree: Tree & { links: Link[] };
   translations: {
+    instagram: Dictionary["public"]["instagram"];
     poweredBy: string;
     notFound: string;
   };
@@ -68,6 +70,7 @@ export function PublicTree({ tree, translations }: PublicTreeProps) {
             treeId={tree.id}
             defaultStyle={linkStyle}
             radius={radiusValue}
+            instagramTranslations={translations.instagram}
           />
         ))}
       </div>

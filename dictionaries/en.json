@@ -114,6 +114,18 @@
       "newLinkSubtitle": "Add a link to your tree",
       "editLinkSubtitle": "Update the details",
       "type": "Type",
+      "instagramDisplay": {
+        "mainUrl": "Main Instagram link",
+        "title": "Instagram display",
+        "simple": "Simple link",
+        "posts": "Show posts",
+        "simpleHint": "Display a button that opens your Instagram.",
+        "hint": "Choose 1–6 public posts or Reels. Paste their links in the desired order. Private, deleted posts or posts with embedding disabled may not load.",
+        "postLabel": "Post",
+        "add": "Add post",
+        "remove": "Remove post",
+        "invalidPosts": "Enter 1–6 valid, unique Instagram post or Reel links."
+      },
       "instagramUrlInvalid": "Enter a valid Instagram URL.",
       "categoryLinks": "Links",
       "categoryMedia": "Media",
@@ -759,6 +771,13 @@
     }
   },
   "public": {
+    "instagram": {
+      "title": "Instagram posts",
+      "post": "Instagram post",
+      "previous": "Previous post",
+      "next": "Next post",
+      "open": "View post on Instagram"
+    },
     "poweredBy": "Made with Gatree",
     "notFound": "Not found"
   },

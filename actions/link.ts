@@ -4,7 +4,8 @@ import { linkAppearanceSchema } from "@/lib/link-appearance";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { serverLinkSchema } from "@/lib/validations";
-import type { LinkType } from "@prisma/client";
+import { Prisma, type LinkType } from "@prisma/client";
+import type { InstagramDisplayConfig } from "@/lib/instagram";
 import { revalidatePath } from "next/cache";
 
 export async function createLink(
@@ -17,6 +18,7 @@ export async function createLink(
     bgColor?: string | null;
     textColor?: string | null;
     thumbnail?: string | null;
+    instagramConfig?: InstagramDisplayConfig | null;
     scheduledStart?: string | null;
     scheduledEnd?: string | null;
   }
@@ -32,6 +34,7 @@ export async function createLink(
     url: data.url,
     icon: data.icon,
     type: data.type || "LINK",
+    instagramConfig: data.instagramConfig,
   });
   if (!parsed.success) {
     return { error: "errors.invalidData" };
@@ -65,6 +68,7 @@ export async function createLink(
       bgColor: appearance.data.bgColor ?? null,
       textColor: appearance.data.textColor ?? null,
       thumbnail: data.thumbnail || null,
+      instagramConfig: parsed.data.instagramConfig ?? Prisma.DbNull,
       scheduledStart: data.scheduledStart ? new Date(data.scheduledStart) : null,
       scheduledEnd: data.scheduledEnd ? new Date(data.scheduledEnd) : null,
     },
@@ -86,6 +90,7 @@ export async function updateLink(
     bgColor?: string | null;
     textColor?: string | null;
     thumbnail?: string | null;
+    instagramConfig?: InstagramDisplayConfig | null;
     scheduledStart?: string | null;
     scheduledEnd?: string | null;
   }
@@ -99,19 +104,15 @@ export async function updateLink(
   });
   if (!link || link.tree.userId !== session.user.id) return { error: "errors.notAuthorized" };
 
-  {
-    const parsed = serverLinkSchema.safeParse({
-      label: data.label ?? link.label,
-      url: data.url ?? link.url,
-      icon: data.icon !== undefined ? data.icon : link.icon,
-      type: data.type ?? link.type,
-    });
-    if (!parsed.success) {
-      return { error: "errors.invalidData" };
-    }
-
-    if (data.url !== undefined) data.url = parsed.data.url;
-  }
+  const parsed = serverLinkSchema.safeParse({
+    label: data.label ?? link.label,
+    url: data.url ?? link.url,
+    icon: data.icon !== undefined ? data.icon : link.icon,
+    type: data.type ?? link.type,
+    instagramConfig: data.instagramConfig !== undefined ? data.instagramConfig : link.instagramConfig,
+  });
+  if (!parsed.success) return { error: "errors.invalidData" };
+  if (data.url !== undefined) data.url = parsed.data.url;
 
   const effectiveStart = data.scheduledStart !== undefined ? data.scheduledStart : (link.scheduledStart ? link.scheduledStart.toISOString() : null);
   const effectiveEnd = data.scheduledEnd !== undefined ? data.scheduledEnd : (link.scheduledEnd ? link.scheduledEnd.toISOString() : null);
@@ -131,6 +132,7 @@ export async function updateLink(
     enabled: data.enabled, thumbnail: data.thumbnail,
     bgColor: appearance.data.bgColor, textColor: appearance.data.textColor,
   };
+  if (data.instagramConfig !== undefined) prismaData.instagramConfig = parsed.data.instagramConfig ?? Prisma.DbNull;
   if (data.scheduledStart !== undefined) {
     prismaData.scheduledStart = data.scheduledStart ? new Date(data.scheduledStart) : null;
   }
