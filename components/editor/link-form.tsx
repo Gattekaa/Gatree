@@ -16,6 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { SOCIAL_BRAND_ICONS } from "@/components/shared/social-brand-icons";
+import { normalizeSocialUrl } from "@/lib/social-platforms";
 import { linkFormSchema, type LinkFormInput } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Link, LinkType } from "@prisma/client";
@@ -83,6 +85,9 @@ export function LinkForm({
 }: LinkFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const t = translations.editor.linkForm;
+  const [instagramSelected, setInstagramSelected] = useState(() =>
+    link?.type === "LINK" && link.icon === "instagram" && !!normalizeSocialUrl("instagram", link.url),
+  );
 
   const LINK_TYPES_TRANSLATED = [
     {
@@ -122,6 +127,15 @@ export function LinkForm({
       category: "links",
     },
 
+    {
+      value: "INSTAGRAM" as const,
+      label: t.types.instagram,
+      description: t.types.instagramDesc,
+      icon: SOCIAL_BRAND_ICONS.instagram,
+      color: "text-[#e1306c]",
+      bg: "bg-[#e1306c]/10",
+      category: "links",
+    },
     {
       value: "YOUTUBE" as const,
       label: t.types.youtube,
@@ -209,14 +223,40 @@ export function LinkForm({
   const type = form.watch("type");
   const label = form.watch("label");
   const url = form.watch("url");
+  const selectedType = instagramSelected ? "INSTAGRAM" : type;
+
+  function selectLinkType(
+    value: LinkFormInput["type"] | "INSTAGRAM",
+    onChange: (value: LinkFormInput["type"]) => void,
+  ) {
+    const isInstagram = value === "INSTAGRAM";
+    setInstagramSelected(isInstagram);
+    onChange(isInstagram ? "LINK" : value);
+    form.clearErrors("url");
+    if (isInstagram) {
+      form.setValue("icon", "instagram");
+      if (!form.getValues("label").trim()) form.setValue("label", "Instagram");
+    } else if (instagramSelected && form.getValues("icon") === "instagram") {
+      form.setValue("icon", null);
+    }
+    if (["HEADER", "TEXT"].includes(value)) form.setValue("url", "#");
+    else if (form.getValues("url") === "#") form.setValue("url", "");
+  }
 
   async function handleSubmit(data: LinkFormInput) {
+    const instagramUrl = instagramSelected
+      ? normalizeSocialUrl("instagram", data.url)
+      : null;
+    if (instagramSelected && !instagramUrl) {
+      form.setError("url", { type: "validate", message: t.instagramUrlInvalid });
+      return;
+    }
     setIsSubmitting(true);
     try {
       await onSubmit({
         label: data.label,
-        url: data.type === "HEADER" ? "#" : data.url,
-        icon: data.icon || null,
+        url: instagramUrl || (data.type === "HEADER" ? "#" : data.url),
+        icon: instagramSelected ? "instagram" : data.icon || null,
         type: data.type,
         thumbnail: data.thumbnail || null,
         scheduledStart: data.scheduledStart
@@ -290,18 +330,13 @@ export function LinkForm({
                         ).map((lt) => (
                           <button
                             key={lt.value}
-                            aria-pressed={field.value === lt.value}
+                            aria-pressed={selectedType === lt.value}
                             type="button"
                             onClick={() => {
-                              field.onChange(lt.value);
-                              if (["HEADER", "TEXT"].includes(lt.value)) {
-                                form.setValue("url", "#");
-                              } else if (form.getValues("url") === "#") {
-                                form.setValue("url", "");
-                              }
+                              selectLinkType(lt.value, field.onChange);
                             }}
                             className={`rounded-xl flex flex-col items-center gap-1 border py-2.5 transition-all active:scale-[0.98] ${
-                              field.value === lt.value
+                              selectedType === lt.value
                                 ? "border-primary bg-surface-2"
                                 : "border-hairline-strong hover:border-ink-subtle"
                             }`}
@@ -312,7 +347,7 @@ export function LinkForm({
                               <lt.icon className={`h-3.5 w-3.5 ${lt.color}`} />
                             </div>
                             <span
-                              className={`text-xs font-medium ${field.value === lt.value ? "text-ink" : "text-ink-subtle"}`}
+                              className={`text-xs font-medium ${selectedType === lt.value ? "text-ink" : "text-ink-subtle"}`}
                             >
                               {lt.label}
                             </span>
@@ -330,18 +365,13 @@ export function LinkForm({
                         ).map((lt) => (
                           <button
                             key={lt.value}
-                            aria-pressed={field.value === lt.value}
+                            aria-pressed={selectedType === lt.value}
                             type="button"
                             onClick={() => {
-                              field.onChange(lt.value);
-                              if (["HEADER", "TEXT"].includes(lt.value)) {
-                                form.setValue("url", "#");
-                              } else if (form.getValues("url") === "#") {
-                                form.setValue("url", "");
-                              }
+                              selectLinkType(lt.value, field.onChange);
                             }}
                             className={`rounded-xl flex flex-col items-center gap-1 border py-2.5 transition-all active:scale-[0.98] ${
-                              field.value === lt.value
+                              selectedType === lt.value
                                 ? "border-primary bg-surface-2"
                                 : "border-hairline-strong hover:border-ink-subtle"
                             }`}
@@ -352,7 +382,7 @@ export function LinkForm({
                               <lt.icon className={`h-3.5 w-3.5 ${lt.color}`} />
                             </div>
                             <span
-                              className={`text-xs font-medium ${field.value === lt.value ? "text-ink" : "text-ink-subtle"}`}
+                              className={`text-xs font-medium ${selectedType === lt.value ? "text-ink" : "text-ink-subtle"}`}
                             >
                               {lt.label}
                             </span>
@@ -370,18 +400,13 @@ export function LinkForm({
                         ).map((lt) => (
                           <button
                             key={lt.value}
-                            aria-pressed={field.value === lt.value}
+                            aria-pressed={selectedType === lt.value}
                             type="button"
                             onClick={() => {
-                              field.onChange(lt.value);
-                              if (["HEADER", "TEXT"].includes(lt.value)) {
-                                form.setValue("url", "#");
-                              } else if (form.getValues("url") === "#") {
-                                form.setValue("url", "");
-                              }
+                              selectLinkType(lt.value, field.onChange);
                             }}
                             className={`rounded-xl flex flex-col items-center gap-1 border py-2.5 transition-all active:scale-[0.98] ${
-                              field.value === lt.value
+                              selectedType === lt.value
                                 ? "border-primary bg-surface-2"
                                 : "border-hairline-strong hover:border-ink-subtle"
                             }`}
@@ -392,7 +417,7 @@ export function LinkForm({
                               <lt.icon className={`h-3.5 w-3.5 ${lt.color}`} />
                             </div>
                             <span
-                              className={`text-xs font-medium ${field.value === lt.value ? "text-ink" : "text-ink-subtle"}`}
+                              className={`text-xs font-medium ${selectedType === lt.value ? "text-ink" : "text-ink-subtle"}`}
                             >
                               {lt.label}
                             </span>
@@ -501,13 +526,15 @@ export function LinkForm({
                               leftIcon={Globe}
                               aria-label={t.urlField}
                               placeholder={
-                                type === "YOUTUBE"
-                                  ? t.placeholders.urlYoutube
-                                  : type === "SPOTIFY"
-                                    ? t.placeholders.urlSpotify
-                                    : type === "EMAIL"
-                                      ? t.placeholders.urlEmail
-                                      : t.placeholders.urlDefault
+                                instagramSelected
+                                  ? t.placeholders.urlInstagram
+                                  : type === "YOUTUBE"
+                                    ? t.placeholders.urlYoutube
+                                    : type === "SPOTIFY"
+                                      ? t.placeholders.urlSpotify
+                                      : type === "EMAIL"
+                                        ? t.placeholders.urlEmail
+                                        : t.placeholders.urlDefault
                               }
                               wrapperClassName="h-12"
                               className="text-[15px]"
@@ -522,7 +549,7 @@ export function LinkForm({
                 )}
 
                 {}
-                {type === "LINK" && (
+                {type === "LINK" && !instagramSelected && (
                   <FormField
                     control={form.control}
                     name="icon"
