@@ -1,68 +1,51 @@
 import { db } from "@/lib/db";
+import { isPublicLinkAvailable } from "@/lib/link-access";
 import { clickRateLimiter, getClientIp } from "@/lib/rate-limit";
 import { isAllowedRedirectUrl } from "@/lib/security";
 import { trackLinkClick } from "@/lib/tracking";
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ linkId: string }> }
+  { params }: { params: Promise<{ linkId: string }> },
 ) {
-
-  const ip = getClientIp(request);
-  const { success } = await clickRateLimiter.check(`click:${ip}`);
-  if (!success) {
+  const { success } = await clickRateLimiter.check(
+    "click:" + getClientIp(request),
+  );
+  if (!success)
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
-  }
-
   const { linkId } = await params;
-  const { searchParams } = new URL(request.url);
-  const treeId = searchParams.get("tree");
-
-  try {
-
-    const link = await db.link.findUnique({
-      where: { id: linkId },
-      select: { url: true, treeId: true },
-    });
-
-    if (!link) {
-
-      if (treeId) {
-        const tree = await db.tree.findUnique({
-          where: { id: treeId },
-          select: { slug: true },
-        });
-        if (tree) {
-          return NextResponse.redirect(
-            new URL(`/${tree.slug}?link_not_found=true`, request.url)
-          );
-        }
-      }
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-
-    const headersList = await headers();
-    trackLinkClick(linkId, link.treeId, headersList).catch(() => {
-
-    });
-
-    let destinationUrl = link.url;
-    if (!destinationUrl.startsWith("http://") && !destinationUrl.startsWith("https://")) {
-      destinationUrl = `https://${destinationUrl}`;
-    }
-
-    if (!isAllowedRedirectUrl(destinationUrl)) {
-      return NextResponse.json(
-        { error: "URL de destino inválida" },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.redirect(destinationUrl, 302);
-  } catch (error) {
-    console.error("Click tracking error:", error);
-    return NextResponse.redirect(new URL("/", request.url));
+  const link = await db.link.findUnique({
+    where: { id: linkId },
+    select: {
+      url: true,
+      treeId: true,
+      enabled: true,
+      scheduledStart: true,
+      scheduledEnd: true,
+      tree: { select: { status: true } },
+    },
+  });
+  if (!link || !isPublicLinkAvailable(link)) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  const destination = /^https?:\/\//i.test(link.url)
+    ? link.url
+    : "https://" + link.url;
+  if (!isAllowedRedirectUrl(destination)) {
+    return NextResponse.json(
+      { error: "URL de destino inválida" },
+      { status: 400 },
+    );
+  }
+  after(async () => {
+    try {
+      await trackLinkClick(linkId, link.treeId, request.headers);
+    } catch {
+      console.error("Link click tracking failed");
+    }
+  });
+  const response = NextResponse.redirect(destination, 302);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
 }

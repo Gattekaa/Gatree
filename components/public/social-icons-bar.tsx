@@ -1,6 +1,8 @@
 import { getIconComponent } from "@/lib/icons";
 import { getSocialPlatform, normalizeSocialUrl } from "@/lib/social-platforms";
 
+import { socialClickPath } from "@/lib/social-clicks";
+
 interface SocialIcon {
   platform: string;
   url: string;
@@ -8,7 +10,9 @@ interface SocialIcon {
 
 export function SocialIconsBar({
   socialIcons,
+  treeId,
 }: {
+  treeId: string;
   socialIcons: SocialIcon[] | null | undefined;
 }) {
   if (!socialIcons?.length) return null;
@@ -22,7 +26,7 @@ export function SocialIconsBar({
         return (
           <a
             key={platform.id}
-            href={href}
+            href={socialClickPath(treeId, platform.id)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={platform.label}

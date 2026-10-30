@@ -1,9 +1,10 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
 import QRCode from "qrcode";
 
-const RATE_LIMIT_MAX = 20;
+const limiter = createRateLimiter({ namespace: "qrcode", max: 20, windowMs: 60_000 });
 
 export async function GET(
   request: Request,
@@ -14,8 +15,6 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { createRateLimiter, getClientIp } = await import("@/lib/rate-limit");
-  const limiter = createRateLimiter({ max: RATE_LIMIT_MAX, windowMs: 60_000 });
   const { success } = await limiter.check(`qrcode:${getClientIp(request)}`);
   if (!success) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });

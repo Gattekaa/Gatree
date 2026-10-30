@@ -1,3 +1,4 @@
+import { matchesHostname } from "@/lib/security-policy";
 import { z } from "zod";
 
 export const createTreeSchema = z.object({
@@ -8,6 +9,11 @@ export const createTreeSchema = z.object({
     .max(30, "Máximo 30 caracteres")
     .regex(/^[a-z0-9-]+$/, "Apenas letras minúsculas, números e hífens"),
 });
+
+export const updateTreeSchema = createTreeSchema.partial().extend({
+  description: z.string().max(160).nullable().optional(),
+  status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+}).strict();
 
 export type CreateTreeInput = z.infer<typeof createTreeSchema>;
 
@@ -77,7 +83,8 @@ function ensureProtocol(url: string): string {
 const safeHttpUrl = z.string().transform(ensureProtocol).pipe(
   z.string().url("URL inválida").refine((url) => {
     try {
-      return SAFE_URL_PROTOCOLS.includes(new URL(url).protocol);
+      const parsed = new URL(url);
+      return SAFE_URL_PROTOCOLS.includes(parsed.protocol) && !parsed.username && !parsed.password;
     } catch {
       return false;
     }
@@ -91,19 +98,19 @@ const phoneValue = z.string().regex(/^[\d\s+()-]+$/, "Número inválido");
 const youtubeUrl = safeHttpUrl.pipe(
   z.string().refine((url) => {
     const host = new URL(url).hostname;
-    return host.includes("youtube.com") || host.includes("youtu.be");
+    return matchesHostname(host, ["youtube.com", "youtu.be"]);
   }, "URL deve ser do YouTube")
 );
 
 const spotifyUrl = safeHttpUrl.pipe(
-  z.string().refine((url) => new URL(url).hostname.includes("spotify.com"), "URL deve ser do Spotify")
+  z.string().refine((url) => matchesHostname(new URL(url).hostname, ["spotify.com"]), "URL deve ser do Spotify")
 );
 
 const soundcloudUrl = safeHttpUrl.pipe(
-  z.string().refine((url) => new URL(url).hostname.includes("soundcloud.com"), "URL deve ser do SoundCloud")
+  z.string().refine((url) => matchesHostname(new URL(url).hostname, ["soundcloud.com"]), "URL deve ser do SoundCloud")
 );
 
-const mapUrl = z.string().min(1, "Localização é obrigatória");
+const mapUrl = safeHttpUrl.pipe(z.string().refine((url) => matchesHostname(new URL(url).hostname, ["google.com", "google.com.br", "maps.app.goo.gl"]), "URL deve ser do Google Maps"));
 
 export const serverLinkSchema = z.object({
   label: z.string().max(100, "Máximo 100 caracteres"),

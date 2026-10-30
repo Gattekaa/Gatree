@@ -1,5 +1,6 @@
 "use server";
 
+import { updateTreeSchema } from "@/lib/validations";
 import { normalizeSocialUrl } from "@/lib/social-platforms";
 import { isAuthError, requireUser } from "@/lib/auth-utils";
 import { db } from "@/lib/db";
@@ -48,14 +49,17 @@ export async function updateTree(
   const tree = await db.tree.findUnique({ where: { id: treeId } });
   if (!tree || tree.userId !== userId) return { error: "errors.notAuthorized" };
 
-  if (data.slug && data.slug !== tree.slug) {
-    const existing = await db.tree.findUnique({ where: { slug: data.slug } });
+  const parsed = updateTreeSchema.safeParse(data);
+  if (!parsed.success) return { error: "errors.invalidData" };
+
+  if (parsed.data.slug && parsed.data.slug !== tree.slug) {
+    const existing = await db.tree.findUnique({ where: { slug: parsed.data.slug } });
     if (existing) return { error: "errors.slugUnavailable" };
   }
 
   const updated = await db.tree.update({
     where: { id: treeId },
-    data,
+    data: { title: parsed.data.title, description: parsed.data.description, slug: parsed.data.slug, status: parsed.data.status },
   });
 
   revalidatePath("/dashboard");

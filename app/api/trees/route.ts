@@ -1,4 +1,5 @@
 import { getAuthUser } from "@/lib/auth-utils";
+import { socialAnalyticsTargets } from "@/lib/social-clicks";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -18,17 +19,12 @@ export async function GET() {
 
   const treeIds = trees.map((t) => t.id);
 
-  const treeLinks = await db.link.findMany({
+  const regularLinks = await db.link.findMany({
     where: { treeId: { in: treeIds } },
     select: { id: true, treeId: true },
   });
 
-  const linksByTree = new Map<string, string[]>();
-  for (const link of treeLinks) {
-    const existing = linksByTree.get(link.treeId) ?? [];
-    existing.push(link.id);
-    linksByTree.set(link.treeId, existing);
-  }
+  const treeLinks = [...regularLinks, ...trees.flatMap((tree) => socialAnalyticsTargets(tree.id).map((link) => ({ id: link.id, treeId: tree.id })))];
 
   const [viewCounts, clickCounts] = await Promise.all([
     db.analyticsEvent.groupBy({

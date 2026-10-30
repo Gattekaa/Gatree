@@ -54,6 +54,7 @@ export default async function RootLayout({
 }>) {
   const headersList = await headers();
   const lang = headersList.get("x-locale") || "pt-BR";
+  const nonce = headersList.get("x-nonce") || undefined;
   const googleAnalyticsId = process.env.GOOGLE_ANALYTICS_ID;
 
   return (
@@ -64,6 +65,7 @@ export default async function RootLayout({
     >
       <body className="min-h-dvh bg-canvas text-ink antialiased">
         <ThemeProvider
+          nonce={nonce}
           attribute="class"
           defaultTheme="dark"
           themes={["dark", "light"]}
@@ -91,7 +93,7 @@ export default async function RootLayout({
         </ThemeProvider>
         {googleAnalyticsId && (
           <>
-            <Script id="google-analytics-init" strategy="afterInteractive">
+            <Script nonce={nonce} id="google-analytics-init" strategy="afterInteractive">
               {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){window.dataLayer.push(arguments);}
@@ -100,6 +102,7 @@ export default async function RootLayout({
               `}
             </Script>
             <Script
+              nonce={nonce}
               id="google-analytics"
               src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(googleAnalyticsId)}`}
               strategy="afterInteractive"

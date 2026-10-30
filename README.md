@@ -99,6 +99,16 @@ Para utilizar o Imgur, configure `STORAGE_PROVIDER="imgur"` e `IMGUR_CLIENT_ID`.
 
 O runtime aceita `GATREE_DATABASE_URL` como conexão alternativa a `DATABASE_URL`. Quando houver `?schema=...` na URL, esse namespace também é passado explicitamente ao adaptador PostgreSQL.
 
+## Segurança em produção
+
+O processo web usa um login PostgreSQL restrito ao schema `gatree_v2`, sem permissão para criar tabelas ou usuários. A conexão administrativa fica separada em `GATREE_MIGRATION_DATABASE_URL` e é usada apenas pelo Prisma CLI. Ela não deve ser cadastrada no ambiente do runtime.
+
+Após criar o login `gatree_runtime` via SQL, execute `database/runtime-grants.sql` e `database/security.sql` com o proprietário do banco. O segundo script instala o limitador compartilhado entre instâncias, acessível ao runtime apenas por uma função restrita. Se esse armazenamento falhar, as operações protegidas são recusadas. No desenvolvimento local, o limitador usa memória.
+
+Defina `GATREE_DATABASE_URL` em produção com o login restrito e `?schema=gatree_v2&sslmode=verify-full`. Conexões remotas em produção exigem validação do certificado TLS. O domínio de `NEXT_PUBLIC_APP_URL` e os hosts da implantação Vercel são reconhecidos automaticamente; domínios adicionais podem ser informados em `GATREE_ALLOWED_HOSTS`, separados por vírgula.
+
+A política CSP usa um nonce por resposta, e telas privadas bloqueiam incorporação em iframe. Redirecionamentos verificam o destino e a disponibilidade do link antes de registrar o clique. Os ícones sociais também passam por `/api/click/social/...` e aparecem nos totais e no ranking de analytics. O deploy automático está limitado à branch `main`.
+
 ## Verificação
 
 ```bash
@@ -110,6 +120,7 @@ Os testes usam o runner nativo do Node.js com suporte a TypeScript pelo `tsx`:
 
 ```bash
 node --import tsx --test \
+  lib/security-hardening.test.ts \
   lib/onboarding.test.ts \
   components/onboarding/position.test.ts \
   components/onboarding/tour-plan.test.ts \

@@ -138,6 +138,7 @@ export default async function PublicTreePage({ params, searchParams }: Props) {
   return (
     <>
       <script
+        nonce={headersList.get("x-nonce") || undefined}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />

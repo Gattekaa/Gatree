@@ -8,6 +8,7 @@ import {
     getTimeSeries
 } from "@/lib/analytics";
 import { auth } from "@/lib/auth";
+import { socialAnalyticsTargets } from "@/lib/social-clicks";
 import { db } from "@/lib/db";
 import { generateInsights } from "@/lib/insights";
 import type { AnalyticsOverview, LinkClickData, Period } from "@/types";
@@ -51,7 +52,6 @@ export async function GET(
       viewsPrevious,
       uniqueCurrent,
       uniquePrevious,
-      topLinks,
     ] = await Promise.all([
       db.analyticsEvent.count({
         where: {
@@ -84,24 +84,14 @@ export async function GET(
         },
       }),
 
-      db.analyticsEvent.groupBy({
-        by: ["sourceId"],
-        where: {
-          sourceType: "link_click",
-          createdAt: { gte: current.start, lte: current.end },
-
-        },
-        _count: { id: true },
-        orderBy: { _count: { id: "desc" } },
-        take: 1,
-      }),
     ]);
 
     const treeLinks = await db.link.findMany({
       where: { treeId: treeId },
-      select: { id: true },
+      select: { id: true, label: true },
     });
-    const linkIds = treeLinks.map((l) => l.id);
+    const targets = [...treeLinks, ...socialAnalyticsTargets(treeId)];
+    const linkIds = targets.map((l) => l.id);
 
     const [clicksCurrent, clicksPrevious] = await Promise.all([
       db.analyticsEvent.count({
@@ -134,10 +124,7 @@ export async function GET(
 
     let topLink: { label: string; clicks: number } | null = null;
     if (topLinkClicks.length > 0) {
-      const linkData = await db.link.findUnique({
-        where: { id: topLinkClicks[0].sourceId },
-        select: { label: true },
-      });
+      const linkData = targets.find((link) => link.id === topLinkClicks[0].sourceId);
       if (linkData) {
         topLink = { label: linkData.label, clicks: topLinkClicks[0]._count.id };
       }
@@ -166,8 +153,9 @@ export async function GET(
       where: { treeId: treeId },
       select: { id: true, label: true, icon: true },
     });
-    const linkIds = treeLinks.map((l) => l.id);
-    const linksMap = new Map(treeLinks.map((l) => [l.id, l]));
+    const targets = [...treeLinks, ...socialAnalyticsTargets(treeId)];
+    const linkIds = targets.map((l) => l.id);
+    const linksMap = new Map(targets.map((l) => [l.id, l]));
 
     const [currentClicks, previousClicks, totalViews] = await Promise.all([
       db.analyticsEvent.groupBy({

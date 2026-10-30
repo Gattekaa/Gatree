@@ -1,5 +1,7 @@
 import type { LinkType } from "@prisma/client";
 
+import { matchesHostname } from "@/lib/security-policy";
+
 const ALLOWED_PROTOCOLS = ["http:", "https:"];
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -41,7 +43,7 @@ export function validateLinkUrl(
       }
       try {
         const parsed = new URL(ytUrl);
-        if (!parsed.hostname.includes("youtube.com") && !parsed.hostname.includes("youtu.be")) {
+        if (!matchesHostname(parsed.hostname, ["youtube.com", "youtu.be"])) {
           return { valid: false, error: "URL deve ser do YouTube" };
         }
       } catch {
@@ -57,7 +59,7 @@ export function validateLinkUrl(
       }
       try {
         const parsed = new URL(spUrl);
-        if (!parsed.hostname.includes("spotify.com")) {
+        if (!matchesHostname(parsed.hostname, ["open.spotify.com"])) {
           return { valid: false, error: "URL deve ser do Spotify" };
         }
       } catch {
@@ -73,7 +75,7 @@ export function validateLinkUrl(
       }
       try {
         const parsed = new URL(scUrl);
-        if (!parsed.hostname.includes("soundcloud.com")) {
+        if (!matchesHostname(parsed.hostname, ["soundcloud.com"])) {
           return { valid: false, error: "URL deve ser do SoundCloud" };
         }
       } catch {
@@ -89,7 +91,7 @@ export function validateLinkUrl(
       }
       try {
         const parsed = new URL(mapUrl);
-        if (!parsed.hostname.includes("google.com") && !parsed.hostname.includes("google.com.br")) {
+        if (!matchesHostname(parsed.hostname, ["google.com", "google.com.br", "maps.app.goo.gl"])) {
           return { valid: false, error: "URL deve ser do Google Maps" };
         }
       } catch {
@@ -113,7 +115,7 @@ export function validateLinkUrl(
 export function isAllowedRedirectUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
-    return ALLOWED_PROTOCOLS.includes(parsed.protocol);
+    return ALLOWED_PROTOCOLS.includes(parsed.protocol) && !parsed.username && !parsed.password;
   } catch {
     return false;
   }
@@ -124,12 +126,12 @@ export function sanitizeEmbedUrl(url: string, type: "youtube" | "spotify" | "sou
 
   try {
     const parsed = new URL(url);
-    if (!ALLOWED_PROTOCOLS.includes(parsed.protocol)) return null;
+    if (!ALLOWED_PROTOCOLS.includes(parsed.protocol) || parsed.username || parsed.password) return null;
 
     switch (type) {
       case "youtube": {
 
-        if (parsed.hostname.includes("youtube.com") || parsed.hostname.includes("youtu.be")) {
+        if (matchesHostname(parsed.hostname, ["youtube.com", "youtu.be"])) {
           return url;
         }
         return null;
@@ -139,11 +141,11 @@ export function sanitizeEmbedUrl(url: string, type: "youtube" | "spotify" | "sou
         return null;
       }
       case "soundcloud": {
-        if (parsed.hostname.includes("soundcloud.com")) return url;
+        if (matchesHostname(parsed.hostname, ["soundcloud.com"])) return url;
         return null;
       }
       case "map": {
-        if (parsed.hostname.includes("google.com")) return url;
+        if (matchesHostname(parsed.hostname, ["google.com", "google.com.br", "maps.app.goo.gl"])) return url;
         return null;
       }
       case "image": {
@@ -202,7 +204,7 @@ function ensureProtocol(url: string): string {
 function isValidHttpUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
-    return ALLOWED_PROTOCOLS.includes(parsed.protocol);
+    return ALLOWED_PROTOCOLS.includes(parsed.protocol) && !parsed.username && !parsed.password;
   } catch {
     return false;
   }

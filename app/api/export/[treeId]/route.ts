@@ -1,5 +1,6 @@
 import {
   getCount,
+  getPeriodRange,
   getCountryBreakdown,
   getDeviceBreakdown,
   getReferrers,
@@ -7,13 +8,14 @@ import {
   getUniqueVisitors
 } from "@/lib/analytics";
 import { getAuthUser } from "@/lib/auth-utils";
+import { socialAnalyticsTargets } from "@/lib/social-clicks";
 import { db } from "@/lib/db";
 import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
 import { sanitizeCsvValue } from "@/lib/security";
 import type { Period } from "@/types";
 import { NextResponse } from "next/server";
 
-const exportLimiter = createRateLimiter({ max: 10, windowMs: 60_000 });
+const exportLimiter = createRateLimiter({ namespace: "export", max: 10, windowMs: 60_000 });
 
 export async function GET(
   request: Request,
@@ -57,7 +59,7 @@ export async function GET(
       referrers,
     ] = await Promise.all([
       getCount("tree_view", treeId, period),
-      getCount("link_click", treeId, period),
+      db.analyticsEvent.count({ where: { sourceType: "link_click", sourceId: { in: [...tree.links.map((link) => link.id), ...socialAnalyticsTargets(treeId).map((link) => link.id)] }, createdAt: { gte: getPeriodRange(period).current.start, lte: getPeriodRange(period).current.end } } }),
       getUniqueVisitors("tree_view", treeId, period),
       getTimeSeries("tree_view", treeId, period),
       getDeviceBreakdown("tree_view", treeId, period),

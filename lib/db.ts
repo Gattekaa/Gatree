@@ -19,8 +19,13 @@ function createPrismaClient() {
     });
   }
 
+  const connectionUrl = new URL(databaseUrl);
+  if (process.env.NODE_ENV === "production" && !["localhost", "127.0.0.1", "[::1]"].includes(connectionUrl.hostname)) {
+    connectionUrl.searchParams.set("sslmode", "verify-full");
+  }
   const pool = new Pool({
-    connectionString: databaseUrl,
+    connectionString: connectionUrl.toString(),
+    connectionTimeoutMillis: 10_000,
     
     keepAlive: true,
     
