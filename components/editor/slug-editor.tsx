@@ -6,85 +6,121 @@ import { Label } from "@/components/ui/label";
 import { useSlugAvailability } from "@/hooks/use-analytics";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getAppDomain } from "@/lib/constants";
-import { cn } from "@/lib/utils";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { treeSlugSchema } from "@/lib/tree-slug";
 import { Check, Loader2, X } from "lucide-react";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 interface SlugEditorProps {
+  treeId: string;
   currentSlug: string;
   onSave: (newSlug: string) => void;
   isSaving: boolean;
+  translations: Dictionary["editor"]["urlEditor"];
 }
 
-export function SlugEditor({ currentSlug, onSave, isSaving }: SlugEditorProps) {
+export function SlugEditor({
+  treeId,
+  currentSlug,
+  onSave,
+  isSaving,
+  translations: t,
+}: SlugEditorProps) {
+  const inputId = useId();
   const [slug, setSlug] = useState(currentSlug);
   const hasChanged = slug !== currentSlug;
-
-  const debouncedSlug = useDebounce(hasChanged ? slug : "", 500);
-  const { data: slugCheck, isLoading: checkingSlug } =
-    useSlugAvailability(debouncedSlug);
-  const slugAvailable =
-    hasChanged && debouncedSlug === slug
-      ? (slugCheck?.available ?? null)
-      : null;
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setSlug(
-      e.target.value
-        .toLowerCase()
-        .replace(/[^a-z0-9-]/g, "")
-        .slice(0, 30),
-    );
-  }
-
-  const statusIcon = checkingSlug ? (
-    <Loader2 className="h-3.5 w-3.5 animate-spin text-ink-tertiary" />
-  ) : hasChanged && slugAvailable === true ? (
-    <Check className="h-3.5 w-3.5 text-brutal-green" />
-  ) : hasChanged && slugAvailable === false ? (
-    <X className="h-3.5 w-3.5 text-error" />
-  ) : null;
+  const valid = treeSlugSchema.safeParse(slug).success;
+  const debouncedSlug = useDebounce(hasChanged && valid ? slug : "", 500);
+  const { data, isFetching, isError } = useSlugAvailability(
+    debouncedSlug,
+    treeId,
+  );
+  const checking =
+    hasChanged && valid && (debouncedSlug !== slug || isFetching);
+  const available =
+    hasChanged && valid && !checking && !isError && data?.available === true;
+  const unavailable =
+    hasChanged && valid && !checking && !isError && data?.available === false;
+  const message = !hasChanged
+    ? null
+    : !valid
+      ? t.invalid
+      : checking
+        ? t.checking
+        : isError
+          ? t.checkError
+          : available
+            ? t.available
+            : unavailable
+              ? t.unavailable
+              : null;
+  const statusIcon =
+    checking || isSaving ? (
+      <Loader2 aria-hidden className="size-4 animate-spin" />
+    ) : available ? (
+      <Check aria-hidden className="size-4 text-success" />
+    ) : unavailable || (hasChanged && !valid) ? (
+      <X aria-hidden className="size-4 text-error" />
+    ) : null;
 
   return (
-    <div className="space-y-2">
-      <Label className="text-ink text-sm leading-[1.5]">Slug da URL</Label>
-      <div className="flex gap-2">
-        <div className="flex-1">
+    <div className="space-y-3">
+      <Label htmlFor={inputId} className="text-sm text-ink">
+        {t.label}
+      </Label>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="min-w-0 flex-1">
           <Input
+            id={inputId}
             value={slug}
-            onChange={handleChange}
+            disabled={isSaving}
+            autoComplete="off"
+            spellCheck={false}
+            maxLength={30}
+            aria-describedby={message ? `${inputId}-status` : undefined}
+            aria-invalid={hasChanged && (!valid || unavailable)}
+            onChange={(event) =>
+              setSlug(
+                event.target.value
+                  .toLowerCase()
+                  .replace(/[^a-z0-9-]/g, "")
+                  .slice(0, 30),
+              )
+            }
             leftAddon={
-              <span className="text-ink-tertiary text-xs tracking-normal leading-[1.5]">
+              <span className="whitespace-nowrap text-xs text-ink-tertiary">
                 {getAppDomain()}/
               </span>
             }
             rightAddon={statusIcon}
-            className="h-full"
-            wrapperClassName={cn(
-              "h-12 rounded-xl",
-              hasChanged && slugAvailable === true && "border-brutal-green",
-              hasChanged && slugAvailable === false && "border-error",
-            )}
+            wrapperClassName="h-12 rounded-xl"
           />
         </div>
-        {hasChanged && slugAvailable === true && (
-          <Button
-            onClick={() => onSave(slug)}
-            disabled={isSaving}
-            size="sm"
-            className="h-12 rounded-full bg-product-accent px-3 text-on-primary hover:bg-primary-hover text-xs tracking-normal leading-[1.5]"
-          >
-            {isSaving ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              "Salvar"
-            )}
-          </Button>
-        )}
+        <Button
+          type="button"
+          onClick={() => {
+            if (available && !isSaving) onSave(slug);
+          }}
+          disabled={!available || isSaving}
+          className="h-12 rounded-full bg-product-accent px-5 text-sm text-on-primary hover:bg-primary-hover"
+        >
+          {isSaving ? (
+            <>
+              <Loader2 aria-hidden className="mr-2 size-4 animate-spin" />
+              {t.saving}
+            </>
+          ) : (
+            t.save
+          )}
+        </Button>
       </div>
-      {hasChanged && slugAvailable === false && !checkingSlug && (
-        <p className="break-words text-error text-xs tracking-normal leading-[1.5]">
-          Slug indisponível
+      {message && (
+        <p
+          id={`${inputId}-status`}
+          role="status"
+          className={`text-xs leading-relaxed ${unavailable || !valid || isError ? "text-error" : available ? "text-success" : "text-ink-tertiary"}`}
+        >
+          {message}
         </p>
       )}
     </div>

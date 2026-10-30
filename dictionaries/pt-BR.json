@@ -94,6 +94,20 @@
     "appearance": "Aparência",
     "customize": "Personalizar",
     "customizeSubtitle": "Aparência da sua árvore",
+    "urlEditor": {
+      "edit": "Editar URL",
+      "title": "Editar URL da árvore",
+      "description": "Altere o endereço público da sua árvore. Após salvar, o endereço anterior deixará de funcionar. Seus links e estatísticas serão mantidos.",
+      "label": "Endereço da árvore",
+      "save": "Salvar URL",
+      "saving": "Salvando...",
+      "checking": "Verificando disponibilidade...",
+      "available": "Endereço disponível.",
+      "unavailable": "Esse endereço já está em uso. Escolha outro.",
+      "invalid": "Use de 2 a 30 letras minúsculas, números ou hífens. O endereço não pode ser reservado pelo site.",
+      "checkError": "Não foi possível verificar o endereço. Tente novamente.",
+      "saved": "URL da árvore atualizada."
+    },
     "linkForm": {
       "newLink": "Novo link",
       "editLink": "Editar link",

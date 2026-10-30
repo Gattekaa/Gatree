@@ -36,6 +36,7 @@ import {
   Eye,
   Loader2,
   Palette,
+  Pencil,
   Plus,
   Share2,
   Smartphone,
@@ -49,6 +50,7 @@ import { toast } from "sonner";
 import { AppearancePanel } from "./appearance-panel";
 import { LinkForm } from "./link-form";
 import { LinkList } from "./link-list";
+import { TreeUrlDialog } from "./tree-url-dialog";
 import { TreePreview } from "./tree-preview";
 
 interface TreeEditorViewProps {
@@ -67,6 +69,7 @@ export function TreeEditorView({
   const [links, setLinks] = useState(initialTree.links);
   const [showLinkForm, setShowLinkForm] = useState(false);
   const [editingLink, setEditingLink] = useState<Link | null>(null);
+  const [showUrlEditor, setShowUrlEditor] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [deletingLink, setDeletingLink] = useState<Link | null>(null);
@@ -239,9 +242,9 @@ export function TreeEditorView({
                   className="w-full rounded-xl border border-transparent bg-transparent px-2 py-1 text-2xl font-semibold tracking-[-0.035em] text-ink outline-none placeholder:text-ink-tertiary hover:border-hairline focus:border-primary focus-visible:outline-none"
                   placeholder={translations.editor.titlePlaceholder}
                 />
-                <p className="break-words text-[12px] text-ink-tertiary">
-                  /{slug}
-                </p>
+                <button type="button" onClick={() => setShowUrlEditor(true)} className="inline-flex max-w-full items-center gap-2 rounded-lg px-2 py-1 text-xs text-ink-tertiary hover:text-primary focus-visible:outline-2 focus-visible:outline-primary" aria-label={translations.editor.urlEditor.edit}>
+                  <span className="truncate">/{slug}</span><Pencil aria-hidden className="size-3 shrink-0" /><span>{translations.editor.urlEditor.edit}</span>
+                </button>
               </div>
             </div>
             {titleSaveStatus === "saving" && (
@@ -479,11 +482,9 @@ export function TreeEditorView({
               </span>
             </div>
             <div className="h-4 w-px bg-hairline-strong" />
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-ink-tertiary text-xs tracking-normal leading-[1.5]">
-                /{slug}
-              </span>
-            </div>
+            <button type="button" onClick={() => setShowUrlEditor(true)} className="inline-flex min-w-0 items-center gap-2 rounded-lg px-2 py-1 text-xs text-ink-tertiary hover:text-primary focus-visible:outline-2 focus-visible:outline-primary" aria-label={translations.editor.urlEditor.edit}>
+              <span className="truncate font-mono">/{slug}</span><Pencil aria-hidden className="size-3 shrink-0" /><span className="shrink-0">{translations.editor.urlEditor.edit}</span>
+            </button>
           </div>
 
           <div className="grid grid-cols-[minmax(0,1.25fr)_minmax(280px,1fr)] gap-8">
@@ -621,6 +622,8 @@ export function TreeEditorView({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {showUrlEditor && <TreeUrlDialog treeId={tree.id} slug={slug} open={showUrlEditor} onOpenChange={setShowUrlEditor} translations={translations} />}
 
         {showMobilePreview && (
           <DialogContent

@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAutoSave } from "@/hooks/use-auto-save";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useUpdateTree } from "@/hooks/use-tree-detail";
+import { useUpdateTreeUrl } from "@/hooks/use-update-tree-url";
 import {
   CURATED_FONTS,
   DEFAULT_BACKGROUND,
@@ -208,7 +208,7 @@ export function AppearancePanel({
   const linkStyle =
     (tree.linkStyle as LinkStyleConfig | null) || DEFAULT_LINK_STYLE;
 
-  const updateTreeMutation = useUpdateTree(slug);
+  const updateTreeMutation = useUpdateTreeUrl(tree.id, slug, translations);
 
   useAutoSave(description, async (desc) => {
     if (desc !== (tree.description || "")) {
@@ -274,17 +274,8 @@ export function AppearancePanel({
     publishTreePatch({ avatar: url });
   }
 
-  async function handleSlugSave(newSlug: string) {
-    const result = await updateTree(tree.id, { slug: newSlug });
-    if (result && "error" in result) {
-      const errorKey = result.error.replace("errors.", "");
-      toast.error(
-        translations.errors[errorKey as keyof typeof translations.errors] ||
-          translations.errors.updateSlug,
-      );
-      return;
-    }
-    window.location.href = `/editor/${newSlug}`;
+  function handleSlugSave(newSlug: string) {
+    updateTreeMutation.mutate(newSlug);
   }
 
   async function handleSeoSave(seoTitle: string, seoDescription: string) {
@@ -656,6 +647,9 @@ function SectionContent({
             </p>
             <div className="mt-3">
               <SlugEditor
+                key={slug}
+                treeId={tree.id}
+                translations={translations.editor.urlEditor}
                 currentSlug={slug}
                 onSave={onSlugSave}
                 isSaving={updateTreeMutation.isPending}

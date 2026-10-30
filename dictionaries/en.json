@@ -94,6 +94,20 @@
     "appearance": "Appearance",
     "customize": "Customize",
     "customizeSubtitle": "Your tree's appearance",
+    "urlEditor": {
+      "edit": "Edit URL",
+      "title": "Edit tree URL",
+      "description": "Change the public address of your tree. After saving, the previous address will stop working. Your links and analytics will be preserved.",
+      "label": "Tree address",
+      "save": "Save URL",
+      "saving": "Saving...",
+      "checking": "Checking availability...",
+      "available": "Address available.",
+      "unavailable": "This address is already in use. Choose another.",
+      "invalid": "Use 2–30 lowercase letters, numbers or hyphens. The address cannot be reserved by the site.",
+      "checkError": "Could not check availability. Please try again.",
+      "saved": "Tree URL updated."
+    },
     "linkForm": {
       "newLink": "New link",
       "editLink": "Edit link",

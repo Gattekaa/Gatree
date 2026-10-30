@@ -4,6 +4,7 @@ import { updateTreeSchema } from "@/lib/validations";
 import { normalizeSocialUrl } from "@/lib/social-platforms";
 import { isAuthError, requireUser } from "@/lib/auth-utils";
 import { db } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import type { BackgroundConfig, LinkStyleConfig } from "@/types";
 import { revalidatePath } from "next/cache";
 
@@ -27,8 +28,12 @@ export async function createTree(data: { title: string; slug: string }) {
       slug: parsed.data.slug,
       userId: userId,
     },
+  }).catch((error: unknown) => {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") return { error: "errors.slugUnavailable" };
+    throw error;
   });
 
+  if ("error" in tree) return tree;
   revalidatePath("/dashboard");
   return tree;
 }
@@ -60,10 +65,16 @@ export async function updateTree(
   const updated = await db.tree.update({
     where: { id: treeId },
     data: { title: parsed.data.title, description: parsed.data.description, slug: parsed.data.slug, status: parsed.data.status },
+  }).catch((error: unknown) => {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") return { error: "errors.slugUnavailable" };
+    throw error;
   });
+  if ("error" in updated) return updated;
 
   revalidatePath("/dashboard");
   revalidatePath(`/editor/${updated.slug}`);
+  revalidatePath(`/${tree.slug}`);
+  revalidatePath(`/${updated.slug}`);
   return updated;
 }
 

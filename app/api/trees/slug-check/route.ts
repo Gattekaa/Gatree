@@ -1,4 +1,5 @@
 import { getAuthUser } from "@/lib/auth-utils";
+import { treeSlugSchema, isTreeSlugAvailable } from "@/lib/tree-slug";
 import { db } from "@/lib/db";
 import { getClientIp, slugCheckRateLimiter } from "@/lib/rate-limit";
 import { NextResponse } from "next/server";
@@ -18,20 +19,16 @@ export async function GET(request: Request) {
   const slug = searchParams.get("slug");
   const excludeId = searchParams.get("excludeId");
 
-  if (!slug || slug.length < 2) {
+  if (!treeSlugSchema.safeParse(slug).success) {
     return NextResponse.json({ available: false });
   }
 
   const existing = await db.tree.findFirst({
-    where: {
-      slug,
-
-      ...(excludeId ? { NOT: { id: excludeId } } : {}),
-    },
+    where: { slug: slug! },
     select: { id: true, userId: true },
   });
 
-  const available = !existing || existing.userId === userId;
+  const available = isTreeSlugAvailable(existing, userId, excludeId);
 
   return NextResponse.json({ available });
 }

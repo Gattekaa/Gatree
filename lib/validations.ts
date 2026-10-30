@@ -1,13 +1,10 @@
 import { matchesHostname } from "@/lib/security-policy";
+import { treeSlugSchema } from "@/lib/tree-slug";
 import { z } from "zod";
 
 export const createTreeSchema = z.object({
   title: z.string().min(1, "Título é obrigatório").max(100, "Máximo 100 caracteres"),
-  slug: z
-    .string()
-    .min(2, "Mínimo 2 caracteres")
-    .max(30, "Máximo 30 caracteres")
-    .regex(/^[a-z0-9-]+$/, "Apenas letras minúsculas, números e hífens"),
+  slug: treeSlugSchema,
 });
 
 export const updateTreeSchema = createTreeSchema.partial().extend({

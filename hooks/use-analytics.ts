@@ -103,13 +103,15 @@ export function useReferrers(slug: string, treeId: string, period: Period) {
   });
 }
 
-export function useSlugAvailability(slug: string) {
+export function useSlugAvailability(slug: string, excludeId?: string) {
   return useQuery({
-    queryKey: BASE_QUERY_KEYS.trees.slugAvailability(slug),
+    queryKey: [...BASE_QUERY_KEYS.trees.slugAvailability(slug), excludeId || null],
     queryFn: async () => {
       if (slug.length < 2) return { available: false };
-      const res = await fetch(`/api/trees/slug-check?slug=${slug}`);
-      if (!res.ok) return { available: false };
+      const params = new URLSearchParams({ slug });
+      if (excludeId) params.set("excludeId", excludeId);
+      const res = await fetch(`/api/trees/slug-check?${params}`);
+      if (!res.ok) throw new Error("Availability check failed");
       return res.json() as Promise<{ available: boolean }>;
     },
     enabled: slug.length >= 2,
