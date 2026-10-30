@@ -1,0 +1,898 @@
+{
+  "common": {
+    "retry": "Try again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "confirm": "Confirm",
+    "close": "Close",
+    "copy": "Copy",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "noResults": "No results",
+    "active": "Active",
+    "inactive": "Inactive",
+    "expired": "Expired",
+    "protected": "Protected",
+    "preview": "Preview",
+    "export": "Export",
+    "share": "Share",
+    "pageOf": "{{page}} of {{totalPages}}"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "shortener": "Shortener",
+    "settings": "Settings",
+    "editor": "Editor",
+    "analytics": "Analytics",
+    "viewPage": "View page",
+    "menu": "Menu",
+    "activeTree": "Active tree"
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "logoutAccount": "Log out",
+    "loginWith": "Log in with {{provider}}",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithGithub": "Continue with GitHub",
+    "welcome": "Welcome to Gatree",
+    "welcomeSubtitle": "Create and manage your link trees with powerful analytics.",
+    "termsNotice": "By continuing, you agree to the",
+    "termsOfUse": "Terms of Use",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy",
+    "authenticatedViaOAuth": "Authenticated via OAuth",
+    "loginError": "Could not complete login. Please try again."
+  },
+  "dashboard": {
+    "loadError": "Could not load your trees",
+    "loadErrorDescription": "Check your connection and try again.",
+    "title": "Dashboard",
+    "subtitle": "Overview of your link trees",
+    "createTree": "New Tree",
+    "emptyState": "Create your first tree",
+    "emptyStateDescription": "A link tree is your personalized page with all your profiles, projects, and important content gathered in a single link.",
+    "createFirstTree": "Create First Tree",
+    "yourTrees": "Your trees",
+    "totalViews": "Total Views",
+    "totalClicks": "Total Clicks",
+    "activeTrees": "Active Trees"
+  },
+  "editor": {
+    "title": "Editor",
+    "loadError": "Failed to load",
+    "loadErrorDescription": "Could not load this tree",
+    "addLink": "Add link",
+    "addLinkDescription": "Link, YouTube, or divider",
+    "addNewLink": "Add new link",
+    "addNewLinkDescription": "Link, YouTube video, or divider",
+    "links": "{{count}} links",
+    "activeLinks": "{{count}} active",
+    "dragHint": "Hold and drag the dots to reorder",
+    "emptyLinks": "No links yet. Add your first link above.",
+    "titlePlaceholder": "Title",
+    "treeTitlePlaceholder": "Tree title",
+    "deleteLink": {
+      "title": "Delete link?",
+      "description": "The item “{{label}}” will be removed from your tree. This action cannot be undone.",
+      "unnamed": "Untitled",
+      "deleting": "Deleting..."
+    },
+    "linkItem": {
+      "section": "Section",
+      "scheduled": "Scheduled",
+      "highlight": "Featured",
+      "addHighlight": "Feature",
+      "removeHighlight": "Remove feature"
+    },
+    "appearance": "Appearance",
+    "customize": "Customize",
+    "customizeSubtitle": "Your tree's appearance",
+    "linkForm": {
+      "newLink": "New link",
+      "editLink": "Edit link",
+      "newLinkSubtitle": "Add a link to your tree",
+      "editLinkSubtitle": "Update the details",
+      "type": "Type",
+      "categoryLinks": "Links",
+      "categoryMedia": "Media",
+      "categoryLayout": "Layout",
+      "labelField": "Title",
+      "sectionTitle": "Section title",
+      "textField": "Text",
+      "optional": "(optional)",
+      "urlField": "URL",
+      "locationField": "Location",
+      "numberField": "Number",
+      "imageField": "Image",
+      "iconField": "Icon",
+      "thumbnailField": "Thumbnail",
+      "schedule": "Schedule",
+      "scheduleStart": "Start",
+      "scheduleEnd": "End",
+      "addButton": "Add",
+      "saveButton": "Save",
+      "loadingMap": "Loading map...",
+      "imageError": "Please select an image file",
+      "imageSizeError": "Image too large. Maximum 1MB.",
+      "placeholders": {
+        "header": "e.g., Social Media",
+        "text": "Your text here...",
+        "youtube": "e.g., My latest video",
+        "spotify": "e.g., My playlist",
+        "default": "e.g., My Portfolio",
+        "urlYoutube": "https://youtube.com/watch?v=...",
+        "urlSpotify": "https://open.spotify.com/track/...",
+        "urlEmail": "email@example.com",
+        "urlDefault": "https://example.com"
+      },
+      "types": {
+        "link": "Link",
+        "linkDesc": "URL to any page",
+        "email": "Email",
+        "emailDesc": "Open email",
+        "phone": "Phone",
+        "phoneDesc": "Call or save",
+        "whatsapp": "WhatsApp",
+        "whatsappDesc": "Start a conversation",
+        "youtube": "YouTube",
+        "youtubeDesc": "Video embed",
+        "spotify": "Spotify",
+        "spotifyDesc": "Music embed",
+        "soundcloud": "SoundCloud",
+        "soundcloudDesc": "Audio embed",
+        "image": "Image",
+        "imageDesc": "Display an image",
+        "header": "Divider",
+        "headerDesc": "Section title",
+        "text": "Text",
+        "textDesc": "Free text block",
+        "map": "Map",
+        "mapDesc": "Interactive location"
+      }
+    }
+  },
+  "settings": {
+    "sessionLoadError": "Could not load your sessions.",
+    "title": "Settings",
+    "subtitle": "Manage your profile and preferences",
+    "profile": "Profile",
+    "activeSessions": "Active Sessions",
+    "preferences": "Preferences",
+    "account": "Account",
+    "theme": "Theme",
+    "themeToggle": "Toggle between light and dark",
+    "sessionEnded": "Session ended",
+    "sessionEndError": "Failed to end session",
+    "allSessionsEnded": "All other sessions have been ended",
+    "allSessionsEndError": "Failed to end sessions",
+    "endOtherSessions": "End others",
+    "loadingSessions": "Loading sessions...",
+    "noActiveSessions": "No active sessions found",
+    "thisSession": "This session",
+    "unknownDevice": "Unknown device",
+    "language": "Language",
+    "languageDescription": "Choose the interface language"
+  },
+  "analytics": {
+    "backToShortener": "Back to the shortener",
+    "title": "Analytics",
+    "views": "Views",
+    "visitors": "Visitors",
+    "clicks": "Clicks",
+    "ctr": "CTR",
+    "totalClicks": "Total Clicks",
+    "uniqueVisitors": "Unique Visitors",
+    "viewsOverTime": "Views over time",
+    "clicksOverTime": "Clicks over time",
+    "noDataForPeriod": "No data for this period",
+    "viewsAppearHint": "Views will appear here as visitors access your page",
+    "currentPeriod": "Current period",
+    "previousPeriod": "Previous period",
+    "vsPrevious": "vs {{count}} previous",
+    "previousPeriodRef": "{{count}} in the previous period",
+    "peak": "Peak",
+    "peakStat": "{{count}} views on {{date}}",
+    "peakClicks": "{{count}} clicks on {{date}}",
+    "devices": "Devices",
+    "countries": "Countries",
+    "states": "States",
+    "cities": "Cities",
+    "location": "Location",
+    "trafficSource": "Traffic Source",
+    "directAccess": "Direct access",
+    "directAccessTooltip": "Typed the URL, used bookmarks, or came from an app that doesn't send a referrer",
+    "noReferrerData": "No referrer data",
+    "noDeviceData": "No device data",
+    "noLocationData": "No location data",
+    "insights": "Insights",
+    "insightsSoon": "Insights will be available soon",
+    "insightsSoonDescription": "We need at least 7 days of data to generate relevant insights. Keep sharing your tree!",
+    "insightsSoonDescriptionShort": "We need at least 7 days of data to generate relevant insights. Keep sharing your link!",
+    "loadError": "Failed to load analytics",
+    "loadErrorHint": "Please try again in a moment.",
+    "noClicksPeriod": "No clicks in this period",
+    "noClicksPeriodDescription": "No clicks recorded for the selected period. Share your link or select a different time range.",
+    "sources": "sources",
+    "source": "source",
+    "items": "items",
+    "item": "item",
+    "periods": {
+      "today": "Today",
+      "7d": "7d",
+      "30d": "30d",
+      "90d": "90d"
+    }
+  },
+  "shortener": {
+    "noTopLink": "No clicks this period",
+    "loadError": "Could not load your links",
+    "title": "Shortener",
+    "subtitle": "Create and manage your shortened links",
+    "createLink": "Create link",
+    "totalLinks": "Total Links",
+    "clicks30d": "Clicks (30 days)",
+    "topLink": "Top Link",
+    "noLinksYet": "No links yet",
+    "emptyState": "Create your first short link",
+    "emptyStateDescription": "Short links make sharing easier and let you track clicks, devices, location, and referrers in real time.",
+    "createFirstLink": "Create First Link",
+    "noSearchResults": "No results",
+    "noSearchResultsDescription": "No links found for \"{{query}}\". Try a different term.",
+    "searchPlaceholder": "Search by slug or destination URL...",
+    "clicks": "clicks",
+    "linkActions": "Link actions",
+    "copyUrl": "Copy URL",
+    "urlCopied": "URL copied!",
+    "urlCopyError": "Could not copy the URL",
+    "qrCode": "QR Code",
+    "status": {
+      "active": "Active",
+      "expired": "Expired",
+      "protected": "Protected"
+    }
+  },
+  "marketing": {
+    "ui": {
+      "skipToContent": "Skip to content",
+      "navigation": "Main navigation",
+      "toggleTheme": "Toggle light and dark theme",
+      "previewLabel": "Example page created with Gatree",
+      "previewDescription": "Music, code, and everything I create.",
+      "previewLinks": [
+        "Listen to my beats",
+        "My portfolio",
+        "Instagram",
+        "Get in touch"
+      ],
+      "productHighlights": "Gatree in numbers",
+      "viewComparison": "View full comparison",
+      "included": "Included"
+    },
+    "hero": {
+      "badge": "Smart analytics + 11 link types",
+      "headline": "All your links.",
+      "headlineHighlight": "One place.",
+      "subtitle": "Create your link tree with full analytics, media embeds, animated backgrounds, and total customization. Free.",
+      "cta": "Create my tree",
+      "ctaSecondary": "See how it works"
+    },
+    "embeds": {
+      "title": "Native embeds from"
+    },
+    "stats": {
+      "linkTypes": "Link types",
+      "animatedBackgrounds": "Animated backgrounds",
+      "linksPerTree": "Links per tree",
+      "free": "Free"
+    },
+    "linkTypes": {
+      "title": "11 content types",
+      "subtitle": "From YouTube videos to Spotify playlists, maps, images, and direct contacts.",
+      "sectionLabel": "More than links",
+      "link": "Link",
+      "linkDesc": "Any URL",
+      "youtube": "YouTube",
+      "youtubeDesc": "Embed player",
+      "spotify": "Spotify",
+      "spotifyDesc": "Music embed",
+      "soundcloud": "SoundCloud",
+      "soundcloudDesc": "Audio embed",
+      "map": "Map",
+      "mapDesc": "Location",
+      "email": "Email",
+      "emailDesc": "Open email",
+      "phone": "Phone",
+      "phoneDesc": "Direct call",
+      "whatsapp": "WhatsApp",
+      "whatsappDesc": "Start a conversation",
+      "header": "Header",
+      "headerDesc": "Section title",
+      "text": "Text",
+      "textDesc": "Free block",
+      "image": "Image",
+      "imageDesc": "Direct upload",
+      "more": "+More",
+      "moreDesc": "Coming soon"
+    },
+    "features": {
+      "title": "Everything in one place",
+      "sectionLabel": "Features",
+      "analytics": "Full Analytics",
+      "analyticsDesc": "Views, clicks, CTR, devices, countries, states, cities, referrers. Time-based comparison.",
+      "themes": "Themes & Backgrounds",
+      "themesDesc": "13 animated backgrounds (aurora, particles, rain, matrix...), gradients, colors, and 20+ themes.",
+      "editor": "Visual Editor",
+      "editorDesc": "Drag-and-drop, auto-save, real-time preview via iframe, mobile-first.",
+      "responsive": "Natively Responsive",
+      "responsiveDesc": "Different layouts for mobile and desktop. Designed for each screen.",
+      "qrCode": "QR Code",
+      "qrCodeDesc": "Generate QR codes in PNG or SVG. Share on social media with 1 click.",
+      "utm": "UTM Tracking",
+      "utmDesc": "Smart source resolution: UTM params, Referer, and UA sniffing."
+    },
+    "shortener": {
+      "badge": "New",
+      "title": "URL Shortener",
+      "titleHighlight": "with analytics",
+      "subtitle": "Create short links independent of your trees. Each link has its own dashboard with full metrics for clicks, devices, and location.",
+      "shorten": "Shorten",
+      "copied": "Copied!",
+      "features": [
+        "Short links with custom or auto-generated slug",
+        "Full analytics per link: device, country, referrer",
+        "Password protection with rate limiting",
+        "Configurable expiration for temporary campaigns",
+        "QR Code in PNG and SVG with brand colors",
+        "Generous limit: 100 links per account"
+      ]
+    },
+    "analyticsHighlight": {
+      "badge": "Differentiator",
+      "title": "Analytics that",
+      "titleHighlight": "matter",
+      "subtitle": "Not just counting clicks. Understand where your audience comes from, which links perform, and receive automatic insights.",
+      "features": [
+        "Geographic drilldown: Country → State → City",
+        "Smart source resolution (Instagram, TikTok, etc.)",
+        "Comparison with previous period across all KPIs",
+        "Link ranking with CTR and sparklines",
+        "Automatically generated insights",
+        "Full CSV export"
+      ]
+    },
+    "howItWorks": {
+      "sectionLabel": "3 steps",
+      "title": "Ready in 30 seconds",
+      "step1Title": "Quick login",
+      "step1Desc": "Google or GitHub. No forms.",
+      "step2Title": "Build your page",
+      "step2Desc": "Add links, pick a theme and background.",
+      "step3Title": "Share",
+      "step3Desc": "Copy the link or QR code. Instant analytics."
+    },
+    "cta": {
+      "title": "Create your tree now",
+      "subtitle": "Free forever. No credit card. No link limits.",
+      "button": "Get Started Free"
+    },
+    "footer": {
+      "features": "Features",
+      "login": "Log in",
+      "startFree": "Get Started Free"
+    },
+    "nav": {
+      "features": "Features",
+      "login": "Log in",
+      "startFree": "Get Started Free"
+    },
+    "floatingCards": {
+      "viewsToday": "Views today",
+      "countries": "Countries",
+      "spotifyEmbed": "Spotify embed",
+      "activeStatus": "Active"
+    },
+    "comparison": {
+      "title": "Gatree vs the competition",
+      "subtitle": "Everything others charge for, here it's free.",
+      "features": [
+        "Full analytics",
+        "Unlimited links",
+        "Animated backgrounds",
+        "Media embeds",
+        "QR Code",
+        "URL shortener",
+        "Drag-and-drop editor",
+        "Custom domain",
+        "No watermark"
+      ],
+      "gatree": "Gatree",
+      "linktree": "Linktree",
+      "beacons": "Beacons",
+      "free": "Free",
+      "paid": "Paid",
+      "limited": "Limited",
+      "soon": "Coming soon",
+      "yes": "✓",
+      "no": "✗"
+    },
+    "useCases": {
+      "title": "Built for creators",
+      "subtitle": "No matter your niche. Gatree adapts.",
+      "musicians": {
+        "title": "Musicians",
+        "description": "Spotify, YouTube, and SoundCloud embeds right on your page. Your audience listens without leaving.",
+        "tags": ["Spotify embed", "YouTube embed", "SoundCloud", "Gig links"]
+      },
+      "designers": {
+        "title": "Designers",
+        "description": "Visual portfolio with images, links to Behance/Dribbble, and a location map for your studio.",
+        "tags": ["Image gallery", "Portfolio links", "Interactive map"]
+      },
+      "influencers": {
+        "title": "Influencers",
+        "description": "Full analytics to understand your audience. CTR, devices, countries, and peak hours.",
+        "tags": [
+          "Real-time analytics",
+          "CTR per link",
+          "Geolocation",
+          "QR Code"
+        ]
+      },
+      "devs": {
+        "title": "Devs & Makers",
+        "description": "Links to GitHub, Product Hunt, docs. Customizable with animated backgrounds like terminal/matrix.",
+        "tags": ["GitHub links", "Animated backgrounds", "URL shortener"]
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": [
+        {
+          "q": "Is it really free?",
+          "a": "Yes. No tricks, no 14-day trial. Analytics, themes, animated backgrounds: all included. Forever."
+        },
+        {
+          "q": "Do I need a credit card?",
+          "a": "No. Log in with Google or GitHub and you're ready to go."
+        },
+        {
+          "q": "Is my data mine?",
+          "a": "100%. No third-party tracking, no data selling. Export everything via CSV whenever you want."
+        },
+        {
+          "q": "Can I use my own domain?",
+          "a": "Not yet, but it's on the roadmap. For now, your link is gatree.app/your-slug."
+        },
+        {
+          "q": "How many links can I have?",
+          "a": "Unlimited per tree. No hidden paywall."
+        }
+      ]
+    },
+    "campaign": {
+      "hero": {
+        "line1": "Your world.",
+        "line2": "In one link.",
+        "subtitle": "Your links, content and projects on one page. Share for free and see what makes your audience click.",
+        "cta": "Create my tree",
+        "secondary": "Explore Gatree",
+        "portraitAlt": "Creator with headphones around her neck holding a phone",
+        "sceneTitle": "Your world, connected."
+      },
+      "marquee": {
+        "items": [
+          "Your music",
+          "Your work",
+          "Your ideas",
+          "Your next project",
+          "Your world"
+        ],
+        "pause": "Pause animation",
+        "resume": "Resume animation",
+        "reduced": "Motion reduced to match your preference"
+      },
+      "story": {
+        "title": "Create. Share. Understand.",
+        "description": "From your first link to your next move, all in one place.",
+        "steps": [
+          {
+            "title": "A page that feels like you.",
+            "description": "Add links, drag them into place, and choose your look. Watch your tree take shape as you edit.",
+            "alt": "Gatree editor with organized links and a page preview",
+            "tags": ["Visual editor", "Live preview", "Unlimited links"]
+          },
+          {
+            "title": "See what gets attention.",
+            "description": "Track visits, clicks, and where your audience comes from. Compare periods and find the links people notice.",
+            "alt": "Gatree analytics showing visits, clicks, and audience sources",
+            "tags": ["Clicks and visits", "Audience sources", "CSV export"]
+          },
+          {
+            "title": "A short link. More ways in.",
+            "description": "Shorten URLs for your projects and campaigns. Share a link or QR code and follow the clicks.",
+            "alt": "Gatree URL shortener with a short link and sharing options",
+            "tags": ["Custom URLs", "QR codes", "Per-link analytics"]
+          }
+        ],
+        "tabs": ["Editor", "Analytics", "Short links"]
+      },
+      "audience": {
+        "title": "Your world fits here.",
+        "description": "From your next song to your next client, bring together what matters to the people finding you.",
+        "exampleLabel": "Sample profile",
+        "items": [
+          {
+            "name": "Creators",
+            "title": "Everything you create, together.",
+            "description": "Videos, updates, and collaborations on a page that keeps up with your content.",
+            "profileName": "Luna Brooks",
+            "bio": "Videos, ideas, and a little of my world.",
+            "links": [
+              "Watch my latest video",
+              "Behind the scenes",
+              "Let’s create together"
+            ]
+          },
+          {
+            "name": "Musicians",
+            "title": "Press play on your world.",
+            "description": "Let your audience listen to your music, watch your videos, and find your next show.",
+            "profileName": "Nina Lane",
+            "bio": "Sounds to take with you.",
+            "links": [
+              "Listen to my new single",
+              "Watch the music video",
+              "Upcoming shows"
+            ]
+          },
+          {
+            "name": "Professionals",
+            "title": "Put your work in view.",
+            "description": "Bring your portfolio, projects, and contact details together for people discovering your work.",
+            "profileName": "Alex Park",
+            "bio": "Turning ideas into thoughtful design.",
+            "links": ["Explore my portfolio", "See my projects", "Let’s talk"]
+          },
+          {
+            "name": "Businesses",
+            "title": "Open the door to your business.",
+            "description": "Keep your catalog, location, and WhatsApp together so customers can find what they need.",
+            "profileName": "House Studio",
+            "bio": "Objects and ideas for everyday living.",
+            "links": [
+              "Explore our collection",
+              "Visit the studio",
+              "Chat on WhatsApp"
+            ]
+          }
+        ]
+      },
+      "bento": {
+        "title": "Every detail, your way.",
+        "description": "Tools to show more of you, without making your page complicated.",
+        "items": [
+          {
+            "title": "Your identity in motion.",
+            "description": "Choose themes, colors, and backgrounds for a page that feels like you.",
+            "detail": "13 animated backgrounds"
+          },
+          {
+            "title": "More than a URL.",
+            "description": "Music, video, images, maps, and direct contact. Your content belongs on the page.",
+            "detail": "11 content types"
+          },
+          {
+            "title": "From the screen to anywhere.",
+            "description": "Share your page with a QR code on printed materials, at events, or wherever it makes sense.",
+            "detail": "PNG and SVG QR codes"
+          },
+          {
+            "title": "Know where the click came from.",
+            "description": "Use UTM parameters and track visitor sources to understand your campaigns.",
+            "detail": "UTM tracking"
+          }
+        ]
+      },
+      "statement": {
+        "line1": "You have so much",
+        "line2": "to share.",
+        "description": "Give your audience a place to discover it all."
+      },
+      "universe": {
+        "bridgeWords": ["Create.", "Share.", "Connect."],
+        "assembledTitle": "Everything in one link.",
+        "description": "Your music, your ideas, your work. Bring what you do together on a page that feels like you.",
+        "hint": "Scroll to see your world connect",
+        "address": "gatree.app/your-profile",
+        "nodes": [
+          "Music",
+          "Videos",
+          "Projects",
+          "Contacts",
+          "Photos",
+          "Ideas",
+          "Events",
+          "Links"
+        ]
+      },
+      "final": {
+        "line1": "Your next link",
+        "line2": "starts here.",
+        "description": "Sign in with Google or GitHub. Create your tree for free, with no credit card.",
+        "cta": "Get started free"
+      }
+    }
+  },
+  "errors": {
+    "notAuthenticated": "Not authenticated",
+    "notAuthorized": "Not authorized",
+    "slugUnavailable": "Slug unavailable",
+    "slugInUse": "This slug is already in use",
+    "invalidData": "Invalid data",
+    "invalidLocale": "Invalid locale",
+    "notFound": "Not found",
+    "linkNotFound": "Link not found",
+    "limitReached": "Limit of 100 links reached",
+    "invalidIds": "Invalid IDs: some links do not belong to this tree",
+    "duplicateIds": "Duplicate IDs are not allowed",
+    "endDateAfterStart": "End date must be after the start date",
+    "expirationFuture": "Expiration date must be in the future (minimum 5 minutes)",
+    "expirationFutureMin": "Expiration date must be in the future (minimum 1 minute)",
+    "generic": "Something went wrong",
+    "createTree": "Failed to create tree",
+    "deleteTree": "Failed to delete",
+    "reorder": "Failed to reorder",
+    "addLink": "Failed to add link",
+    "updateLink": "Failed to update link",
+    "deleteLink": "Failed to remove link",
+    "toggleVisibility": "Failed to change visibility",
+    "toggleHighlight": "Failed to change highlight",
+    "statusChange": "Failed to change status",
+    "saveBackground": "Failed to save background",
+    "saveLinkStyle": "Failed to save style",
+    "applyTheme": "Failed to apply theme",
+    "saveAvatar": "Failed to save avatar",
+    "updateSlug": "Failed to update slug",
+    "saveSeo": "Failed to save SEO",
+    "saveSocial": "Failed to save social links",
+    "saveFont": "Failed to save font",
+    "deleteShortLink": "Failed to delete link",
+    "createShortLink": "Failed to create link",
+    "updateShortLink": "Failed to update link",
+    "loadAnalytics": "Failed to load analytics",
+    "invalidImage": "Please select a valid image",
+    "imageTooLarge": "Image too large. Maximum 5MB.",
+    "uploadError": "Upload failed"
+  },
+  "toasts": {
+    "treeSaved": "Tree saved successfully",
+    "treeCreated": "Tree created successfully!",
+    "treeDeleted": "Tree deleted",
+    "treeActivated": "Tree activated",
+    "treeDeactivated": "Tree deactivated",
+    "linkCreated": "Link created",
+    "linkAdded": "Link added",
+    "linkUpdated": "Link updated",
+    "linkDeleted": "Link removed",
+    "linkExcluded": "Link deleted",
+    "linkCopied": "Link copied!",
+    "urlCopied": "URL copied!",
+    "shortLinkCreated": "Link created successfully!",
+    "shortLinkUpdated": "Link updated!",
+    "avatarUpdated": "Avatar updated",
+    "imageUploaded": "Image uploaded",
+    "localeSaved": "Language updated",
+    "themeApplied": "Theme \"{{name}}\" applied",
+    "seoUpdated": "SEO updated",
+    "sessionEnded": "Session ended",
+    "allSessionsEnded": "All other sessions have been ended"
+  },
+  "dialogs": {
+    "createTree": {
+      "title": "Create new tree",
+      "description": "Set a title and unique URL for your link tree.",
+      "nameLabel": "Tree name",
+      "namePlaceholder": "e.g., My Portfolio, Professional Links...",
+      "urlLabel": "Page URL",
+      "slugPlaceholder": "my-profile",
+      "slugUnavailable": "This URL is already taken. Try another.",
+      "slugAvailable": "✓ URL available",
+      "createButton": "Create tree"
+    },
+    "deleteTree": {
+      "title": "Delete tree",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action is permanent and will remove all links and associated analytics data."
+    },
+    "deleteShortLink": {
+      "title": "Delete link",
+      "description": "Are you sure you want to delete this link? All click data will be permanently removed. This action cannot be undone."
+    },
+    "share": {
+      "title": "Share",
+      "copyButton": "Copy",
+      "qrCode": "QR Code",
+      "checkMyLinks": "Check out my links:"
+    }
+  },
+  "public": {
+    "poweredBy": "Made with Gatree",
+    "notFound": "Not found"
+  },
+  "appearance": {
+    "sections": {
+      "profile": "Profile",
+      "profileDesc": "Avatar, title, and description",
+      "themes": "Themes",
+      "themesDesc": "Pre-defined themes",
+      "background": "Background",
+      "backgroundDesc": "Color, gradient, or animation",
+      "links": "Link Style",
+      "linksDesc": "Button shape and colors",
+      "fonts": "Fonts",
+      "fontsDesc": "Page typography",
+      "social": "Social Links",
+      "socialDesc": "Social media icons",
+      "seo": "SEO",
+      "seoDesc": "Title and description for search engines",
+      "preview": "Preview",
+      "previewDesc": "Preview result"
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Customize how your tree appears to visitors",
+      "avatar": "Profile photo",
+      "avatarHint": "Recommended: 400×400px, JPG or PNG",
+      "bio": "Bio / Description",
+      "bioHint": "Short text that appears below the title",
+      "bioPlaceholder": "Designer, developer, creator...",
+      "url": "Page URL",
+      "urlHint": "Unique address for your tree"
+    },
+    "themes": {
+      "title": "Themes",
+      "subtitle": "Apply a ready-made theme with one click. You can customize it later."
+    },
+    "background": {
+      "title": "Background",
+      "subtitle": "Choose a solid color, gradient, or animated background"
+    },
+    "linkStyle": {
+      "title": "Link Style",
+      "subtitle": "Define the appearance of link buttons on your page",
+      "variant": "Variant",
+      "variantFilled": "Filled",
+      "variantOutlined": "Outlined",
+      "variantShadow": "Shadow",
+      "border": "Border radius",
+      "borderSharp": "Sharp",
+      "borderRounded": "Rounded",
+      "borderPill": "Pill",
+      "buttonColor": "Button color",
+      "customColors": "Custom colors",
+      "buttonBackground": "Button background",
+      "textColor": "Text",
+      "shadowColor": "Shadow color",
+      "preview": "Preview",
+      "previewLabel": "Link example"
+    },
+    "fonts": {
+      "title": "Fonts",
+      "subtitle": "Choose the typography for your page",
+      "default": "Default (system)"
+    },
+    "seo": {
+      "title": "SEO",
+      "subtitle": "Optimize how your page appears in search engines and social media"
+    }
+  },
+  "treeCard": {
+    "actions": "Tree actions",
+    "edit": "Edit",
+    "viewPage": "View page",
+    "share": "Share",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "delete": "Delete",
+    "views": "Views",
+    "clicks": "Clicks",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "onboarding": {
+    "reopen": "App tour",
+    "next": "Next",
+    "back": "Back",
+    "skip": "Skip tour",
+    "finish": "Finish tour",
+    "close": "Close tour",
+    "stepLabel": "{{current}} of {{total}}",
+    "guided": {
+      "loading": "Finding this control…",
+      "unavailable": "This control is not available right now. You can move to the next step.",
+      "steps": {
+        "dashboard": {
+          "title": "This is your dashboard.",
+          "description": "Find your link trees and see an overview of visits and clicks here.",
+          "tip": "This guide highlights the real controls on each page."
+        },
+        "createTree": {
+          "title": "Create a link tree.",
+          "description": "This button opens page creation. Choose a title and a public address.",
+          "tip": "The tour never creates a tree automatically."
+        },
+        "trees": {
+          "title": "Your link trees live here.",
+          "description": "Each card shows page totals and gives access to the editor, analytics and sharing.",
+          "tip": "Manage multiple trees from the same account."
+        },
+        "editorTitle": {
+          "title": "Edit your page.",
+          "description": "This is the tree title. Changes made in the editor are saved automatically.",
+          "tip": "Let’s explore the main controls for this tree."
+        },
+        "addLink": {
+          "title": "Add your content.",
+          "description": "Add links, videos, music, images, maps and contacts here. Drag items to change their order.",
+          "tip": "Use each item’s switch to control its visibility."
+        },
+        "appearance": {
+          "title": "Make it your own.",
+          "description": "Open themes, colors, fonts, backgrounds and profile settings with this control.",
+          "tip": "You choose how your public page looks."
+        },
+        "preview": {
+          "title": "Check the preview.",
+          "description": "See how your page looks on mobile or desktop while you edit.",
+          "tip": "On mobile, this button opens the preview."
+        },
+        "sharing": {
+          "title": "Share your link tree.",
+          "description": "Open the options to copy your page address or get its QR code.",
+          "tip": "The nearby button also lets you view your public page."
+        },
+        "analytics": {
+          "title": "Track your results.",
+          "description": "These indicators show views, visitors, clicks and click-through rate for this tree.",
+          "tip": "This page displays your real analytics."
+        },
+        "period": {
+          "title": "Compare time periods.",
+          "description": "Change the period to follow trends in visits and clicks.",
+          "tip": "Export the data if you want to analyze it later."
+        },
+        "shortener": {
+          "title": "Create short links.",
+          "description": "Open short-link creation here, with password and expiration options.",
+          "tip": "Every short link also has analytics and a QR code."
+        },
+        "shortenerSearch": {
+          "title": "Find your links.",
+          "description": "Search by the short address or destination URL. Each row’s menu contains its actions.",
+          "tip": "Edit a link, view analytics or get its QR code from that menu."
+        },
+        "preferences": {
+          "title": "Set your preferences.",
+          "description": "Change the app theme and interface language here.",
+          "tip": "Tree appearance settings live in the editor."
+        },
+        "finish": {
+          "title": "You’re ready to create.",
+          "description": "You know the way around. Use this button to start a link tree and bring your links together.",
+          "tip": "Reopen the guide through the profile menu → App tour."
+        },
+        "welcomeFinish": {
+          "title": "Create your first link tree.",
+          "description": "After you create your first tree, the guide will continue in the editor to show you how to add links, customize the page and track your results.",
+          "tip": "Finish this tour, then use the highlighted button to create your tree. Skipping the tour cancels the automatic follow-up."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,223 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==================== AUTH (NextAuth.js) ====================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  // Device/location metadata
+  device       String?  // "Chrome on macOS", "Safari on iPhone"
+  ip           String?
+  location     String?  // "São Paulo, BR"
+  lastActive   DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ==================== USER ====================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  locale        String?   // Nullable: null = use browser detection
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts   Account[]
+  sessions   Session[]
+  trees      Tree[]
+  shortLinks ShortLink[]
+}
+
+// ==================== TREE ====================
+
+model Tree {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  slug        String     @unique
+  status      TreeStatus @default(ACTIVE)
+
+  // Appearance
+  avatar     String?
+  background Json? // { type: 'solid' | 'gradient' | 'image' | 'animated', value: string, config?: object }
+  linkStyle  Json? // { variant: 'filled' | 'outlined', radius: 'sharp' | 'rounded' | 'pill', bgColor: string, textColor: string }
+  theme      String? // Nome do tema pré-definido (null = customizado)
+  socialIcons Json? // Array de { platform: string, url: string }
+  fontFamily  String?
+
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+
+  // Custom Domain (futuro)
+  customDomain String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links  Link[]
+
+  @@index([userId])
+  @@index([slug])
+  @@index([customDomain])
+}
+
+enum TreeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+// ==================== LINK ====================
+
+model Link {
+  id       String   @id @default(cuid())
+  label    String
+  url      String
+  icon      String? // Nome do ícone (ex: "instagram", "github", "globe")
+  thumbnail String? // URL/path da thumbnail 64x64
+  type      LinkType @default(LINK)
+  enabled  Boolean  @default(true)
+  position Int      @default(0)
+
+  // Scheduling
+  scheduledStart DateTime?
+  scheduledEnd   DateTime?
+
+  // Priority (max 1 per tree — highlighted/featured link)
+  priority Boolean @default(false)
+
+  // Appearance (override do estilo da Tree)
+  bgColor   String?
+  textColor String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  treeId String
+  tree   Tree   @relation(fields: [treeId], references: [id], onDelete: Cascade)
+
+  @@index([treeId, position])
+  @@index([treeId, enabled])
+}
+
+enum LinkType {
+  LINK
+  YOUTUBE
+  SPOTIFY
+  SOUNDCLOUD
+  HEADER
+  TEXT
+  IMAGE
+  MAP
+  EMAIL
+  PHONE
+  WHATSAPP
+}
+
+// ==================== ANALYTICS ====================
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+
+  // Source — polymorphic (what entity generated this event)
+  sourceType String   // "tree_view" | "link_click" | "short_link_click"
+  sourceId   String   // treeId, linkId, or shortLinkId
+
+  // Location metadata
+  country    String?
+  region     String?
+  city       String?
+
+  // Device metadata
+  device     String?
+  browser    String?
+
+  // Referrer
+  referrer   String?
+
+  createdAt  DateTime @default(now())
+
+  @@index([sourceType, sourceId])
+  @@index([sourceType, sourceId, createdAt])
+  @@index([sourceType, sourceId, country])
+  @@index([sourceType, sourceId, device])
+  @@index([createdAt])
+}
+
+
+// ==================== SHORT LINKS ====================
+
+model ShortLink {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  url         String          // Destination URL
+  title       String?         // Optional title (max 100 chars)
+  description String?         // Optional description (max 300 chars)
+
+  // Security
+  passwordHash String?        // bcrypt hash (null = public)
+
+  // Expiration
+  expiresAt   DateTime?       // null = never expires
+
+  // Timestamps
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  // Relations
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([slug])
+  @@index([userId, createdAt(sort: Desc)])
+}

@@ -1,0 +1,77 @@
+import {
+    BookOpen,
+    Briefcase,
+    Calendar,
+    Camera,
+    Coffee,
+    ExternalLink,
+    FileText,
+    Globe,
+    Headphones,
+    Heart,
+    Link,
+    Mail,
+    MapPin,
+    MessageCircle,
+    Mic,
+    Music,
+    Phone,
+    Play,
+    Podcast,
+    Rocket,
+    Send,
+    ShoppingBag,
+    Star,
+    Users,
+    Video,
+    Zap,
+    type LucideIcon,
+} from "lucide-react";
+
+export const ICON_COMPONENT_MAP: Record<string, LucideIcon> = {
+
+  instagram: Camera,
+  twitter: MessageCircle,
+  youtube: Play,
+  github: Briefcase,
+  linkedin: Users,
+  facebook: Users,
+  tiktok: Music,
+  twitch: Play,
+  discord: MessageCircle,
+  spotify: Headphones,
+  whatsapp: Phone,
+  telegram: Send,
+
+  globe: Globe,
+  mail: Mail,
+  "shopping-bag": ShoppingBag,
+  music: Music,
+  video: Video,
+  "file-text": FileText,
+  calendar: Calendar,
+  "map-pin": MapPin,
+  link: Link,
+  "external-link": ExternalLink,
+  heart: Heart,
+  star: Star,
+  zap: Zap,
+  "book-open": BookOpen,
+  briefcase: Briefcase,
+  camera: Camera,
+  coffee: Coffee,
+  headphones: Headphones,
+  mic: Mic,
+  phone: Phone,
+  play: Play,
+  podcast: Podcast,
+  rocket: Rocket,
+  users: Users,
+};
+
+export function getIconComponent(
+  name: string | null | undefined
+): LucideIcon | undefined {
+  if (!name) return undefined;
+  return ICON_COMPONENT_MAP[name];
+}
