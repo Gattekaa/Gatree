@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { headers } from "next/headers";
+import Script from "next/script";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -53,6 +54,7 @@ export default async function RootLayout({
 }>) {
   const headersList = await headers();
   const lang = headersList.get("x-locale") || "pt-BR";
+  const googleAnalyticsId = process.env.GOOGLE_ANALYTICS_ID;
 
   return (
     <html
@@ -87,6 +89,23 @@ export default async function RootLayout({
             }}
           />
         </ThemeProvider>
+        {googleAnalyticsId && (
+          <>
+            <Script id="google-analytics-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){window.dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', ${JSON.stringify(googleAnalyticsId)});
+              `}
+            </Script>
+            <Script
+              id="google-analytics"
+              src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(googleAnalyticsId)}`}
+              strategy="afterInteractive"
+            />
+          </>
+        )}
       </body>
     </html>
   );

@@ -78,7 +78,7 @@ const nextConfig: NextConfig = {
               "frame-src 'self' https://www.youtube.com https://open.spotify.com https://w.soundcloud.com https://www.google.com https://maps.google.com",
               "img-src 'self' data: https: blob:",
               "style-src 'self' 'unsafe-inline'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
             ].join("; "),
           },
         ],

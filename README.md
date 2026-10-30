@@ -77,12 +77,15 @@ GOOGLE_CLIENT_ID=""
 GOOGLE_CLIENT_SECRET=""
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 GOOGLE_SITE_VERIFICATION=""
+GOOGLE_ANALYTICS_ID=""
 STORAGE_PROVIDER="local"
 ```
 
 Gere um valor aleatório para `AUTH_SECRET`, por exemplo com `openssl rand -base64 32`. No cliente OAuth do Google, autorize o retorno para `http://localhost:3000/api/auth/callback/google`.
 
 Para verificar o site no Google Search Console, defina `GOOGLE_SITE_VERIFICATION` em produção com o valor de `content` da meta tag fornecida pelo Google. O sitemap dinâmico está disponível em `/sitemap.xml` e é indicado no `/robots.txt`.
+
+Para ativar o Google Analytics 4, defina `GOOGLE_ANALYTICS_ID` em produção com o ID de medição (`G-...`). A tag é carregada uma única vez pelo layout principal, após a página ficar interativa. As visualizações usam a medição automática do GA4; mantenha as mudanças de página pelo histórico habilitadas na medição otimizada do fluxo Web.
 
 ```bash
 npx prisma generate
