@@ -7,7 +7,7 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  const databaseUrl = process.env.DATABASE_URL;
+  const databaseUrl = process.env.GATREE_DATABASE_URL || process.env.DATABASE_URL;
 
   if (!databaseUrl) {
     throw new Error("DATABASE_URL environment variable is not set");
@@ -29,7 +29,8 @@ function createPrismaClient() {
     max: 10,
   });
 
-  const adapter = new PrismaPg(pool);
+  const schema = new URL(databaseUrl).searchParams.get("schema") || "public";
+  const adapter = new PrismaPg(pool, { schema });
   return new PrismaClient({ adapter });
 }
 

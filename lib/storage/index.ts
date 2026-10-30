@@ -8,7 +8,7 @@ export interface UploadOptions {
 
 export interface StorageAdapter {
   upload(buffer: Buffer, options?: UploadOptions): Promise<string>;
-  delete(fileUrl: string): Promise<void>;
+  delete?(fileUrl: string): Promise<void>;
 }
 
 let adapter: StorageAdapter | null = null;
@@ -19,6 +19,11 @@ export async function getStorageAdapter(): Promise<StorageAdapter> {
   const provider = process.env.STORAGE_PROVIDER || "local";
 
   switch (provider) {
+    case "imgur": {
+      const { ImgurAdapter } = await import("./adapters/imgur");
+      adapter = new ImgurAdapter();
+      break;
+    }
     case "r2": {
       const { R2Adapter } = await import("./adapters/r2");
       adapter = new R2Adapter();

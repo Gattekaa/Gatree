@@ -87,7 +87,7 @@ export default async function LoginPage({
           </div>
         )}
         <div className="flex flex-col gap-3">
-          <form
+          {process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && <form
             action={async () => {
               "use server";
               await signIn("google", { redirectTo: "/dashboard" });
@@ -100,8 +100,8 @@ export default async function LoginPage({
               <GoogleIcon />
               {t.continueWithGoogle}
             </button>
-          </form>
-          <form
+          </form>}
+          {process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET && <form
             action={async () => {
               "use server";
               await signIn("github", { redirectTo: "/dashboard" });
@@ -114,7 +114,7 @@ export default async function LoginPage({
               <GitHubIcon />
               {t.continueWithGithub}
             </button>
-          </form>
+          </form>}
         </div>
         <p className="mt-7 border-t border-hairline pt-6 text-xs leading-[1.75] text-ink-tertiary">
           {t.termsNotice}{" "}
